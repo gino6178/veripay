@@ -116,6 +116,9 @@ export function mockPaypal({ publicUrl = "http://localhost:8790", file = stateFi
     async payout({ batchId, receiver, amount }) {
       return once(`payout:${batchId}`, () => { const p = { batchId: id("PAYOUT-"), receiver, amount, status: /^unclaimed/i.test(receiver) ? "UNCLAIMED" : "SUCCESS" }; payouts.set(p.batchId, p); return { batchId: p.batchId, status: "PENDING" }; });
     },
+    async payoutBatch({ batchId, items }) {
+      return once(`payout:${batchId}`, () => { const p = { batchId: id("PAYOUT-"), receiver: items.map((x) => x.receiver).join(","), amount: items.reduce((t, x) => t + x.amount, 0), status: "SUCCESS", items: items.map((x) => ({ ...x, status: /^unclaimed/i.test(x.receiver) ? "UNCLAIMED" : "SUCCESS", tx: id("TX-") })) }; payouts.set(p.batchId, p); return { batchId: p.batchId, status: "PENDING" }; });
+    },
     async getPayout(batchId) { const p = payouts.get(batchId); return { batchId, status: p ? "SUCCESS" : "DENIED", item: p ? p.status : null }; },
     async invoice({ recipient, item, amount, requestId }) {
       return once(requestId, () => { const v = { id: id("INV2-"), recipient, item, amount, status: "SENT" }; invoices.set(v.id, v); return { id: v.id, url: `${publicUrl}/mock-paypal/approve?invoice=${v.id}`, status: "SENT" }; });
@@ -175,6 +178,7 @@ export function mockPaypal({ publicUrl = "http://localhost:8790", file = stateFi
       const p = payouts.get(batchId);
       if (!p) return null;
       const sender = Object.entries(db.data.byRequest).find(([k, v]) => k.startsWith("payout:") && v?.batchId === batchId)?.[0].slice(7) || null;
+      if (p.items) return { batchId, status: "SUCCESS", sender, items: p.items.map((x) => ({ transaction_id: x.status === "SUCCESS" ? x.tx : null, status: x.status, amount: x.amount, receiver: x.receiver, sender_item_id: x.id })) };
       return { batchId, status: "SUCCESS", sender, items: [{ transaction_id: p.status === "SUCCESS" ? `TX${batchId.slice(7)}` : null, status: p.status, amount: p.amount, receiver: p.receiver, sender_item_id: sender }] };
     },
     // what the simulated approval page does

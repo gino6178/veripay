@@ -13,7 +13,7 @@ import { now, nowIso, DAY } from "./clock.js";
 import { product } from "./products/index.js";
 import { quote as makeQuote, getQuote, limits } from "./quote.js";
 import { person, updatePerson } from "./people.js";
-import { post, DEFAULT_CAUSE, CAUSES } from "./pool.js";
+import { post, postSplit, causesOf, checkCauses, DEFAULT_CAUSE, CAUSES } from "./pool.js";
 import { record } from "./activity.js";
 import { statusOf } from "./flights.js";
 import { pp, publicUrl, usd, why } from "./pay/index.js";
@@ -22,6 +22,9 @@ const db = store(stateFile("policies"), { policies: {} });
 export const policiesStore = db;
 const MONTH = 365 * DAY / 12, YEAR = 365 * DAY;
 export const policy = (id) => db.data.policies[id] || null;
+// where a policy's money goes: its causes and shares (older policies have one cause)
+export const causesOfPolicy = (pol) => pol.causes || causesOf(pol.cause);
+export const topCause = (pol) => Object.entries(causesOfPolicy(pol)).sort((a, b) => b[1] - a[1])[0][0];
 export const policiesOf = (personId) => Object.values(db.data.policies).filter((p) => p.person === personId);
 export const allPolicies = () => Object.values(db.data.policies);
 const graceDays = (p) => (p.product === "life" ? 30 : 14);
@@ -29,11 +32,13 @@ const say = (p, action, summary, data = null, actor = { kind: "platform" }) => r
 const save = () => db.save();
 
 // Buy what a quote priced. plan: "monthly" | "yearly"; billing: "vault" | "subscription" (monthly only)
-export async function buy(personId, { quote: qid, plan = "monthly", billing = "vault", cause, beneficiaries, items, pay = "paypal", actor }) {
+export async function buy(personId, { quote: qid, plan = "monthly", billing = "vault", cause, causes, beneficiaries, items, pay = "paypal", actor }) {
   const who = person(personId), q = getQuote(qid);
   if (!who) return { error: "person" };
   if (!q || (q.person && q.person !== personId)) return { error: "quote", message: "No such quote for this person: get one with get_quote." };
   if (Date.parse(q.expires) < now()) return { error: "quote_expired", message: "That quote has expired: get a new one." };
+  const badCause = checkCauses(causes ?? cause);
+  if (badCause) return { error: "cause", message: badCause };
   const p = product(q.product);
   if (p.term === "trip") { plan = "trip"; billing = "vault"; }
   else if (!["monthly", "yearly"].includes(plan)) return { error: "plan", message: "plan is monthly or yearly." };
@@ -46,7 +51,7 @@ export async function buy(personId, { quote: qid, plan = "monthly", billing = "v
   }
   const id = `pol_${crypto.randomBytes(5).toString("hex")}`;
   const pol = { id, person: personId, product: q.product, quote: q.id, answers: q.answers, addons: q.addons, zone: q.zone, annual: q.annual, monthly: q.monthly, reinsShare: q.breakdown.reinsurance / q.annual,
-    coverages: q.coverages, deductible: q.deductible, plan, billing, cause: cause && cause in CAUSES ? cause : who.cause || DEFAULT_CAUSE,
+    coverages: q.coverages, deductible: q.deductible, plan, billing, causes: causesOf(causes ?? cause ?? who.causes ?? who.cause),
     beneficiaries: p.beneficiaries ? beneficiaries.map((x) => ({ name: String(x.name).slice(0, 60), relation: String(x.relation || "").slice(0, 30), share: +x.share })) : undefined,
     items: Array.isArray(items) ? items.slice(0, 20).map((x) => ({ what: String(x.what || "").slice(0, 80), value: Math.round(+x.value * 100) || 0 })) : undefined,
     status: q.decision === "review" ? "review" : "awaiting_payment", created: nowIso(), start: null, end: null, nextDue: null, waitingUntil: null,
@@ -133,7 +138,7 @@ function activate(pol) {
   say(pol, "policy_active", `Policy ${pol.number} started: ${p.name.en}, cover until ${pol.end.slice(0, 10)}.${pol.waitingUntil ? ` Claims other than ${p.id === "pet" ? "accidents" : "fire and theft"} are paid from ${pol.waitingUntil.slice(0, 10)} (waiting period).` : ""}`);
 }
 function premiumPaid(pol, amount, ref) {
-  post({ kind: "premium", cause: pol.cause, amount, policy: pol.id, product: pol.product, ref: ref.capture || ref.subscription || ref.invoice || null });
+  postSplit({ kind: "premium", causes: causesOfPolicy(pol), amount, policy: pol.id, product: pol.product, ref: ref.capture || ref.subscription || ref.invoice || null });
   say(pol, "premium_paid", `Premium ${usd(amount)} paid in PayPal: ${usd(Math.round(amount * 0.8))} to the claims pool, ${usd(Math.round(amount * 0.2))} Cover's fee.`, ref, { kind: "paypal" });
 }
 
@@ -223,7 +228,7 @@ async function refund(pol, amount, step) {
     pay.refunded = (pay.refunded || 0) + take; left -= take; done.push({ capture: pay.capture, amount: take, id: r.id });
   }
   const sent = amount - left;
-  if (sent > 0) post({ kind: "refund", cause: pol.cause, amount: sent, policy: pol.id, product: pol.product, ref: done.map((d) => d.id).join(",") });
+  if (sent > 0) postSplit({ kind: "refund", causes: causesOfPolicy(pol), amount: sent, policy: pol.id, product: pol.product, ref: done.map((d) => d.id).join(",") });
   return { sent, done };
 }
 // A one-off charge to saved PayPal (a change that costs more)
@@ -296,7 +301,7 @@ export function view(pol, lang = "en") {
   return { policy: pol.id, number: pol.number, product: pol.product, name: p.name[lang], status: pol.status, plan: pol.plan, billing: pol.billing,
     ...(pol.plan === "trip" ? { trip: { destination: pol.answers.destination, departure: pol.answers.departure, return: pol.answers.return, flights: pol.answers.flights, travelers: pol.answers.travelers, plan: pol.answers.plan } } : {}),
     price: pol.plan === "trip" ? (lang === "zh" ? `本趟 ${usd(pol.annual)}` : `${usd(pol.annual)} for the trip`) : pol.plan === "monthly" ? (lang === "zh" ? `每月 ${usd(pol.monthly)}` : `${usd(pol.monthly)} a month`) : (lang === "zh" ? `每年 ${usd(pol.annual)}` : `${usd(pol.annual)} a year`), annual: usd(pol.annual), monthly: pol.monthly == null ? null : usd(pol.monthly),
-    start: pol.start, end: pol.end, nextPremium: pol.nextDue, waitingUntil: pol.waitingUntil, cause: pol.cause,
+    start: pol.start, end: pol.end, nextPremium: pol.nextDue, waitingUntil: pol.waitingUntil, causes: causesOfPolicy(pol), cause: topCause(pol),
     covers: pol.coverages.map((c) => ({ id: c.id, clause: c.clause, limit: c.limit != null ? usd(c.limit) : null })), deductible: pol.deductible != null ? usd(pol.deductible) : null, addons: pol.addons,
     ...(pol.items?.length ? { items: pol.items.map((x) => ({ what: x.what, value: usd(x.value) })) } : {}),
     ...(pol.beneficiaries ? { beneficiaries: pol.beneficiaries } : {}),

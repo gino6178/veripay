@@ -31,6 +31,10 @@ export function post({ kind, cause, amount, policy = null, claim = null, product
   else if (["claim", "reinsurance", "giveback"].includes(kind)) pool = -amount;
   else if (kind === "recovery") pool = amount;
   else if (kind === "adjust") pool = amount;
+  // ---- BEGIN partner commission (partners.js): a partner's share of a premium it sold, paid out of Cover's fee; the
+  // claims pool never pays it
+  else if (kind === "commission") fee = -amount;
+  // ---- END partner commission
   const line = { n: db.data.lines.length + 1, at: nowIso(), year: db.data.year, kind, cause: c, amount, fee, pool, policy, claim, product, ref, note };
   db.data.lines.push(line); db.save();
   return line;
@@ -54,3 +58,36 @@ export const year = () => db.data.year;
 export function closeYear() { db.data.closed.push({ year: db.data.year, at: nowIso() }); db.data.year += 1; db.save(); return db.data.year; }
 // money a policy has paid in and been refunded, for working out what a cancellation gives back
 export function paidBy(policy) { let paid = 0; for (const l of db.data.lines) if (l.policy === policy) { if (l.kind === "premium") paid += l.amount; if (l.kind === "refund") paid -= l.amount; } return paid; }
+
+// ---- giving to several causes -------------------------------------------------------------------------------------
+// A person may split their giveback across causes ({ animals: 50, disaster: 50 }, shares adding up to 100). Then
+// every premium, refund and claim of theirs is split across those causes' pools in the same shares, to the cent (the
+// largest remainders take the odd cents), so each pool's leftover at the year's close is exactly theirs to give.
+export function causesOf(input, fallback = DEFAULT_CAUSE) {
+  let m = {};
+  if (typeof input === "string" && CAUSES[input]) m = { [input]: 100 };
+  else if (Array.isArray(input)) for (const x of input) { const c = x?.cause || x?.id; if (CAUSES[c]) m[c] = (m[c] || 0) + Math.round(+x.share || +x.pct || 0); }
+  else if (input && typeof input === "object") for (const [c, v] of Object.entries(input)) if (CAUSES[c] && +v > 0) m[c] = Math.round(+v);
+  const total = Object.values(m).reduce((t, v) => t + v, 0);
+  if (!total) return { [CAUSES[fallback] ? fallback : DEFAULT_CAUSE]: 100 };
+  // shares that don't add up to 100 are scaled to it
+  if (total !== 100) { const parts = split(100, Object.fromEntries(Object.entries(m).map(([c, v]) => [c, v * 100 / total]))); m = Object.fromEntries(parts.filter(([, v]) => v > 0)); }
+  return m;
+}
+export const checkCauses = (input) => {
+  if (input == null) return null;
+  const bad = (typeof input === "string" ? [input] : Array.isArray(input) ? input.map((x) => x?.cause || x?.id) : Object.keys(input)).filter((c) => !CAUSES[c]);
+  return bad.length ? `unknown cause${bad.length > 1 ? "s" : ""}: ${bad.join(", ")}; causes are ${Object.keys(CAUSES).join(", ")}` : null;
+};
+export function split(amount, shares) {
+  const entries = Object.entries(shares), total = entries.reduce((t, [, v]) => t + v, 0) || 1;
+  const raw = entries.map(([c, v]) => [c, (amount * v) / total]), floor = raw.map(([c, v]) => [c, Math.floor(v)]);
+  let left = amount - floor.reduce((t, [, v]) => t + v, 0);
+  const order = raw.map(([, v], i) => [v - Math.floor(v), i]).sort((a, b) => b[0] - a[0]);
+  for (const [, i] of order) { if (left <= 0) break; floor[i][1]++; left--; }
+  return floor;
+}
+// post one movement split across a policy's causes
+export function postSplit({ causes, amount, ...rest }) {
+  return split(amount, causesOf(causes)).filter(([, v]) => v > 0).map(([cause, v]) => post({ ...rest, cause, amount: v }));
+}

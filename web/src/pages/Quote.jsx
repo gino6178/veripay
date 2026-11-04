@@ -100,8 +100,8 @@ function Result({ p, q, answers, addons, toggle, seconds, busy }) {
 
 function Buy({ p, q, addons, answers }) {
   const t = useT(), { lang } = useLang(), { toast, me } = useMe();
-  const { data: causes } = useApi("/api/causes");
-  const [plan, setPlan] = useState("monthly"), [billing, setBilling] = useState("vault"), [cause, setCause] = useState(me?.cause || "disaster"), [busy, setBusy] = useState(false);
+  const { data: causeList } = useApi("/api/causes");
+  const [plan, setPlan] = useState("monthly"), [billing, setBilling] = useState("vault"), [causes, setCauses] = useState(() => me?.causes || (me?.cause ? { [me.cause]: 100 } : { disaster: 100 })), [busy, setBusy] = useState(false);
   const [bens, setBens] = useState([{ name: "", relation: "", share: 100 }]), [items, setItems] = useState([{ what: "", value: "" }]);
   const life = p.id === "life", listing = addons.includes("valuables"), trip = !!q.trip;
   const benOk = !life || (bens.every((b) => b.name.trim()) && bens.reduce((s, b) => s + (+b.share || 0), 0) === 100);
@@ -109,7 +109,7 @@ function Buy({ p, q, addons, answers }) {
   const buy = async (pay = "paypal") => {
     setBusy(true);
     try {
-      const r = await api("/api/policies", { method: "POST", body: { quote: q.quote, plan, billing, cause, pay, ...(life ? { beneficiaries: bens.map((b) => ({ ...b, share: +b.share })) } : {}), ...(listing ? { items: items.filter((x) => x.what && +x.value > 0).map((x) => ({ what: x.what, value: +x.value })) } : {}) } });
+      const r = await api("/api/policies", { method: "POST", body: { quote: q.quote, plan, billing, causes, pay, ...(life ? { beneficiaries: bens.map((b) => ({ ...b, share: +b.share })) } : {}), ...(listing ? { items: items.filter((x) => x.what && +x.value > 0).map((x) => ({ what: x.what, value: +x.value })) } : {}) } });
       if (r.error) throw new Error(r.message);
       // the mock's approval page is Cover's own; with the sandbox, the policy page shows PayPal's buttons
       if (r.approveUrl && info?.paypal === "mock") location.href = r.approveUrl; else navigate(`/policies/${r.policy}`);
@@ -127,8 +127,8 @@ function Buy({ p, q, addons, answers }) {
         <button className={`chip ${billing === "vault" ? "on" : ""}`} onClick={() => setBilling("vault")}>{t("存好 PayPal，Cover 每月扣款", "Save PayPal; Cover charges monthly")}</button>
         <button className={`chip ${billing === "subscription" ? "on" : ""}`} onClick={() => setBilling("subscription")}>{t("PayPal 訂閱（PayPal 每月扣）", "PayPal subscription (PayPal bills monthly)")}</button>
       </div>}
-      <div className="stack-s"><p className="small" style={{ fontWeight: 500 }}>{t("年底理賠池剩下的錢，要捐給：", "At the end of the year, what's left of the pool goes to:")}</p>
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 200px), 1fr))", gap: 8 }}>{(causes || []).map((c) => <button key={c.id} className={`cause ${cause === c.id ? "on" : ""}`} onClick={() => setCause(c.id)}>{lang === "en" ? c.en : c.zh}</button>)}</div>
+      <div className="stack-s"><p className="small" style={{ fontWeight: 500 }}>{t("年底理賠池剩下的錢，要捐給（可以選好幾個）：", "At the end of the year, what's left of the pool goes to (pick one or several):")}</p>
+        <CausePicker list={causeList} value={causes} onChange={setCauses} />
       </div>
       {life && <div className="stack-s"><p className="small" style={{ fontWeight: 500 }}>{t("受益人（比例合計 100%）", "Beneficiaries (shares add up to 100%)")}</p>
         {bens.map((b, i) => <div key={i} className="row"><input className="input" style={{ flex: 2, minWidth: 120 }} placeholder={t("姓名", "Name")} value={b.name} onChange={(e) => setBens(bens.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))} /><input className="input" style={{ flex: 1, minWidth: 90 }} placeholder={t("關係", "Relation")} value={b.relation} onChange={(e) => setBens(bens.map((x, j) => (j === i ? { ...x, relation: e.target.value } : x)))} /><input className="input" style={{ width: 90 }} type="number" value={b.share} onChange={(e) => setBens(bens.map((x, j) => (j === i ? { ...x, share: e.target.value } : x)))} /><span>%</span></div>)}
@@ -143,6 +143,23 @@ function Buy({ p, q, addons, answers }) {
       <button className="btn paypal" data-tour="pay-paypal" disabled={busy || !benOk} onClick={() => buy("paypal")}>{q.decision === "review" ? t("送出核保", "Send for review") : trip ? t(`用 PayPal 付這趟 ${q.trip}`, `Pay for the trip with PayPal: ${q.trip}`) : t(`用 PayPal 付第一期 ${plan === "monthly" ? q.monthly : q.annual}`, `Pay the first premium with PayPal: ${plan === "monthly" ? q.monthly : q.annual}`)}</button>
       <p className="tiny muted">{trip ? t("班機延誤或取消時，Cover 從航班狀態看到就自動付款，不用申請。第一班起飛前取消，全額退款。", "If a flight is delayed or cancelled, Cover sees it in the flight status and pays automatically, with no claim to file. Cancel before the first flight for a full refund.")
         : t("第一次付款時 PayPal 會同時存好你的付款方式，之後的月繳就不用再跳轉。隨時可以退保，沒用到的天數全額退回。", "Your first payment also saves PayPal for the monthly premiums, so there's no redirect next time. Cancel any time and the unused days are refunded.")}</p>
+    </div>
+  );
+}
+
+// One cause or several: pick as many as you like; the shares start even and can be set (they always add up to 100,
+// the last one picked takes what the others leave). At the year's close all of them are paid in one PayPal batch.
+export function CausePicker({ list, value, onChange }) {
+  const t = useT(), { lang } = useLang(), ids = Object.keys(value);
+  const even = (keys) => { const n = keys.length, base = Math.floor(100 / n); return Object.fromEntries(keys.map((k, i) => [k, i === n - 1 ? 100 - base * (n - 1) : base])); };
+  const toggle = (id) => { const keys = ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]; if (keys.length) onChange(even(keys)); };
+  const setShare = (id, v) => { const n = Math.max(0, Math.min(100, Math.round(+v || 0))), others = ids.filter((x) => x !== id), rest = 100 - n;
+    const per = others.length ? Math.floor(rest / others.length) : 0; onChange(Object.fromEntries([[id, others.length ? n : 100], ...others.map((k, i) => [k, i === others.length - 1 ? rest - per * (others.length - 1) : per])])); };
+  return (
+    <div className="stack-s">
+      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 200px), 1fr))", gap: 8 }}>{(list || []).map((c) => <button key={c.id} type="button" aria-pressed={ids.includes(c.id)} className={`cause ${ids.includes(c.id) ? "on" : ""}`} onClick={() => toggle(c.id)}>{lang === "zh" ? c.zh : c.en}</button>)}</div>
+      {ids.length > 1 && <ul className="spec">{ids.map((id) => { const c = (list || []).find((x) => x.id === id); return <li key={id}><span className="lead">{c ? (lang === "zh" ? c.zh : c.en) : id}</span><input className="input" style={{ width: 84, minHeight: 34, padding: "4px 8px" }} type="number" min="0" max="100" value={value[id]} onChange={(e) => setShare(id, e.target.value)} aria-label={t(`${c?.zh} 的比例`, `share for ${c?.en}`)} /><span className="val">%</span></li>; })}</ul>}
+      {ids.length > 1 && <p className="tiny muted">{t("每一筆保費都按這個比例分進各公益的池子；年底一次用 PayPal Payouts 全部捐出。", "Every premium is split across these causes' pools in these shares; at the year's end they are all paid in one PayPal Payouts batch.")}</p>}
     </div>
   );
 }

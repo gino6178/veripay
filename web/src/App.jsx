@@ -13,6 +13,7 @@ import Desk from "./pages/Desk.jsx";
 import Carrier from "./pages/Carrier.jsx";
 import Reconcile from "./pages/Reconcile.jsx";
 import Models from "./pages/Models.jsx";
+import Neighborhood from "./pages/Neighborhood.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import Tour, { startTour } from "./components/Tour.jsx";
 
@@ -35,6 +36,7 @@ function routes(path) {
   if (p === "/carrier") return <Carrier />;
   if (p === "/reconcile") return <Reconcile />;
   if (p === "/models") return <Models />;
+  if (p === "/neighborhood") return <Neighborhood />;
   if (p === "/signin") return <SignIn />;
   return <NotFound />;
 }
@@ -79,6 +81,7 @@ function Header({ path }) {
           <Link to="/policies" className={on("/policies")}>{t("我的保單", "My policies")}</Link>
           <Link to="/activity" className={on("/activity")}>{t("紀錄", "Activity")}</Link>
           <Link to="/connect" className={on("/connect")}>{t("AI agent", "AI agent")}</Link>
+          <Link to="/neighborhood" className={on("/neighborhood")}>{t("社區基金", "Neighborhood")}</Link>
           <Link to="/transparency" className={on("/transparency")}>{t("帳本", "Ledger")}</Link>
           <span className="sep" aria-hidden="true" />
           <Link to="/desk" className={`staff ${on("/desk") || ""}`}>{t("理賠審核", "Claims desk")}</Link>

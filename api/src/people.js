@@ -23,6 +23,7 @@ export function updatePerson(id, patch) {
   if (patch.vault !== undefined) p.vault = patch.vault;
   if (patch.limits !== undefined) p.limits = patch.limits;
   if (patch.devices !== undefined) p.devices = patch.devices;
+  if (patch.causes !== undefined) { p.causes = patch.causes; p.cause = Object.entries(patch.causes).sort((a, b) => b[1] - a[1])[0]?.[0] || p.cause; }
   db.save();
   return p;
 }

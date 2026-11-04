@@ -13,9 +13,9 @@ import path from "node:path";
 import { store, stateFile } from "./store.js";
 import { now, nowIso, DAY } from "./clock.js";
 import { product, claimType, clause } from "./products/index.js";
-import { policy as getPolicy, inForce } from "./policy.js";
+import { policy as getPolicy, inForce, causesOfPolicy } from "./policy.js";
 import { person, allPeople, payoutAddress, updatePerson } from "./people.js";
-import { post } from "./pool.js";
+import { postSplit } from "./pool.js";
 import { record } from "./activity.js";
 import { exifOf } from "./exif.js";
 import { signals } from "./fraud.js";
@@ -177,10 +177,11 @@ async function pay(c, amount, { by, note = null }) {
     c.payout = { batchId: r.batchId, status: r.status, to: c.payee === "vet" ? "the vet" : "you", amount, at: nowIso() };
     c.status = "paid"; c.paid = amount; c.paidAt = nowIso(); c.secondsToPay = Math.round((Date.parse(c.paidAt) - Date.parse(c.reportedAt)) / 1000);
     save();
-    post({ kind: "claim", cause: pol.cause, amount, policy: pol.id, claim: c.id, product: c.product, ref: r.batchId });
+    postSplit({ kind: "claim", causes: causesOfPolicy(pol), amount, policy: pol.id, claim: c.id, product: c.product, ref: r.batchId });
     say(c, "claim_paid", `Claim ${c.number} paid: ${usd(amount)} sent with PayPal Payouts to ${c.payout.to}${by === "rules" ? `, ${c.secondsToPay} seconds after it was filed` : by === "parametric" ? ", with no claim filed" : ""}.`, { kind: "paypal" });
     issue(c, "paid");
     (await import("./carrier.js")).afterClaim?.(c);
+    await (await import("./community.js")).afterClaim(c).catch(() => null);
   } catch (e) { c.status = "referred"; c.payoutError = why(e); save(); say(c, "payout_failed", `The payout for claim ${c.number} failed (${c.payoutError}); an adjuster will retry it.`); }
   return view(c);
 }

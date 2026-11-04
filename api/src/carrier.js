@@ -4,16 +4,16 @@
 //   reinsurance   a per-claim excess of loss (Cover keeps the first $5,000 of any claim, the reinsurer pays the rest)
 //                 and a catastrophe layer (one hurricane, wildfire or earthquake: Cover keeps $20,000 of the event, the reinsurer
 //                 pays the rest up to $500,000), paid for with the reinsurance part of every premium
-//   giveback      at the year's close, each cause pool pays its reinsurance, and what is left goes to the cause with
-//                 PayPal Payouts, with a receipt in the transparency log
+//   giveback      at the year's close, each cause pool pays its reinsurance, and what is left of every pool goes to its
+//                 cause in one PayPal Payouts batch (an item per cause), with a receipt for each in the transparency log
 //   exposure      in-force policies and sums insured by state and hazard level; a hurricane, wildfire or quake scenario
 //   rates         a filed rate change waits for the regulator's answer; until approved, prices don't move
 import { store, stateFile } from "./store.js";
 import { nowIso, DAY } from "./clock.js";
 import { PRODUCTS } from "./products/index.js";
-import { allPolicies } from "./policy.js";
+import { allPolicies, causesOfPolicy, topCause } from "./policy.js";
 import { allClaims } from "./claims.js";
-import { post, pools, poolOf, CAUSES, lines, year, closeYear as nextYear } from "./pool.js";
+import { post, postSplit, pools, poolOf, CAUSES, lines, year, closeYear as nextYear } from "./pool.js";
 import { record } from "./activity.js";
 import * as receipts from "./proof/receipts.js";
 import { pp, usd, why } from "./pay/index.js";
@@ -28,13 +28,13 @@ export function afterClaim(c) {
   if (c.paid > TREATY.perClaimRetention) {
     const amount = c.paid - TREATY.perClaimRetention;
     db.data.recoveries.push({ claim: c.id, layer: "per claim", amount, at: nowIso() }); db.save();
-    post({ kind: "recovery", cause: (allPolicies().find((p) => p.id === c.policy) || {}).cause, amount, policy: c.policy, claim: c.id, product: c.product, note: "per-claim excess of loss" });
+    postSplit({ kind: "recovery", causes: causesOfPolicy(allPolicies().find((p) => p.id === c.policy) || {}), amount, policy: c.policy, claim: c.id, product: c.product, note: "per-claim excess of loss" });
   }
   if (c.event && CAT_TYPES.includes(c.type)) {
     const ev = (db.data.events[c.event] ||= { id: c.event, paid: 0, recovered: 0 });
     ev.paid += c.paid;
     const owed = Math.min(TREATY.catLimit, Math.max(0, ev.paid - TREATY.catRetention)) - ev.recovered;
-    if (owed > 0) { ev.recovered += owed; post({ kind: "recovery", cause: (allPolicies().find((p) => p.id === c.policy) || {}).cause, amount: owed, policy: c.policy, claim: c.id, product: c.product, note: `catastrophe layer, event ${c.event}` }); }
+    if (owed > 0) { ev.recovered += owed; postSplit({ kind: "recovery", causes: causesOfPolicy(allPolicies().find((p) => p.id === c.policy) || {}), amount: owed, policy: c.policy, claim: c.id, product: c.product, note: `catastrophe layer, event ${c.event}` }); }
     db.save();
   }
 }
@@ -102,24 +102,29 @@ export const filings = () => db.data.filings;
 
 // The year's close: each pool pays its reinsurance, then gives what is left to its cause
 export async function closeYear() {
-  const y = year(), done = [];
+  const y = year(), done = [], items = [];
+  // each pool pays its reinsurance: the reinsurance part of every premium line it received this year
   for (const cause of Object.keys(CAUSES)) {
-    const pol = allPolicies().filter((p) => p.cause === cause);
-    // the reinsurance part of what each policy paid this year (the share its quote priced for it)
-    const reins = lines({ year: y, cause, kind: "premium" }).reduce((t, l) => { const p = pol.find((x) => x.id === l.policy); return t + (p ? Math.round(l.amount * (p.reinsShare ?? reinsShare(p))) : 0); }, 0);
+    const reins = lines({ year: y, cause, kind: "premium" }).reduce((t, l) => { const p = allPolicies().find((x) => x.id === l.policy); return t + (p ? Math.round(l.amount * (p.reinsShare ?? reinsShare(p))) : 0); }, 0);
     if (reins) post({ kind: "reinsurance", cause, amount: reins, note: `reinsurance for year ${y}` });
     const left = poolOf(cause, y).balance;
-    const g = { year: y, cause, amount: Math.max(0, left), policies: pol.length, at: nowIso(), payout: null };
-    if (left > 0) {
-      try {
-        const r = await pp().payout({ batchId: `giveback-${y}-${cause}`, receiver: CAUSES[cause].email, amount: left, note: `Cover's giveback for year ${y}: what was left of the claims pool of the people who chose you.`, subject: "Cover: this year's giveback" });
-        g.payout = r.batchId; post({ kind: "giveback", cause, amount: left, ref: r.batchId, note: `giveback year ${y}` });
-      } catch (e) { g.error = why(e); }
-    }
-    const rc = receipts.issue({ kind: "giveback", subject: `giveback-${y}-${cause}`, event: "given", data: { year: y, cause, amount: g.amount, reinsurance: reins, payout: g.payout, pool: poolOf(cause, y) } });
-    g.receipt = rc.id; db.data.givebacks.push(g); db.save(); done.push(g);
-    for (const p of pol) record({ actor: { kind: "platform" }, who: [p.person], action: "giveback", summary: `Year ${y} closed: ${usd(g.amount)} from the ${CAUSES[cause].en} pool was given to that cause.`, ref: g.receipt });
+    done.push({ year: y, cause, amount: Math.max(0, left), reinsurance: reins, policies: new Set(lines({ year: y, cause, kind: "premium" }).map((l) => l.policy)).size, at: nowIso(), payout: null });
+    if (left > 0) items.push({ id: `giveback-${y}-${cause}`, receiver: CAUSES[cause].email, amount: left, note: `Cover's giveback for year ${y}: what was left of the ${CAUSES[cause].en} pool.` });
   }
+  // then every cause is paid in ONE PayPal Payouts batch, an item per cause
+  let batch = null, err = null;
+  if (items.length) try { batch = (await pp().payoutBatch({ batchId: `giveback-${y}`, items, subject: "Cover: this year's giveback", note: `Cover's giveback for year ${y}.` })).batchId; } catch (e) { err = why(e); }
+  for (const g of done) {
+    if (g.amount > 0) { if (batch) { g.payout = batch; post({ kind: "giveback", cause: g.cause, amount: g.amount, ref: batch, note: `giveback year ${y}, item giveback-${y}-${g.cause}` }); } else g.error = err; }
+    const rc = receipts.issue({ kind: "giveback", subject: `giveback-${y}-${g.cause}`, event: "given", data: { year: y, cause: g.cause, amount: g.amount, reinsurance: g.reinsurance, payout: g.payout, item: `giveback-${y}-${g.cause}`, pool: poolOf(g.cause, y) } });
+    g.receipt = rc.id; db.data.givebacks.push(g);
+  }
+  db.save();
+  // each person hears what their premiums gave, cause by cause
+  const people = new Map();
+  for (const p of allPolicies()) for (const [c, share] of Object.entries(causesOfPolicy(p))) { const m = people.get(p.person) || {}; m[c] = Math.max(m[c] || 0, share); people.set(p.person, m); }
+  for (const [pid, m] of people) { const gs = done.filter((g) => m[g.cause] && g.amount > 0); if (gs.length) record({ actor: { kind: "platform" }, who: [pid], action: "giveback", summary: `Year ${y} closed: ${gs.map((g) => `${usd(g.amount)} to ${CAUSES[g.cause].en}`).join(", ")}, in one PayPal Payouts batch${batch ? ` (${batch})` : ""}.`, ref: batch }); }
+  done.funds = await (await import("./community.js")).closeYear();
   nextYear();
   return done;
 }

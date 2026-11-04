@@ -207,7 +207,8 @@ export async function compare(runTool) {
     let d = null;
     try { d = p.id ? await payoutDetail(p.id) : null; } catch (e) { row(p.kind, "pending", cv, null, `Payouts API: ${why(e)}`); continue; }
     if (!d) { row(p.kind, "missing_in_paypal", cv, null, "PayPal has no such payout batch"); continue; }
-    const it = d.items[0] || {}, t = it.transaction_id ? pay.tx.get(it.transaction_id) : null;
+    // (the year's giveback is one batch with an item per cause: find this cause's item)
+    const it = (p.kind === "giveback" && d.items.find((x) => x.sender_item_id && x.sender_item_id.endsWith(`-${p.cause}`))) || d.items[0] || {}, t = it.transaction_id ? pay.tx.get(it.transaction_id) : null;
     if (it.transaction_id) payoutTx.add(it.transaction_id);
     const pv = { id: d.batchId, item: it.transaction_id || null, amount: it.amount ?? null, status: it.status || d.status, receiver: it.receiver, source: t ? "Payouts API + list_transactions" : "Payouts API" };
     let status = "matched", note = null;

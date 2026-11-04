@@ -18,6 +18,24 @@ ${INSTRUCTIONS}
   Testing with a demo account: POST ${base}/api/auth/demo {"name": "..."} (keeps a cookie), then POST ${base}/api/tokens
   {"label": "my agent"} with that cookie returns a token.
 
+<!-- BEGIN partner skill (partners.js) -->
+## Selling Cover at your checkout (partners)
+
+A travel seller's checkout agent can offer, negotiate and bind trip cover for its customer, agent to agent.
+- Key: Cover's staff issue a partner key (POST ${base}/api/staff/partners {"name", "email" (PayPal for the commission), "rate"}),
+  kept only as a hash. Send it as Authorization: Bearer cvpk_...
+- A2A: ${base}/a2a, message/send with one data part {"action": ..., ...}; or REST: POST ${base}/api/partner/<action>.
+  1. offer_trip_cover {"trip": {"destination", "departure", "return", "flights": [{"flight", "date"}], "travelers", "oldest", "tripCost"}, "plan": "standard"}
+     -> offer id (15 minutes), price, cover lines with clause ids, where the money goes, your commission.
+  2. counter_offer {"offer", "plan": "flight"} or {"offer", "budget": 100}, once. Cover never discounts the risk price:
+     it drops cover lines to fit a budget and names them, or says no and gives the lowest price.
+  3. bind_cover {"offer", "customer": {"name", "email"}, "payer": "test_card" | "paypal"}: the policy is the customer's
+     (a person at Cover by that email; flight payouts go to it). The premium is Cover's own PayPal order, beside your
+     ticket order; "paypal" returns an approveUrl for your customer.
+  4. cover_status {"sale"}: the payment, the policy, and your commission (paid with PayPal Payouts once the premium is
+     captured, out of Cover's 20% fee, never the claims pool).
+<!-- END partner skill -->
+
 ## Demo controls (this demo server only; off when DEMO_SIGNIN=0)
 
 - POST ${base}/api/demo/flight {"flight": "UA837", "date": "YYYY-MM-DD", "status": "departed" | "cancelled" | "delayed", "delayMin": 150}

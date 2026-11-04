@@ -9,6 +9,7 @@ import { PRODUCTS, product } from "./products/index.js";
 import { quote as makeQuote, checkAnswers } from "./quote.js";
 import { parseFlights } from "./flights.js";
 import { now } from "./clock.js";
+import { allPolicies } from "./policy.js";
 
 // What each cover can't be priced without (asked for), and what Lumi assumes when nobody said (and says so)
 const NEED = {
@@ -131,11 +132,15 @@ export async function advise({ messages = [], state = {}, lang = "en", person = 
   if (chk.bad.length || chk.missing.length) return { reply: `${L(lang, ["有一點我得確認：", "One thing to check: "])}${[...chk.bad, ...chk.missing.map((k) => L(lang, SAY[k] || [k, k]))].join("; ")}`, recommend: pid, missing: chk.missing, problems: chk.bad, state: st, via: model ? "model + rules" : "rules" };
   const q = makeQuote(pid, merged, { person, lang });
   if (q.error) return { reply: q.message || q.bad?.join("; "), recommend: pid, state: st };
+  // home cover: how many households at the same ZIP are already on Cover (a neighborhood fund is possible from 3)
+  const zip = q.zone?.area?.match(/\d{5}/)?.[0] || (/^\d{5}$/.test(String(merged.place)) ? merged.place : null);
+  const neighbors = ["renters", "home"].includes(pid) && zip ? new Set(allPolicies().filter((x) => ["active", "grace"].includes(x.status) && ["renters", "home"].includes(x.product) && x.zone?.zip === zip && x.person !== person).map((x) => x.person)).size : 0;
   const price = q.term === "trip" ? L(lang, [`這趟 ${q.trip}`, `${q.trip} for the trip`]) : L(lang, [`每月 ${q.monthly}`, `${q.monthly} a month`]);
   const shown = (k) => { const v = merged[k], opt = p.questions.find((x) => x.id === k)?.options?.find((o) => o.v === String(v));
     const val = opt ? opt[lang === "zh" ? "zh" : "en"].replace(/[:：].*$/, "") : typeof v === "boolean" ? L(lang, v ? ["是", "yes"] : ["否", "no"]) : ["contents", "tripCost", "valuables", "rebuild", "value", "limit"].includes(k) ? `$${Number(v).toLocaleString("en-US")}` : v;
     return `${SHORT[k] ? L(lang, SHORT[k]) : k} ${val}`; };
-  return { reply: `${L(lang, [`你最需要的是「${p.name.zh}」，${price}。`, `What you need most is ${p.name.en} cover: ${price}.`])} ${why}${assumed.length ? ` ${L(lang, ["我先假設了這些，不對就跟我說：", "I assumed these; tell me if any is wrong:"])} ${assumed.map(shown).join(L(lang, ["；", "; "]))}.` : ""}`,
-    recommend: pid, quote: q, assumed, state: { product: pid, answers: merged }, via: model ? "model + rules" : "rules" };
+  const near = neighbors >= 2 ? ` ${L(lang, [`另外，${zip} 已經有 ${neighbors} 戶人家在 Cover 投保：買了之後可以一起成立社區基金，出事時互相分擔自負額。`, `Also: ${neighbors} households at ${zip} are already on Cover. Once you're covered you can start a neighborhood fund together and share each other's deductibles.`])}` : "";
+  return { reply: `${L(lang, [`你最需要的是「${p.name.zh}」，${price}。`, `What you need most is ${p.name.en} cover: ${price}.`])} ${why}${near}${assumed.length ? ` ${L(lang, ["我先假設了這些，不對就跟我說：", "I assumed these; tell me if any is wrong:"])} ${assumed.map(shown).join(L(lang, ["；", "; "]))}.` : ""}`,
+    recommend: pid, quote: q, assumed, state: { product: pid, answers: merged }, via: model ? "model + rules" : "rules", ...(neighbors ? { neighbors } : {}) };
 }
 const pick = (p, a) => Object.fromEntries(Object.entries(a || {}).filter(([k, v]) => p.questions.some((q) => q.id === k) && v !== undefined && v !== null && v !== ""));

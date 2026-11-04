@@ -105,6 +105,12 @@ export function paypal({ clientId, secret, brand = "Cover", testCard = false }) 
       const j = await call("POST", "/v1/payments/payouts", { sender_batch_header: { sender_batch_id: batchId, email_subject: subject, email_message: note }, items: [{ recipient_type: "EMAIL", receiver, note, sender_item_id: batchId, amount: { value: (amount / 100).toFixed(2), currency } }] });
       return { batchId: j.batch_header.payout_batch_id, status: j.batch_header.batch_status };
     },
+    // one Payouts batch with several items, each with its own sender_item_id (the year's giveback to every cause at once)
+    async payoutBatch({ batchId, items, currency = "USD", subject = `${brand}: money for you`, note = "" }) {
+      const j = await call("POST", "/v1/payments/payouts", { sender_batch_header: { sender_batch_id: batchId, email_subject: subject, email_message: note },
+        items: items.map((x) => ({ recipient_type: "EMAIL", receiver: x.receiver, note: x.note || note, sender_item_id: x.id, amount: { value: (x.amount / 100).toFixed(2), currency } })) });
+      return { batchId: j.batch_header.payout_batch_id, status: j.batch_header.batch_status };
+    },
     async getPayout(batchId) {
       const j = await call("GET", `/v1/payments/payouts/${batchId}`);
       return { batchId, status: j.batch_header.batch_status, item: j.items?.[0]?.transaction_status || null };

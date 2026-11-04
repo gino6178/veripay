@@ -14,7 +14,7 @@ import { makePerson, person, updatePerson } from "./people.js";
 import { PRODUCTS, product, summary, check as checkProducts, clause } from "./products/index.js";
 import { quote } from "./quote.js";
 import * as policies from "./policy.js";
-import { pools, CAUSES, lines as ledgerLines } from "./pool.js";
+import { pools, CAUSES, causesOf, checkCauses, lines as ledgerLines } from "./pool.js";
 import { forPerson, onActivity } from "./activity.js";
 import { advance, nowIso, skipped } from "./clock.js";
 import * as receipts from "./proof/receipts.js";
@@ -22,6 +22,7 @@ import * as claims from "./claims.js";
 import * as carrier from "./carrier.js";
 import * as flights from "./flights.js";
 import * as advisor from "./advisor.js";
+import * as community from "./community.js";
 import * as mcp from "./mcp.js";
 import { limitsOf, setLimits } from "./ops.js";
 import { guide } from "./guide.js";
@@ -79,6 +80,42 @@ setInterval(() => { const t = Date.now(); for (const [k, w] of windows) if (t - 
 app.use(["/mcp", "/api/agent", "/a2a"], limit("agent", +(process.env.AGENT_RPM || 120)));
 app.use(["/api/auth", "/api/tokens"], limit("people", 30));
 
+// ==== BEGIN partners block (partners.js): Cover sold inside a partner's checkout, agent to agent =======================
+// A partner's agent speaks A2A at /a2a with its partner key (Bearer cvpk_...; a person's token goes on to mcp.a2a
+// below), or the same actions as REST at /api/partner/<action>. Staff add partners. The demo page (/partners) runs
+// Skyway Travel's checkout agent (skyway.js), which talks to this server's /a2a over HTTP like any outside agent.
+// (staff and send are defined further down; they are only looked up when a request comes in.)
+const partners = await import("./partners.js"), skyway = await import("./skyway.js");
+const asStaff = (req, res, next) => staff(req, res, next);
+app.post("/a2a", (req, res, next) => partners.a2a(req, res, next).catch((e) => { console.error("partner a2a", e); if (!res.headersSent) res.status(500).end(); }));
+app.use("/api/partner", limit("partner", +(process.env.AGENT_RPM || 120)));
+app.get("/api/partner/welcome/:t", (req, res) => {
+  const w = partners.welcome(req.params.t);
+  if (!w) return res.status(410).type("text/plain").send("This link has been used or has expired. Sign in to Cover to see your policy.");
+  res.set("Set-Cookie", `${COOKIE}=${createSession(w.person)}; HttpOnly; SameSite=Lax; Path=/`).redirect(`/policies/${w.policy}`);
+});
+app.post("/api/partner/:action", async (req, res) => {
+  const p = partners.partnerOf(req);
+  if (!p) return res.status(401).json({ error: "partner_key", message: "Send a partner key Cover issued: Authorization: Bearer cvpk_..." });
+  const r = await partners.act(p, req.params.action, req.body || {});
+  res.status(r.data?.error ? (r.data.error === "action" ? 404 : 400) : 200).json({ ...r.data, said: r.text });
+});
+app.get("/api/staff/partners", asStaff, (req, res) => res.json(partners.allPartners().map((p) => ({ ...partners.viewPartner(p), recent: partners.salesOf(p.id).slice(-10).reverse() }))));
+app.post("/api/staff/partners", asStaff, (req, res) => send(res, partners.createPartner(req.body || {})));
+// the demo page: one move of Skyway's agent (offer, counter, bind, status), sent to Cover's /a2a, both messages back
+app.post("/api/demo/skyway", async (req, res) => {
+  if (!DEMO) return res.status(404).end();
+  const b = req.body || {}, m = skyway.message(b.step, b);
+  if (b.step === "cart") return res.json({ cart: skyway.cart(), testCard: !!pp().testCard, paypal: pp().mode, rate: partners.partner("skyway").rate });
+  if (!m) return res.status(400).json({ error: "step", message: "step is cart, offer, counter, bind or status" });
+  try {
+    const x = await skyway.send(`http://127.0.0.1:${PORT}/a2a`, partners.demoKey(), { ...m, contextId: b.contextId });
+    const sale = x.received?.result?.parts?.find((p) => p.kind === "data")?.data?.sale;
+    res.json({ exchange: x, inbox: sale ? partners.inbox(sale) : null });
+  } catch (e) { res.status(502).json({ error: "a2a", message: e.message }); }
+});
+// ==== END partners block ===========================================================================================
+
 // ---- agents -------------------------------------------------------------------------------------------------------
 app.all("/mcp", (req, res) => mcp.handle(req, res).catch((e) => { console.error("mcp", e); if (!res.headersSent) res.status(500).json({ jsonrpc: "2.0", error: { code: -32603, message: "internal error" }, id: null }); }));
 app.post("/a2a", (req, res) => mcp.a2a(req, res).catch((e) => { console.error("a2a", e); res.status(500).end(); }));
@@ -109,9 +146,10 @@ app.post("/api/auth/demo", (req, res) => {
 app.post("/api/auth/signout", (req, res) => { const s = sessionOf(req); if (s) endSession(s.sid); res.set("Set-Cookie", `${COOKIE}=; Max-Age=0; Path=/`).json({ ok: true }); });
 app.get("/api/me", signedIn, (req, res) => res.json({ ...req.person, vault: !!req.person.vault }));
 app.patch("/api/me", signedIn, (req, res) => {
-  const { name, email, lang, cause } = req.body || {};
-  if (cause !== undefined && !(cause in CAUSES)) return res.status(400).json({ error: "cause", message: `cause is one of ${Object.keys(CAUSES).join(", ")}` });
-  res.json(updatePerson(req.person.id, { name, email, lang, cause }));
+  const { name, email, lang, cause, causes } = req.body || {};
+  const bad = checkCauses(causes ?? cause);
+  if (bad) return res.status(400).json({ error: "cause", message: bad });
+  res.json(updatePerson(req.person.id, { name, email, lang, ...(causes != null || cause != null ? { causes: causesOf(causes ?? cause) } : {}) }));
 });
 
 app.get("/api/products", (req, res) => res.json(Object.values(PRODUCTS).map((p) => summary(p, req.query.lang === "zh" ? "zh" : "en"))));
@@ -138,6 +176,29 @@ app.get("/api/tokens", signedIn, (req, res) => res.json(tokensOf(req.person.id))
 app.post("/api/tokens", signedIn, (req, res) => res.json(makeToken(req.person.id, req.body?.label, { scopes: req.body?.scopes, days: req.body?.days, key: req.body?.key })));
 app.delete("/api/tokens/:id", signedIn, (req, res) => res.json({ ok: revoke(req.person.id, req.params.id) }));
 
+// ---- neighborhood funds (community.js) -----------------------------------------------------------------------------
+app.get("/api/neighborhood", signedIn, (req, res) => res.json({ suggestion: community.suggestion(req.person.id), funds: community.fundsOf(req.person.id).map((f) => community.view(f, req.person.id)) }));
+app.post("/api/neighborhood/join", signedIn, async (req, res) => send(res, await community.join(req.person.id, { zip: req.body?.zip })));
+app.post("/api/neighborhood/:id/leave", signedIn, (req, res) => send(res, community.leave(req.person.id, req.params.id)));
+app.post("/api/neighborhood/:id/propose", signedIn, (req, res) => send(res, community.propose(req.person.id, req.params.id, req.body || {})));
+app.post("/api/neighborhood/:id/vote", signedIn, (req, res) => send(res, community.vote(req.person.id, req.params.id, req.body?.project)));
+// the demo: a few neighbors in your ZIP with renters cover, paid with the sandbox test card (or the stand-in), who join the fund
+app.post("/api/demo/neighbors", signedIn, async (req, res) => {
+  if (!DEMO) return res.status(404).end();
+  const mine = policies.policiesOf(req.person.id).find((p) => ["active", "grace"].includes(p.status) && ["renters", "home"].includes(p.product) && p.zone?.zip);
+  if (!mine) return res.status(400).json({ error: "eligible", message: "Buy renters or home cover at a ZIP code first." });
+  const made = [];
+  for (const name of ["Demo · Ana Ruiz", "Demo · Ben Okafor", "Demo · Chloe Kim"].slice(0, Math.max(1, Math.min(3, +req.body?.count || 3)))) {
+    const p = makePerson({ name, email: `${name.split("· ")[1].toLowerCase().replace(/\W+/g, ".")}@example.com`, lang: "en" });
+    const q = quote("renters", { place: mine.zone.zip, size: 700, floor: "low", building: "apartment", contents: 7000, valuables: 0, claims3y: 0, deductible: "500" }, { person: p.id });
+    const b = await policies.buy(p.id, { quote: q.quote, plan: "monthly", cause: "disaster" });
+    if (b.approveUrl && pp().mode === "mock") { pp().approve({ token: b.payments[0].paypal }); await policies.confirm(b.policy); } else if (b.status === "awaiting_payment") await policies.payByCard(b.policy);
+    made.push({ name, person: p.id, policy: policies.policy(b.policy)?.status });
+  }
+  // they join once all of them are covered (a fund needs 3 households to start)
+  for (const m of made) { const j = m.policy === "active" ? await community.join(m.person, {}) : { error: "not paid" }; m.fund = j.error ? j.message || j.error : j.fund; delete m.person; }
+  res.json({ zip: mine.zone.zip, made });
+});
 // ---- claims ----------------------------------------------------------------------------------------------------------
 app.post("/api/claims", signedIn, limitBody, async (req, res) => send(res, await claims.file(req.person.id, { ...req.body, device: req.headers["x-cover-device"], actor: { kind: "person", person: req.person.id } })));
 app.get("/api/claims", signedIn, (req, res) => res.json(claims.claimsOf(req.person.id).map((c) => claims.view(c, { lang: lang(req) }))));
@@ -234,7 +295,7 @@ if (pp().mode === "mock") {
 }
 
 // ---- the demo's controls: move Cover's clock, make a premium fail ---------------------------------------------------
-app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); await claims.tick(); r.flights = (await claims.flightTick()).length; res.json(r); });
+app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); await claims.tick(); await community.tick(); r.flights = (await claims.flightTick()).length; res.json(r); });
 // the simulated flight feed: report an insured flight late, departed late or cancelled; insured travelers are paid at once
 app.post("/api/demo/flight", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = flights.report(req.body || {}); if (r.error) return res.status(400).json(r); r.paid = (await claims.flightTick()).filter(Boolean).map((c) => ({ claim: c.claim, status: c.status, amount: c.payout?.amount || null })); res.json(r); });
 app.get("/api/flights/:flight/:date", async (req, res) => res.json(await flights.statusOf({ flight: String(req.params.flight).toUpperCase(), date: req.params.date }, req.query.region)));
@@ -280,7 +341,7 @@ const WEB = path.join(HERE, "../../web/dist");
 app.all(/^\/(\.well-known|api)\//, (req, res) => res.status(404).json({ error: "not_found", message: `Nothing at ${req.path}. Agents: start at /llms.txt.` }));
 if (fs.existsSync(WEB)) { app.use(express.static(WEB)); app.get(/^\/(?!api|mcp|paypal|a2a|mock-paypal|\.well-known).*/, (req, res) => res.sendFile(path.join(WEB, "index.html"))); }
 
-setInterval(() => Promise.all([policies.tick(), claims.tick(), claims.flightTick()]).catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
+setInterval(() => Promise.all([policies.tick(), claims.tick(), claims.flightTick(), community.tick()]).catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
 setInterval(() => receipts.batch().catch((e) => console.error("batch", e.message)), +(process.env.RECEIPT_BATCH_MS || 120e3)).unref();
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);

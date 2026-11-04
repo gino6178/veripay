@@ -43,6 +43,7 @@ export function PolicyPage({ id }) {
   const { data: p, reload, error } = useApi(`/api/policies/${id}?lang=${lang}`);
   const { data: prod } = useApi(p ? `/api/products/${p.product}?lang=${lang}` : null);
   const { data: allClaims } = useApi(`/api/claims?lang=${lang}`);
+  const { data: causeList } = useApi("/api/causes");
   const [confirmCancel, setConfirmCancel] = useState(false), [busy, setBusy] = useState(false);
   useRefresh(reload);
   if (error) return <div className="empty">{t("找不到這張保單。", "No such policy.")}</div>;
@@ -70,6 +71,7 @@ export function PolicyPage({ id }) {
             {p.trip && <><dt>{t("航班", "Flights")}</dt><dd className="mono">{(p.trip.flights || []).map((f) => <div key={`${f.flight}${f.date}`}>{f.flight} · {f.date}</div>)}</dd>
               <dt>{t("旅客", "Travelers")}</dt><dd>{p.trip.travelers}</dd>
               <dt>{t("班機出事時", "If a flight goes wrong")}</dt><dd className="small">{t("延誤 2 小時以上每位 $100、6 小時以上 $300，取消 $300。Cover 從航班狀態看到就自動付款，不用申請。", "2 h late pays $100 a traveler, 6 h $300, cancelled $300. Cover sees it in the flight status and pays automatically; there's nothing to file.")}</dd></>}
+            {p.causes && <><dt>{t("年底捐給", "Giveback to")}</dt><dd>{Object.entries(p.causes).map(([c, v]) => `${(causeList || []).find((x) => x.id === c)?.[lang === "zh" ? "zh" : "en"] || c} ${v}%`).join(" · ")}</dd></>}
             <dt>{t("付款方式", "Billing")}</dt><dd>{p.plan === "trip" ? t("這趟一次付清", "once, for the trip") : p.plan === "yearly" ? t("年繳", "yearly") : p.billing === "subscription" ? t("PayPal 訂閱", "PayPal subscription") : t("PayPal（Vault）月繳", "monthly, saved PayPal")}</dd>
           </dl>
           {/* covers and add-ons by their names (the policy itself only keeps the ids), once the product has loaded */}
@@ -77,6 +79,7 @@ export function PolicyPage({ id }) {
           {p.beneficiaries && <p className="small">{t("受益人", "Beneficiaries")}: {p.beneficiaries.map((b) => `${b.name} ${b.share}%`).join("、")}</p>}
           {p.items && <p className="small">{t("逐項保", "Listed")}: {p.items.map((x) => `${x.what} ${x.value}`).join("、")}</p>}
         </div>
+        {["active", "grace"].includes(p.status) && ["renters", "home"].includes(p.product) && <NeighborsHint />}
         {["active", "grace"].includes(p.status) && <div className="row">
           <Link className="btn accent" to={`/claim/new/${p.policy}`}>{t("報理賠", "Make a claim")} <span className="arrow">→</span></Link>
           {!confirmCancel ? <button className="btn ghost" onClick={() => setConfirmCancel(true)}>{t("退保", "Cancel")}</button>
@@ -93,4 +96,11 @@ export function PolicyPage({ id }) {
       </div>
     </div>
   );
+}
+
+// Cover suggests a neighborhood fund when enough households at this ZIP are on Cover (community.js)
+function NeighborsHint() {
+  const t = useT(), { data } = useApi("/api/neighborhood"), s = data?.suggestion;
+  if (!s || s.fund?.member) return null;
+  return <Link to="/neighborhood" className="note good" style={{ display: "block", textDecoration: "none" }}>{t(`${s.zip} 有 ${s.households} 戶人家在 Cover 投保，可以一起成立社區基金：出事時幫彼此付自負額。看看 →`, `${s.households} households at ${s.zip} are on Cover: a neighborhood fund would pay part of each other's deductibles. Take a look →`)}</Link>;
 }
