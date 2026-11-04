@@ -57,6 +57,8 @@ export async function buy(personId, { quote: qid, plan = "monthly", billing = "v
     status: q.decision === "review" ? "review" : "awaiting_payment", created: nowIso(), start: null, end: null, nextDue: null, waitingUntil: null,
     payWith: pay === "card" && pp().testCard ? "card" : "paypal", payments: [], changes: [], number: `CV-${q.product.slice(0, 2).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-6)}` };
   db.data.policies[id] = pol; save();
+  // what the person chose last is their current choice (whoami and giveback_status show it)
+  if (causes != null || cause != null) updatePerson(personId, { causes: pol.causes });
   say(pol, "policy_created", `${who.name} chose ${p.name.en} (${plan === "trip" ? `one trip, ${usd(pol.annual)}` : `${plan}${plan === "monthly" ? `, ${usd(pol.monthly)} a month` : `, ${usd(pol.annual)} a year`}`}).`, { quote: q.id }, actor);
   if (pol.status === "review") return view(pol);
   return startFirstPayment(pol);

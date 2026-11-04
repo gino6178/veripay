@@ -43,6 +43,49 @@
     "Trip premiums now count toward the person's monthly spending limit, and the limit message says so",
     "The product list in errors includes travel; /llms.txt documents the demo controls as demo-only"
    ]
+  },
+  {
+   "n": 2,
+   "date": "2026-11-04",
+   "title": "Giving to several causes, a neighborhood fund, and a seller's agent selling Cover at checkout",
+   "setup": "Three Sonnet agents on the live server (PayPal sandbox). Jordan's agent splits his giveback and looks into a neighborhood fund (three neighbors at his ZIP already on Cover); Priya's agent insures a three-person trip to Lisbon with medical, splits the giveback and cancels the outbound flight with the demo feed; Northwind Trips' checkout agent, with only a partner key and /llms.txt, tries to embed Cover in a customer's checkout.",
+   "testers": [
+    {
+     "name": "Jordan's agent",
+     "role": "split the giveback; find and join the neighborhood fund",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 5,
+     "report": "round2-jordan.md"
+    },
+    {
+     "name": "Priya's agent",
+     "role": "insure a group trip with medical; a cancelled flight",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 2,
+     "confusing": 4,
+     "report": "round2-priya.md"
+    },
+    {
+     "name": "Northwind's checkout agent",
+     "role": "a seller's agent embedding Cover at checkout",
+     "via": "REST (partner key)",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 2,
+     "report": "round2-northwind.md"
+    }
+   ],
+   "outcome": "Jordan's agent set 67/33 causes and joined the 78704 fund on its own (4 households, $12). Priya's agent bought $307.08 of cover for three in one call; cancelling TP236 paid $900 automatically. Northwind's agent stopped rather than invent the oldest traveler's age, so it never reached an offer.",
+   "fixes": [
+    "A seller's offer no longer needs an age: without one it offers flight cover, and a destination in words (\"Cancún, Mexico\") is read into Cover's region; missing trip fields are named instead of \"can't offer this online\"",
+    "The causes chosen with a purchase become the person's current choice (whoami and giveback_status show the split)",
+    "Choosing a cause whose pool is in deficit this year says so",
+    "flight_status shows what is left per traveler and for the trip; the cap reads \"$600 a traveler ($1,800 for 3)\"; payouts say they go to the policyholder for every traveler, and each payout status (UNCLAIMED, RETURNED...) says what it means",
+    "The neighborhood fund's monthly amount counts toward the person's limit; joining returns the PayPal id and how to leave; agents can leave, propose and vote (leave_neighborhood_fund, propose_project, vote_project)"
+   ]
   }
  ]
 }

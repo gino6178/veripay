@@ -74,7 +74,7 @@ async function charge(f, m) {
     const r = await pp().createPayment({ amount: m.monthly, reference: f.id, description: `Neighborhood fund ${f.zip}: month ${n}`, vaultId: who.vault, requestId: `${f.id}:${m.person}:${n}` });
     if (r.status !== "COMPLETED") throw new Error(`PayPal answered ${r.status}`);
     m.payments = n; m.nextDue = new Date((m.nextDue ? Date.parse(m.nextDue) : now()) + MONTH).toISOString(); save();
-    add(f, "contribution", m.monthly, { person: m.person, ref: r.capture?.id || r.id });
+    add(f, "contribution", m.monthly, { person: m.person, ref: r.capture?.id || r.id }); m.lastPayPal = r.capture?.id || r.id;
     return { ok: true };
   } catch (e) { return { error: "paypal", message: why(e) }; }
 }
@@ -151,6 +151,6 @@ export function view(f, pid = null) {
   return { fund: f.id, zip: f.zip, area: f.area, households: active(f).length, year: f.year, monthly: usd(RULES.monthly),
     balance: usd(balance(f)), contributed: usd(sum("contribution")), deductibleHelp: usd(sum("deductible_help")), helped: L.filter((l) => l.kind === "deductible_help").length, givenToProjects: usd(sum("project")),
     rules: `Each household adds ${usd(RULES.monthly)} a month. When Cover pays a member's home or renters claim, the fund pays half its deductible, up to ${usd(RULES.helpCap)}, while it has the money. At the year's end what is left goes to the local project the members voted for. Cover takes nothing from the fund.`,
-    member: !!me, ...(me ? { since: me.since, paid: me.payments, nextDue: me.nextDue } : {}),
+    member: !!me, ...(me ? { since: me.since, paid: me.payments, nextDue: me.nextDue, lastPayment: me.lastPayPal || null, leave: "leave_neighborhood_fund (or Leave on the website): no fee; what was paid in stays with the neighbors" } : {}),
     projects: f.projects.filter((p) => p.year === f.year).map((p) => ({ id: p.id, title: p.title, why: p.why, votes: p.votes.length, mine: pid ? p.votes.includes(pid) : false })) };
 }

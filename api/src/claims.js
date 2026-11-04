@@ -174,7 +174,7 @@ async function pay(c, amount, { by, note = null }) {
   c.status = "paying"; save();
   try {
     const r = await pp().payout({ batchId: `${c.id}-pay`, receiver: to, amount, note: `Cover claim ${c.number}: ${usd(amount)}${c.payee === "vet" ? ` for ${who.name}'s pet` : ""}.`, subject: "Cover: your claim is paid" });
-    c.payout = { batchId: r.batchId, status: r.status, to: c.payee === "vet" ? "the vet" : "you", amount, at: nowIso() };
+    c.payout = { batchId: r.batchId, status: r.status, to: c.payee === "vet" ? "the vet" : c.auto && +pol.answers?.travelers > 1 ? `you, for all ${pol.answers.travelers} travelers` : "you", amount, at: nowIso() };
     c.status = "paid"; c.paid = amount; c.paidAt = nowIso(); c.secondsToPay = Math.round((Date.parse(c.paidAt) - Date.parse(c.reportedAt)) / 1000);
     save();
     postSplit({ kind: "claim", causes: causesOfPolicy(pol), amount, policy: pol.id, claim: c.id, product: c.product, ref: r.batchId });
@@ -228,7 +228,7 @@ async function parametric(pol, f, st, tier) {
   check("threshold", true, tier.clause, st.status === "cancelled" ? "the airline cancelled the flight" : `departed ${Math.floor(st.delayMin / 60)} h ${st.delayMin % 60} min late (${st.source})`);
   const paidSoFar = allClaims().filter((x) => x.policy === pol.id && x.auto && x.status === "paid").reduce((t, x) => t + (x.paid || 0), 0);
   const cap = 60000 * n, amount = Math.max(0, Math.min(tier.each * n, cap - paidSoFar));
-  check("cap", amount > 0, "TR-2.2", amount > 0 ? `${usd(paidSoFar)} paid on this trip so far; the cap is ${usd(cap)}` : `the trip's cap of ${usd(cap)} is reached`);
+  check("cap", amount > 0, "TR-2.2", amount > 0 ? `${usd(paidSoFar)} paid on this trip so far; the cap is $600 a traveler (${usd(cap)} for ${n})` : `the trip's cap of $600 a traveler (${usd(cap)} for ${n}) is reached`);
   const fail = checks.filter((x) => !x.ok);
   c.decision = { outcome: fail.length ? "deny" : "pay", amount: fail.length ? 0 : amount, reason: fail.length ? fail.map((x) => x.says).join("; ") : "every check passed", checks, signals: [],
     steps: [{ step: "parametric", clause: tier.clause, amount: tier.each * n, says: `${usd(tier.each)} for each of ${n} traveler${n > 1 ? "s" : ""}` }, ...(amount < tier.each * n ? [{ step: "cap", clause: "TR-2.2", amount: amount - tier.each * n, says: "the trip's cap" }] : [])],
@@ -285,6 +285,8 @@ export async function tick() {
   }
 }
 
+// what PayPal's payout states mean for the person
+const PAYOUT_MEANS = { PENDING: "PayPal is sending it.", SUCCESS: "In your PayPal.", UNCLAIMED: "No PayPal account uses your email yet: PayPal holds the money for 30 days; sign up to PayPal with that email to receive it, or change your email on Cover and it is sent again.", RETURNED: "Unclaimed for 30 days, so PayPal returned it to Cover; add a PayPal email on Cover and it is sent again.", FAILED: "PayPal couldn't send it; Cover's staff retry it.", BLOCKED: "PayPal blocked it; Cover's staff are looking at it." };
 export function view(c, { staff = false, lang = "en" } = {}) {
   // (a claim whose type a later product version dropped still shows, under its own type id)
   const p = product(c.product), ct = claimType(c.product, c.type) || { en: c.type, zh: c.type, evidence: [] }, d = c.decision, L = (x) => (lang === "zh" ? tr(x) : x);
@@ -293,7 +295,7 @@ export function view(c, { staff = false, lang = "en" } = {}) {
     ...(c.status === "needs_info" ? { asked: c.asked } : {}),
     decision: d && { outcome: d.outcome, amount: usd(d.amount), reason: L(d.reason), by: d.by, at: d.at, basis: d.basis.map((id) => ({ id, text: clause(id)?.[lang] || clause(id)?.en })),
       checks: d.checks.map((x) => ({ check: x.id, ok: x.ok, hard: !!x.hard, clause: x.clause, says: L(x.says) })), steps: d.steps.map((s) => ({ ...s, says: L(s.says), amount: usd(s.amount) })), ...(staff || d.outcome !== "refer" ? { signals: d.signals.map((g) => ({ ...g, says: L(g.says) })) } : { signals: d.signals.length ? (lang === "zh" ? `有 ${d.signals.length} 件事需要真人確認` : `${d.signals.length} thing(s) for a person to check`) : [] }) },
-    ...(c.payout ? { payout: { amount: usd(c.payout.amount), to: c.payout.to, paypal: c.payout.batchId, status: c.payout.item || c.payout.status, secondsToPay: c.secondsToPay } } : {}),
+    ...(c.payout ? { payout: { amount: usd(c.payout.amount), to: c.payout.to, paypal: c.payout.batchId, status: c.payout.item || c.payout.status, statusMeans: PAYOUT_MEANS[c.payout.item || c.payout.status] || null, secondsToPay: c.secondsToPay } } : {}),
     evidence: c.evidence.map((e) => ({ id: e.id, kind: e.kind, name: e.name, at: e.at, ...(e.exif?.taken ? { taken: e.exif.taken } : {}), ...(e.read && !e.read.error ? { read: { date: e.read.date, amount: e.read.amount != null ? usd(e.read.amount) : null, merchant: e.read.merchant, confidence: e.read.confidence, by: e.read.by } } : {}) })),
     ...(staff ? { story: c.story, items: c.items.map((x) => ({ what: x.what, value: usd(x.value) })), person: c.person, history: c.history } : {}),
     appeal: c.appeal || null, receipts: c.receipts || [] };

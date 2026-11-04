@@ -1,7 +1,7 @@
 {
  "about": "Every Cover test agent's operations, one file each (from extract-ops.mjs).",
- "agents": 3,
- "calls": 36,
+ "agents": 6,
+ "calls": 59,
  "screenshots": 0,
  "list": [
   {
@@ -29,6 +29,33 @@
    "model": "Sonnet 5.5",
    "startedAt": "2026-11-04T11:59:07.762Z",
    "calls": 20,
+   "screenshots": 0
+  },
+  {
+   "file": "round02-jordan-s-agent-and-the-neighborhood-aea81a.json",
+   "round": 2,
+   "title": "Cover round 2: Jordan's agent and the neighborhood",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T12:48:56.796Z",
+   "calls": 8,
+   "screenshots": 0
+  },
+  {
+   "file": "round02-priya-s-agent-and-a-group-trip-a04256.json",
+   "round": 2,
+   "title": "Cover round 2: Priya's agent and a group trip",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T12:49:02.656Z",
+   "calls": 10,
+   "screenshots": 0
+  },
+  {
+   "file": "round02-a-seller-s-agent-sells-cover-at-checkout-a09813.json",
+   "round": 2,
+   "title": "Cover round 2: a seller's agent sells Cover at checkout",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T12:49:10.349Z",
+   "calls": 5,
    "screenshots": 0
   }
  ]

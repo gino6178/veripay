@@ -25,6 +25,7 @@
 // So the customer pays once at the checkout (with the test card both orders go through on the same click; with a
 // PayPal account they approve Cover's order in PayPal), and Cover's captured premium is what starts the policy and
 // releases the commission.
+import { rulesRead } from "./advisor.js";
 import crypto from "node:crypto";
 import { store, stateFile } from "./store.js";
 import { now, nowIso } from "./clock.js";
@@ -112,13 +113,17 @@ const RULES = "Cover never discounts the risk price. To meet a budget it can onl
 
 function tripAnswers(x = {}) {
   const t = { ...(x.trip || {}), ...x };
-  const plan = PLANS.includes(t.plan) ? t.plan : "standard";
+  // with no age given and no plan asked for, offer what can be priced without one (flight cover); medical asks for it
+  const plan = PLANS.includes(t.plan) ? t.plan : t.oldest != null ? "standard" : "flight";
+  // a destination in words ("Cancún, Mexico") is read into Cover's region the way Lumi reads it
+  if (t.destination && !["domestic", "americas", "europe", "asia", "other"].includes(t.destination)) t.destination = rulesRead(String(t.destination), { today: new Date(now()).toISOString().slice(0, 10) }).answers.destination || "other";
   // the oldest traveler's age only prices medical: flight-only cover doesn't need it (and a counter to a plan with
   // medical asks for it rather than guess)
   return { destination: t.destination, departure: t.departure, return: t.return, flights: t.flights, tripCost: t.tripCost ?? 0, travelers: t.travelers ?? 1, oldest: t.oldest ?? (plan === "flight" ? 30 : undefined), plan, ageGiven: t.oldest != null };
 }
 function makeOffer(p, { ageGiven, ...answers }, { parent = null, root = null } = {}) {
   const q = makeQuote("travel", answers, { lang: "en" });
+  if (q.error === "answers") return { error: "trip", message: `the trip needs ${[...(q.missing || []).map((k) => (k === "oldest" ? "oldest (the oldest traveler's age, for a plan with medical)" : k)), ...(q.bad || [])].join("; ")}`, missing: q.missing, bad: q.bad };
   if (q.error || q.decision !== "ok") return { error: q.error || "underwriting", message: q.message || q.why || "Cover can't offer this trip online.", ...(q.missing ? { missing: q.missing, bad: q.bad } : {}) };
   const full = getQuote(q.quote), id = rid("ofr");
   const o = { id, partner: p.id, quote: q.quote, answers: full.answers, plan: full.answers.plan, premium: full.annual, breakdown: full.breakdown, coverages: full.coverages,

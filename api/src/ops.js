@@ -15,6 +15,7 @@ import { poolOf, CAUSES, causesOf, checkCauses } from "./pool.js";
 import { forPerson, onActivity, record } from "./activity.js";
 import { usd } from "./pay/index.js";
 import { now } from "./clock.js";
+import { fundsOf as fundsOfSync, RULES as FUND_RULES } from "./community.js";
 
 export const DEFAULT_LIMITS = { monthlyMax: 3000, mayBuy: true, mayCancel: false, autopay: false };
 export const limitsOf = (pid) => ({ ...DEFAULT_LIMITS, ...(person(pid)?.limits || {}) });
@@ -27,7 +28,9 @@ export function setLimits(pid, l) {
 }
 // what a person's policies cost them this month: monthly premiums, a yearly premium as a twelfth, and any trip bought in
 // the last 30 days in full
-const monthlyNow = (pid) => policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status) || (p.plan === "trip" && p.status === "expired")).reduce((t, p) => t + (p.plan === "trip" ? (now() - Date.parse(p.created) < 30 * 864e5 ? p.annual : 0) : p.monthly ?? 0), 0);
+// a neighborhood fund's monthly amount counts too
+const fundMonthly = (pid) => fundsOfSync(pid).length * FUND_RULES.monthly;
+const monthlyNow = (pid) => fundMonthly(pid) + policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status) || (p.plan === "trip" && p.status === "expired")).reduce((t, p) => t + (p.plan === "trip" ? (now() - Date.parse(p.created) < 30 * 864e5 ? p.annual : 0) : p.monthly ?? 0), 0);
 const by = (a) => ({ kind: "agent", person: a.person, client: a.client });
 const lang = (a) => person(a.person)?.lang || "en";
 
@@ -77,7 +80,9 @@ export async function flightStatus(a, { policy }) {
   if (!p || p.product !== "travel") return { error: "policy", message: "A travel policy id." };
   const { statusOf } = await import("./flights.js");
   return { flights: await Promise.all((p.answers.flights || []).map((f) => statusOf(f, p.answers.destination).then((s) => ({ flight: s.flight, date: s.date, from: s.from, to: s.to, scheduled: s.scheduled, status: s.status, delayMin: s.delayMin, source: s.source })))),
-    pays: "TR-2.1: $100 a traveler at 2 h late, $300 at 6 h; TR-2.2: $300 if cancelled. Paid automatically once the flight departs or is cancelled." };
+    pays: "TR-2.1: $100 a traveler at 2 h late, $300 at 6 h; TR-2.2: $300 if cancelled. Paid automatically, to the policyholder for every traveler, once the flight departs or is cancelled.",
+    ...(await (async () => { const { allClaims } = await import("./claims.js"); const n = +p.answers.travelers || 1, paid = allClaims().filter((c) => c.policy === p.id && c.auto && c.status === "paid").reduce((t, c) => t + (c.paid || 0), 0);
+      return { paidSoFar: usd(paid), leftPerTraveler: usd(Math.max(0, 60000 - Math.floor(paid / n))), leftForTrip: usd(Math.max(0, 60000 * n - paid)) }; })()) };
 }
 // Neighborhood funds: what Cover suggests for the person's ZIP, and joining (a monthly charge: within their limits
 // and with autopay only, like any purchase)
@@ -85,6 +90,9 @@ export async function neighborhood(a) {
   const { suggestion, fundsOf, view } = await import("./community.js");
   return { suggestion: suggestion(a.person), funds: fundsOf(a.person).map((f) => view(f, a.person)) };
 }
+export async function leaveFund(a, { fund }) { const { leave, fundsOf } = await import("./community.js"); const id = fund || fundsOf(a.person)[0]?.id; return id ? leave(a.person, id) : { error: "fund", message: "Not in a fund." }; }
+export async function proposeProject(a, { fund, title, payee, why }) { const { propose, fundsOf } = await import("./community.js"); const id = fund || fundsOf(a.person)[0]?.id; return id ? propose(a.person, id, { title, payee, why }) : { error: "fund", message: "Not in a fund." }; }
+export async function voteProject(a, { fund, project }) { const { vote, fundsOf } = await import("./community.js"); const id = fund || fundsOf(a.person)[0]?.id; return id ? vote(a.person, id, project) : { error: "fund", message: "Not in a fund." }; }
 export async function joinFund(a, { zip }) {
   const l = limitsOf(a.person), { RULES, join } = await import("./community.js");
   if (!l.mayBuy || !l.autopay) return { error: "limits", message: "Joining adds a monthly charge, which your person hasn't let you make on your own (mayBuy and autopay). Tell them about the fund; they can join on the website." };
@@ -116,7 +124,8 @@ export function chooseCause(a, { cause, causes }) {
   updatePerson(a.person, { causes: m });
   for (const p of policies.policiesOf(a.person).filter((x) => ["active", "grace", "awaiting_payment"].includes(x.status))) p.causes = m;
   policies.policiesStore.save();
-  return { causes: Object.entries(m).map(([id, share]) => ({ id, share, name: CAUSES[id].en })), note: "Premiums from now on are split across these causes' pools in these shares; at the year's close each pool's leftover goes to its cause, all in one PayPal Payouts batch." };
+  const deficit = Object.keys(m).filter((id) => poolOf(id).balance < 0);
+  return { causes: Object.entries(m).map(([id, share]) => ({ id, share, name: CAUSES[id].en, poolNow: usd(poolOf(id).balance) })), ...(deficit.length ? { warning: `${deficit.map((id) => CAUSES[id].en).join(", ")}: this pool has paid out more than it took in this year, so it would give nothing if the year closed today. Your share still goes in; it gives only if the pool ends the year above zero.` } : {}), note: "Premiums from now on are split across these causes' pools in these shares; at the year's close each pool's leftover goes to its cause, all in one PayPal Payouts batch." };
 }
 export function giveback(a) {
   const p = person(a.person), m = p.causes || (p.cause ? { [p.cause]: 100 } : null) || (policies.policiesOf(a.person)[0] && policies.causesOfPolicy(policies.policiesOf(a.person)[0]));

@@ -19,6 +19,7 @@ function roundOf(desc) { const m = desc.match(/^Cover round (\d+):/i); return m 
 
 const scrub = (s) => String(s)
   .replace(/cover_[A-Za-z0-9_-]{16,}/g, "cover_<token>")
+  .replace(/cvpk_[A-Za-z0-9_-]{8,}/g, "cvpk_<key>")
   .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]{8,}/gi, "$1<token>")
   .replace(/("(?:token|pass|access_token|secret)"\s*:\s*")[^"]{8,}"/gi, '$1<hidden>"')
   .replace(/\/me\/[A-Za-z0-9_-]{8,}/g, "/me/<link>")
