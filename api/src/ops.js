@@ -14,6 +14,7 @@ import { person, updatePerson } from "./people.js";
 import { poolOf, CAUSES } from "./pool.js";
 import { forPerson, onActivity, record } from "./activity.js";
 import { usd } from "./pay/index.js";
+import { now } from "./clock.js";
 
 export const DEFAULT_LIMITS = { monthlyMax: 3000, mayBuy: true, mayCancel: false, autopay: false };
 export const limitsOf = (pid) => ({ ...DEFAULT_LIMITS, ...(person(pid)?.limits || {}) });
@@ -24,7 +25,9 @@ export function setLimits(pid, l) {
   updatePerson(pid, { limits: { ...next, updated: new Date().toISOString() } });
   return limitsOf(pid);
 }
-const monthlyNow = (pid) => policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status) && p.monthly != null).reduce((t, p) => t + p.monthly, 0);
+// what a person's policies cost them this month: monthly premiums, a yearly premium as a twelfth, and any trip bought in
+// the last 30 days in full
+const monthlyNow = (pid) => policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status) || (p.plan === "trip" && p.status === "expired")).reduce((t, p) => t + (p.plan === "trip" ? (now() - Date.parse(p.created) < 30 * 864e5 ? p.annual : 0) : p.monthly ?? 0), 0);
 const by = (a) => ({ kind: "agent", person: a.person, client: a.client });
 const lang = (a) => person(a.person)?.lang || "en";
 
@@ -46,7 +49,7 @@ export async function buyPolicy(a, { quote, plan = "monthly", billing = "vault",
   const l = limitsOf(a.person), q = getQuote(quote);
   if (!l.mayBuy) return { error: "limits", message: "Your person hasn't let you buy policies. Give them the quote; they can buy it on the website." };
   if (!q) return { error: "quote", message: "No such quote: get_quote first." };
-  if (monthlyNow(a.person) + (q.monthly ?? q.annual) > l.monthlyMax) return { error: "limits", message: `This adds ${usd(q.monthly)} a month; with what they already pay (${usd(monthlyNow(a.person))}) that is over your person's limit of ${usd(l.monthlyMax)} a month. Tell them; only they can raise it.` };
+  if (monthlyNow(a.person) + (q.monthly ?? q.annual) > l.monthlyMax) return { error: "limits", message: `This adds ${usd(q.monthly ?? q.annual)}${q.monthly == null ? " (a trip, counted in full this month)" : " a month"}; with what they already pay (${usd(monthlyNow(a.person))}) that is over your person's limit of ${usd(l.monthlyMax)} a month. Tell them; only they can raise it.` };
   const p = person(a.person);
   // without autopay the agent's purchase waits for the person in PayPal, even when PayPal is saved
   const saved = p.vault;
@@ -56,12 +59,16 @@ export async function buyPolicy(a, { quote, plan = "monthly", billing = "vault",
 }
 const ownPolicy = (a, id) => { const p = policies.policy(id); return p && p.person === a.person ? p : null; };
 // Insure a trip in one step, as an agent planning it would: price it, and buy it if your person's limits allow
-export async function insureTrip(a, { destination, departure, return: back, flights, tripCost = 0, travelers = 1, oldest, plan = "flight", cause }) {
+export async function insureTrip(a, x = {}) {
+  // (agents sometimes wrap the arguments as { answers: {...} }, the way get_quote takes them: both work)
+  const { destination, departure, return: back, flights, tripCost = 0, travelers = 1, plan = "flight", cause } = { ...(x.answers || {}), ...x };
+  // the oldest traveler's age only prices medical; flight-only cover needs none, so it isn't asked for then
+  const oldest = x.oldest ?? x.answers?.oldest ?? (plan === "flight" ? 30 : undefined);
   const q = getQuote_(a, { product: "travel", answers: { destination, departure, return: back, flights, tripCost, travelers, oldest, plan } });
   if (q.error) return q;
   const l = limitsOf(a.person), cost = getQuote(q.quote).annual;
   if (!l.mayBuy) return { quote: q, error: "limits", message: "Your person hasn't let you buy. Show them this quote; they can buy it on the website." };
-  if (cost > l.monthlyMax) return { quote: q, error: "limits", message: `This trip costs ${q.trip}, over your person's limit of ${usd(l.monthlyMax)}. Show them the quote.` };
+  if (cost + monthlyNow(a.person) > l.monthlyMax) return { quote: q, error: "limits", message: `This trip costs ${q.trip}; with what your person already pays this month (${usd(monthlyNow(a.person))}) that is over their spending limit of ${usd(l.monthlyMax)} a month. Show them the quote; only they can raise the limit, on the website.` };
   const r = await buyPolicy(a, { quote: q.quote, cause });
   return { quote: { trip: q.trip, whereYourMoneyGoes: q.whereYourMoneyGoes, covers: q.covers }, policy: r };
 }

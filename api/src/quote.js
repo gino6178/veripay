@@ -120,7 +120,7 @@ function expected(p, a, zone, addons) {
 // A quote: the price for these answers, kept 30 days so the person (or their agent) can buy exactly what they saw
 export function quote(productId, answers, { addons = [], person = null, lang = "en" } = {}) {
   const p = product(productId);
-  if (!p) return { error: "product", message: "No such product: renters, home, pet, life or car." };
+  if (!p) return { error: "product", message: "No such product: travel, renters, home, pet, life or car." };
   const chk = checkAnswers(p, answers);
   if (chk.missing.length || chk.bad.length) return { error: "answers", missing: chk.missing, bad: chk.bad, ask: chk.missing.map((id) => p.questions.find((q) => q.id === id)[lang]) };
   const a = chk.answers, uw = underwrite(p, a);

@@ -26,7 +26,55 @@ teacher model. No Claude or GPT outputs are used, and every person, number and d
 
 ## Cover-Risk (US)
 
-(waiting for the US zones.js)
+**Data.** `fit.py` on a US portfolio: 200,000 training policies and 50,000 test policies per product.
+- **Hazards.** Each policy has a 3-digit ZIP prefix with five hazard levels: flood, wildfire, hurricane, earthquake,
+  theft. The levels come from the app's own `zoneOf()` (`api/src/zones.js` as of 2026-11-04, still uncommitted when
+  this ran), via `zones_export.mjs`. That covers 943 prefixes in 51 states and DC, sharpened for 22 metro prefixes;
+  metro prefixes are drawn five times as often.
+- **Generator.** As in round 1: Poisson frequency, Gamma severity, and the product's own US factor table, times hidden
+  effects:
+  - renters: contents^0.8; theft 3 × ground-floor walk-up; hurricane 3 × ground floor; no past claims ×0.85;
+  - home: an age curve; frame house × wildfire 3 ×1.5; hurricane 3 × over 40 years ×1.3; flood 3 × house;
+  - pet: an age curve;
+  - car: an experience curve; √(miles a month); telematics; street parking × theft 3; hurricane 3.
+- **Life and travel** are not modelled. Life is priced from a mortality table, and travel is priced per trip.
+
+**Models.** The same as round 1: a Poisson × Gamma GLM, and LightGBM with a Tweedie loss.
+- **Monotone constraints:** every hazard level, contents, rebuild, past claims, age, vehicle value and miles a month
+  only raise the price; the deductible, the copay and driving years only lower it.
+
+| Product | Train claims | Gini: LightGBM | Gini: GLM | LightGBM − GLM | Product tables | True premium (ceiling) | Predicted / actual total (LightGBM / GLM) | Error vs true premium, RMSE $ (LightGBM / GLM / tables) | Monotone violations |
+|---|---|---|---|---|---|---|---|---|---|
+| renters | 9,171 | 0.343 [0.315, 0.370] | 0.345 [0.318, 0.374] | [−0.012, +0.006] | 0.354 | 0.363 | 1.003 / 1.057 | **44.0** / 49.4 / 50.5 | 0 |
+| home | 7,991 | 0.434 [0.396, 0.467] | 0.437 [0.401, 0.472] | [−0.014, +0.010] | 0.435 | 0.443 | **0.892** / 0.970 | 1,071 / **830** / 960 | 0 |
+| pet | 58,353 | 0.311 [0.297, 0.323] | 0.311 [0.297, 0.323] | [−0.002, +0.003] | 0.305 | 0.313 | 0.991 / 0.992 | 50.9 / **46.3** / 81.1 | 0 |
+| car | 16,503 | 0.498 [0.476, 0.517] | 0.494 [0.473, 0.515] | [−0.002, +0.008] | 0.489 | 0.505 | 0.987 / 1.032 | **426** / 491 / 580 | 0 |
+
+**What these numbers say.**
+- **LightGBM and the GLM rank risks the same.** No product shows a Gini difference outside the noise. Both are within
+  about 0.01–0.02 of the true premium's Gini.
+- **LightGBM is closer to the true premium on renters and car,** with 11% and 13% lower error than the GLM. It is
+  **worse on home and pet.**
+- **Home is under-predicted by LightGBM** (89% of the held-out actual total; the GLM gives 97%), as in round 1.
+  - Home has the fewest claims for its heavy Gamma tail (shape 0.9), so the 85/15 early-stopping split is noisy.
+  - Before home is priced with LightGBM: recalibrate its level, or keep the GLM for home.
+- **No monotone violations** were found on 2,000 test policies per product. Each constrained feature was raised one
+  step and the prediction never moved the wrong way.
+- **Top SHAP features:**
+  - renters: contents, past claims, floor, deductible, theft level;
+  - home: rebuild cost, age, kind (house or condo), contents, past claims;
+  - pet: age, breed size, species;
+  - car: vehicle, miles a month, cover level, past accidents, theft level.
+- **As before, this shows only that the model learnt the generator's assumptions.** The hazard levels are the app's
+  own rough state and metro table. These numbers are not claims experience.
+
+**Export.** `risk/out_us/risk_<product>.json` (version `cover-risk-<product>-us1`) with `risk.mjs`.
+- **The zone object** is the one `zoneOf()` returns (flood, wildfire, hurricane, quake, theft).
+- **Checked against Python:** on 50 test policies per product, Node's prediction differs from LightGBM's by at most
+  2.2e-16 (relative).
+- **Not wired into the app.**
+- **If `zones.js` changes before it is committed,** re-run `zones_export.mjs` and `fit.py`. That takes about
+  10 minutes of CPU.
 
 ## Cover-Audit (US)
 

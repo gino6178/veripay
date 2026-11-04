@@ -1,54 +1,57 @@
-// Getting covered: Lumi, Cover's assistant, asks the product's own questions one at a time (the same questions an
-// agent gets from list_products), then shows the price, where the money goes and why it costs that, and buys it.
-import { useEffect, useMemo, useRef, useState } from "react";
+// Getting covered: talk to Lumi, Cover's advisor, in your own words. Lumi works out the one cover you need most, asks only
+// for what the price can't be guessed without, says what it assumed, and shows the price, where the money goes and why
+// it costs that (the same quote an agent gets). No questionnaire.
+import { useEffect, useRef, useState } from "react";
 import { api, Link, navigate, useApi, useT, useLang, cents, usd } from "../api.jsx";
 import { useMe } from "../App.jsx";
 
 export default function Quote({ product }) {
-  const t = useT(), { lang } = useLang();
-  const { data: products } = useApi(`/api/products?lang=${lang}`);
-  if (!product) return (
-    <div>
-      <div className="page-head"><div><h1>{t("保什麼", "Cover what")}</h1><p className="lede">{t("選一種。Lumi 照那張保單的條款問你幾個問題，大約 90 秒。", "Pick one. Lumi asks the questions that policy needs: about 90 seconds.")}</p></div></div>
-      <ol className="partlist">{(products || []).map((p, i) => <li key={p.id} style={{ gridTemplateColumns: "56px 1fr auto" }}><span className="big" style={{ fontSize: 40, color: "var(--signal)" }}>{String(i + 1).padStart(2, "0")}</span><Link to={`/quote/${p.id}`} style={{ textDecoration: "none" }}><b style={{ fontSize: 20 }}>{p.name}</b><span className="muted" style={{ display: "block", marginTop: 4 }}>{p.for}</span></Link><Link to={`/quote/${p.id}`} className="btn sm">{t(`${p.questions.length} 題`, `${p.questions.length} questions`)} →</Link></li>)}</ol>
-    </div>
-  );
-  return <Conversation key={`${product}-${lang}`} id={product} />;
+  const { lang } = useLang();
+  return <Chat key={`${product || "any"}-${lang}`} hint={product} />;
 }
 
-function Conversation({ id }) {
+function Chat({ hint }) {
   const t = useT(), { lang } = useLang(), { toast } = useMe();
-  const { data: p } = useApi(`/api/products/${id}?lang=${lang}`);
-  const [answers, setAnswers] = useState({}), [step, setStep] = useState(0), [addons, setAddons] = useState([]), [q, setQ] = useState(null), [busy, setBusy] = useState(false);
-  const t0 = useRef(Date.now()), end = useRef(null);
-  const qs = p?.questions || [], done = p && step >= qs.length;
-  useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [step, q]);
-  const price = async (adds = addons) => { setBusy(true); try { setQ(await api("/api/quote", { method: "POST", body: { product: id, answers, addons: adds, lang } })); } catch (e) { toast(e.body?.bad?.join("; ") || e.message); } setBusy(false); };
-  // the judge tour's "fill this for me": every answer at once (and add-ons), then the price as usual
-  const [filled, setFilled] = useState(0);
-  useEffect(() => { const f = (e) => { if (!e.detail?.answers) return; setAnswers(e.detail.answers); setAddons(e.detail.addons || []); setStep(Object.keys(e.detail.answers).length); setQ(null); setFilled((n) => n + 1); }; addEventListener("cover:fill-quote", f); return () => removeEventListener("cover:fill-quote", f); }, []);
-  useEffect(() => { if (done && !q) price(); }, [done, filled]);
-  if (!p) return null;
-  const answer = (v) => { setAnswers((a) => ({ ...a, [qs[step].id]: v })); setStep(step + 1); setQ(null); };
-  const shown = (qq, v) => qq.options ? qq.options.find((o) => o.value === String(v))?.label : qq.type === "bool" ? (v ? t("是", "Yes") : t("否", "No"))
-    : Array.isArray(v) ? v.map((f) => `${f.flight} ${f.date}`).join(" · ") : qq.type === "flights" ? String(v).split(/\n+/).join(" · ") : `${v}${qq.unit ? ` ${unitName(t, qq.unit)}` : ""}`;
+  const { data: products } = useApi(`/api/products?lang=${lang}`);
+  const hello = { role: "assistant", content: t("跟我說說你的狀況：最近要去旅行嗎？剛搬家、養了寵物、買了車，還是有人靠你生活？我會挑一個你最需要的保險，直接給你價格。", "Tell me what's going on: a trip coming up? A new place, a pet, a car, someone who depends on you? I'll pick the one cover you need most and give you the price.") };
+  const [msgs, setMsgs] = useState([hello]), [state, setState] = useState(hint ? { product: hint, answers: {} } : {}), [text, setText] = useState(""), [busy, setBusy] = useState(false);
+  const [q, setQ] = useState(null), [addons, setAddons] = useState([]), [sugg, setSugg] = useState(null);
+  const end = useRef(null), t0 = useRef(Date.now());
+  useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs, q]);
+  const p = products?.find((x) => x.id === (q?.product || state.product));
+  // ask Lumi about the conversation so far
+  const send = async (words) => {
+    const w = String(words ?? text).trim(); if (!w || busy) return;
+    const next = [...msgs, { role: "user", content: w }]; setMsgs(next); setText(""); setBusy(true);
+    try {
+      const r = await api("/api/advisor", { method: "POST", body: { messages: next.filter((m) => m !== hello), state, lang } });
+      setMsgs((m) => [...m, { role: "assistant", content: r.reply, via: r.via }]); setState(r.state || {}); setSugg(r.suggestions || null);
+      if (r.quote) { setQ(r.quote); setAddons(r.quote.addons || []); } else setQ(null);
+    } catch (e) { toast(e.message); }
+    setBusy(false);
+  };
+  const reprice = async (adds) => { setBusy(true); try { setQ(await api("/api/quote", { method: "POST", body: { product: state.product, answers: state.answers, addons: adds, lang } })); } catch (e) { toast(e.message); } setBusy(false); };
+  // the judge tour's "fill this for me": a whole set of answers for one product, priced at once
+  useEffect(() => { const f = async (e) => { if (!e.detail?.answers) return; const prod = e.detail.product || state.product || hint; const st = { product: prod, answers: e.detail.answers }; setState(st); setAddons(e.detail.addons || []);
+    try { setQ(await api("/api/quote", { method: "POST", body: { product: prod, answers: e.detail.answers, addons: e.detail.addons || [], lang } })); } catch (err) { toast(err.message); } }; addEventListener("cover:fill-quote", f); return () => removeEventListener("cover:fill-quote", f); }, [state.product]);
+  const starters = sugg || t(["我和伴侶 12/20 搭 UA837 飛東京，12/30 搭 UA838 回來", "我在 Austin, TX 78704 租房子，東西大概 $9,000", "我剛領養一隻 2 歲的狗"], ["My partner and I fly UA837 to Tokyo on Dec 20, back on UA838 Dec 30", "I rent in Austin, TX 78704, about $9,000 of stuff", "I just adopted a 2-year-old dog"]);
   return (
     <div className="chat stack">
-      <div className="page-head" style={{ marginBottom: 24 }}><div><h1>{p.name}</h1><p className="muted small">{p.for}</p></div><Link to="/quote" className="btn sm">{t("換一種", "Change")}</Link></div>
+      <div className="page-head" style={{ marginBottom: 24 }}><div><h1>{t("跟 Lumi 聊聊", "Talk to Lumi")}</h1><p className="muted small">{t("用你自己的話說。Lumi 會挑一個你最需要的保險；條款和價格都由程式計算。", "In your own words. Lumi picks the one cover you need most; the clauses and the price are worked out by code.")}</p></div></div>
       <div className="msgs">
-        <div className="msg bot"><span className="who">Lumi</span>{t(`嗨！我是 Lumi。我會照 Cover ${p.name}的條款問你 ${qs.length} 個問題，答案由程式檢查，價格怎麼算的會全部攤開給你看。`, `Hi, I'm Lumi. I'll ask you the ${qs.length} questions Cover's ${p.name.toLowerCase()} policy needs. Code checks the answers, and you'll see exactly how the price is worked out.`)}</div>
-        {qs.slice(0, step).map((qq, i) => (
-          <div key={qq.id} style={{ display: "contents" }}>
-            <div className="msg bot"><span className="who">Lumi</span>{qq.ask}</div>
-            <button className="msg me" style={{ border: 0, cursor: "pointer", textAlign: "right" }} onClick={() => { setStep(i); setQ(null); }} title={t("修改", "Change")}>{shown(qq, answers[qq.id])}</button>
-          </div>
-        ))}
-        {!done && <div className="msg bot"><span className="who">Lumi · {step + 1}/{qs.length}</span>{qs[step].ask}</div>}
-        {done && !q && <div className="msg bot"><span className="who">Lumi</span>{t("算價格中…", "Working out your price…")}</div>}
+        {msgs.map((m, i) => m.role === "user" ? <div key={i} className="msg me">{m.content}</div> : <div key={i} className="msg bot"><span className="who">Lumi{m.via ? ` · ${m.via === "rules" ? t("規則", "rules") : t("模型＋規則", "model + rules")}` : ""}</span>{m.content}</div>)}
+        {busy && <div className="msg bot"><span className="who">Lumi</span>{t("想一下…", "Thinking…")}</div>}
       </div>
-      {!done && <div className="composer"><div className="card"><Answer q={qs[step]} value={answers[qs[step].id]} onAnswer={answer} /></div></div>}
-      {q && !q.error && <Result p={p} q={q} answers={answers} addons={addons} seconds={Math.round((Date.now() - t0.current) / 1000)} busy={busy}
-        toggle={(a) => { const next = addons.includes(a) ? addons.filter((x) => x !== a) : [...addons, a]; setAddons(next); price(next); }} />}
+      {!q && msgs.length <= 2 && <div className="chips">{starters.map((s) => <button key={s} className="chip" onClick={() => send(s)}>{s}</button>)}</div>}
+      {q && !q.error && p && <Result p={p} q={q} answers={state.answers} addons={addons} seconds={Math.round((Date.now() - t0.current) / 1000)} busy={busy}
+        toggle={(a) => { const n = addons.includes(a) ? addons.filter((x) => x !== a) : [...addons, a]; setAddons(n); reprice(n); }} />}
+      <div className="composer"><form className="card row" onSubmit={(e) => { e.preventDefault(); send(); }}>
+        <input className="input" style={{ flex: 1, minWidth: 200 }} autoFocus value={text} onChange={(e) => setText(e.target.value)} placeholder={q ? t("要改什麼就直接說，例如「我們其實是 3 個人」", "Change anything in words, e.g. \"there are actually 3 of us\"") : t("例如：下個月要飛東京", "e.g. flying to Tokyo next month")} />
+        <button className="btn accent" disabled={busy || !text.trim()}>{t("送出", "Send")}</button>
+      </form></div>
+      <details><summary>{t("或直接看所有保險", "Or browse every kind of cover")}</summary>
+        <ol className="partlist" style={{ marginTop: 12 }}>{(products || []).map((x) => <li key={x.id} style={{ gridTemplateColumns: "1fr auto" }}><span><b>{x.name}</b> <span className="muted small">{x.for}</span></span><button className="btn sm" onClick={() => send(t(`我想要${x.name}`, `I'd like ${x.name.toLowerCase()} cover`))}>{t("問 Lumi", "Ask Lumi")}</button></li>)}</ol>
+      </details>
       <div ref={end} />
     </div>
   );
@@ -57,33 +60,6 @@ function Conversation({ id }) {
 // units in the reader's language, whichever language the product file wrote them in
 const UNIT = { 年: ["年", "years"], years: ["年", "years"], 歲: ["歲", "years old"], 坪: ["坪", "ping"], "sq ft": ["平方英尺", "sq ft"], miles: ["英里", "miles"] };
 const unitName = (t, u) => (UNIT[u] ? t(...UNIT[u]) : u);
-function Answer({ q, value, onAnswer }) {
-  const t = useT(), { info } = useMe(), [v, setV] = useState(value ?? "");
-  const today = new Date(info?.now || Date.now()).toISOString().slice(0, 10);
-  useEffect(() => setV(value ?? ""), [q.id]);
-  if (q.options) return <div className="chips">{q.options.map((o) => <button key={o.value} className={`chip ${String(value) === o.value ? "on" : ""}`} onClick={() => onAnswer(o.value)}>{o.label}</button>)}</div>;
-  if (q.type === "bool") return <div className="chips"><button className="chip" onClick={() => onAnswer(true)}>{t("是", "Yes")}</button><button className="chip" onClick={() => onAnswer(false)}>{t("否", "No")}</button></div>;
-  const num = q.type === "number", ok = num ? v !== "" && +v >= q.min && +v <= q.max : String(v).trim().length > 0;
-  // a trip's dates (on Cover's clock, which the demo may have moved), and its flights, one per line
-  if (q.type === "date") return (
-    <form className="row" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(v); }}>
-      <input className="input" style={{ flex: 1, minWidth: 160 }} type="date" autoFocus value={v} min={today} onChange={(e) => setV(e.target.value)} />
-      <button className="btn" disabled={!ok}>{t("下一題", "Next")}</button>
-    </form>);
-  if (q.type === "flights") return (
-    <form className="stack-s" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(String(v).trim()); }}>
-      <textarea className="input mono" rows={3} autoFocus value={Array.isArray(v) ? v.map((f) => `${f.flight} ${f.date}`).join("\n") : v} onChange={(e) => setV(e.target.value)} placeholder={t(`每行一班：航班 日期\nUA857 ${today}`, `One flight a line: number and date\nUA857 ${today}`)} />
-      <div><button className="btn" disabled={!ok}>{t("下一題", "Next")}</button></div>
-    </form>);
-  return (
-    <form className="row" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(num ? +v : String(v).trim()); }}>
-      <input className="input" style={{ flex: 1, minWidth: 160 }} autoFocus value={v} onChange={(e) => setV(e.target.value)} inputMode={num ? "decimal" : undefined} type={num ? "number" : "text"} min={q.min} max={q.max}
-        placeholder={num ? `${q.min}–${q.max}${q.unit ? ` ${unitName(t, q.unit)}` : ""}` : q.type === "place" ? t("例如：78704，或 Austin, TX", "e.g. 78704, or Austin, TX") : ""} />
-      <button className="btn" disabled={!ok}>{t("下一題", "Next")}</button>
-    </form>
-  );
-}
-
 const FACTOR = { base: ["起始價", "Starting price"], rate: ["核准的費率調整", "Approved rate change"], "zone.flood": ["淹水風險", "Flood level"], "zone.wildfire": ["野火風險", "Wildfire level"], "zone.hurricane": ["颶風風險", "Hurricane level"], "zone.quake": ["地震風險", "Earthquake level"], "zone.theft": ["竊盜率", "Theft level"] };
 // the place's five hazard levels, each with its name (1 low, 3 high)
 const PERILS = [["flood", "淹水", "flood"], ["wildfire", "野火", "wildfire"], ["hurricane", "颶風", "hurricane"], ["quake", "地震", "quake"], ["theft", "竊盜", "theft"]];

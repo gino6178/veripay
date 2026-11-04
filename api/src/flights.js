@@ -25,20 +25,25 @@ const h = (s) => crypto.createHash("sha256").update(s).digest();
 export const keyOf = (flight, date) => `${flight}@${date}`;
 
 // "UA857 2026-12-20, ua 858 2027-01-03" or [{ flight, date }] → [{ flight: "UA857", date: "2026-12-20" }]
+// (an object may also name its airports, { flight, date, from, to }: kept when they look like IATA codes)
 export function parseFlights(v) {
-  const items = Array.isArray(v) ? v.map((x) => (typeof x === "string" ? x : `${x.flight} ${x.date}`)) : String(v || "").split(/[\n,;]+/);
-  const out = [], bad = [];
-  for (const raw of items.map((s) => s.trim()).filter(Boolean)) {
+  const items = Array.isArray(v) ? v.map((x) => (typeof x === "string" ? { raw: x } : { raw: `${x.flight} ${x.date}`, from: x.from, to: x.to })) : String(v || "").split(/[\n,;]+/).map((raw) => ({ raw }));
+  const out = [], bad = [], ap = (x) => (/^[A-Za-z]{3}$/.test(x || "") ? x.toUpperCase() : undefined);
+  for (const it of items) {
+    const raw = String(it.raw || "").trim();
+    if (!raw) continue;
     const m = raw.toUpperCase().match(/^([A-Z0-9]{2})\s*(\d{1,4})\s+(\d{4}-\d{2}-\d{2})$/);
-    if (!m || Number.isNaN(Date.parse(`${m[3]}T00:00:00Z`))) bad.push(raw); else out.push({ flight: `${m[1]}${m[2]}`, date: m[3] });
+    if (!m || Number.isNaN(Date.parse(`${m[3]}T00:00:00Z`))) bad.push(raw); else out.push({ flight: `${m[1]}${m[2]}`, date: m[3], ...(ap(it.from) ? { from: ap(it.from) } : {}), ...(ap(it.to) ? { to: ap(it.to) } : {}) });
   }
   return { flights: out.slice(0, 8), bad };
 }
 
 // a flight's route and schedule, the same every time it is asked for
-export function routeOf({ flight, date }, region = "domestic") {
-  const b = h(flight), from = HUBS[b[0] % HUBS.length], pool = region === "domestic" ? HUBS.filter((x) => x !== from) : ABROAD[region] || ABROAD.other;
-  const to = pool[b[1] % pool.length], dep = 6 * 60 + (b[2] % 64) * 15; // between 06:00 and 21:45
+export function routeOf(given, region = "domestic") {
+  const { flight, date } = given;
+  // the airports the agent gave, when it gave them; otherwise drawn from the flight number
+  const b = h(flight), from = /^[A-Z]{3}$/.test(given.from || "") ? given.from : HUBS[b[0] % HUBS.length], pool = region === "domestic" ? HUBS.filter((x) => x !== from) : ABROAD[region] || ABROAD.other;
+  const to = /^[A-Z]{3}$/.test(given.to || "") ? given.to : pool[b[1] % pool.length], dep = 6 * 60 + (b[2] % 64) * 15; // between 06:00 and 21:45
   return { flight, date, from, to, scheduled: `${date}T${String(Math.floor(dep / 60)).padStart(2, "0")}:${String(dep % 60).padStart(2, "0")}:00`, rates: RATE[from] || DEFAULT_RATE };
 }
 

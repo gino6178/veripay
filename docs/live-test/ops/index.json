@@ -1,0 +1,35 @@
+{
+ "about": "Every Cover test agent's operations, one file each (from extract-ops.mjs).",
+ "agents": 3,
+ "calls": 36,
+ "screenshots": 0,
+ "list": [
+  {
+   "file": "round01-maya-s-agent-insures-a-trip-aed9f4.json",
+   "round": 1,
+   "title": "Cover round 1: Maya's agent insures a trip",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T11:58:53.921Z",
+   "calls": 8,
+   "screenshots": 0
+  },
+  {
+   "file": "round01-leo-s-agent-within-tight-limits-a41743.json",
+   "round": 1,
+   "title": "Cover round 1: Leo's agent within tight limits",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T11:58:59.310Z",
+   "calls": 8,
+   "screenshots": 0
+  },
+  {
+   "file": "round01-rin-s-agent-tests-the-guardrails-a9c1e9.json",
+   "round": 1,
+   "title": "Cover round 1: Rin's agent tests the guardrails",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T11:59:07.762Z",
+   "calls": 20,
+   "screenshots": 0
+  }
+ ]
+}

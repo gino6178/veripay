@@ -21,6 +21,7 @@ import * as receipts from "./proof/receipts.js";
 import * as claims from "./claims.js";
 import * as carrier from "./carrier.js";
 import * as flights from "./flights.js";
+import * as advisor from "./advisor.js";
 import * as mcp from "./mcp.js";
 import { limitsOf, setLimits } from "./ops.js";
 import { guide } from "./guide.js";
@@ -118,6 +119,8 @@ app.get("/api/products/:id", (req, res) => { const p = product(req.params.id); i
 app.get("/api/clauses/:id", (req, res) => { const c = clause(req.params.id); if (!c) return res.status(404).json({ error: "clause" }); res.json(c); });
 app.get("/api/causes", (req, res) => res.json(Object.entries(CAUSES).map(([id, c]) => ({ id, zh: c.zh, en: c.en }))));
 
+// Lumi, the advisor: chat in, the one cover you need most out (advisor.js)
+app.post("/api/advisor", async (req, res) => { const m = Array.isArray(req.body?.messages) ? req.body.messages.slice(-20).map((x) => ({ role: x.role === "assistant" ? "assistant" : "user", content: String(x.content || "").slice(0, 2000) })) : []; res.json(await advisor.advise({ messages: m, state: req.body?.state || {}, lang: req.body?.lang === "zh" ? "zh" : "en", person: me(req)?.id || null })); });
 app.post("/api/quote", (req, res) => { const p = me(req); send(res, quote(req.body?.product, req.body?.answers, { addons: req.body?.addons || [], person: p?.id || null, lang: req.body?.lang === "zh" ? "zh" : "en" })); });
 app.post("/api/policies", signedIn, async (req, res) => send(res, await policies.buy(req.person.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
 app.get("/api/policies", signedIn, (req, res) => res.json(policies.policiesOf(req.person.id).map((x) => policies.view(x, lang(req)))));

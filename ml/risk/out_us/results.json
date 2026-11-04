@@ -1,0 +1,638 @@
+{
+ "renters": {
+  "policies_train": 200000,
+  "policies_test": 50000,
+  "claims_train": 9171,
+  "loss_per_year_train_usd": 183.65,
+  "trees": 65,
+  "gini": {
+   "lightgbm": 0.343,
+   "glm": 0.3451,
+   "product_tables": 0.3544,
+   "true_premium": 0.3629
+  },
+  "rmse_to_true_premium_usd": {
+   "lightgbm": 44.04,
+   "glm": 49.35,
+   "product_tables": 50.48
+  },
+  "calibration_lightgbm": [
+   {
+    "decile": 1,
+    "predicted": 4750.8,
+    "actual": 4542.4
+   },
+   {
+    "decile": 2,
+    "predicted": 7387.1,
+    "actual": 6427.5
+   },
+   {
+    "decile": 3,
+    "predicted": 9381.5,
+    "actual": 8918.8
+   },
+   {
+    "decile": 4,
+    "predicted": 11432.9,
+    "actual": 10824.6
+   },
+   {
+    "decile": 5,
+    "predicted": 13567.4,
+    "actual": 16510.5
+   },
+   {
+    "decile": 6,
+    "predicted": 16136.4,
+    "actual": 14197.5
+   },
+   {
+    "decile": 7,
+    "predicted": 19153.3,
+    "actual": 19924.9
+   },
+   {
+    "decile": 8,
+    "predicted": 22785.7,
+    "actual": 24863.1
+   },
+   {
+    "decile": 9,
+    "predicted": 27878.6,
+    "actual": 28480.7
+   },
+   {
+    "decile": 10,
+    "predicted": 42564.6,
+    "actual": 39765.1
+   }
+  ],
+  "calibration_glm": [
+   {
+    "decile": 1,
+    "predicted": 5386.0,
+    "actual": 3875.3
+   },
+   {
+    "decile": 2,
+    "predicted": 7575.9,
+    "actual": 7843.1
+   },
+   {
+    "decile": 3,
+    "predicted": 9318.2,
+    "actual": 9719.0
+   },
+   {
+    "decile": 4,
+    "predicted": 11160.0,
+    "actual": 10146.5
+   },
+   {
+    "decile": 5,
+    "predicted": 13234.3,
+    "actual": 14316.1
+   },
+   {
+    "decile": 6,
+    "predicted": 15638.2,
+    "actual": 14152.5
+   },
+   {
+    "decile": 7,
+    "predicted": 18697.7,
+    "actual": 19063.0
+   },
+   {
+    "decile": 8,
+    "predicted": 22973.5,
+    "actual": 24818.5
+   },
+   {
+    "decile": 9,
+    "predicted": 29730.9,
+    "actual": 31030.5
+   },
+   {
+    "decile": 10,
+    "predicted": 50500.8,
+    "actual": 39375.7
+   }
+  ],
+  "predicted_over_actual_total": {
+   "lightgbm": 1.0034,
+   "glm": 1.0566
+  },
+  "shap_mean_abs": {
+   "contents": 0.4295,
+   "claims3y": 0.2077,
+   "floor": 0.112,
+   "deductible": 0.0956,
+   "z_theft": 0.0747,
+   "z_hurricane": 0.0693,
+   "building": 0.0584,
+   "z_wildfire": 0.0561,
+   "size": 0.0177,
+   "valuables": 0.0177,
+   "z_quake": 0.0076,
+   "z_flood": 0.0038
+  },
+  "monotone_violations": 0,
+  "generator": {
+   "freq": 0.07,
+   "shape": 1.2,
+   "hidden": "contents scale as (contents/8000)^0.8 not linearly; theft level 3 x walk-up apartment on the ground floor x1.6; hurricane level 3 x ground floor x1.2; first-time claimants (claims3y 0) x0.85"
+  },
+  "gini_ci95": {
+   "lightgbm": [
+    0.3154,
+    0.3702
+   ],
+   "glm": [
+    0.3177,
+    0.3737
+   ]
+  },
+  "gini_lightgbm_minus_glm_ci95": [
+   -0.0121,
+   0.0063
+  ]
+ },
+ "home": {
+  "policies_train": 200000,
+  "policies_test": 50000,
+  "claims_train": 7991,
+  "loss_per_year_train_usd": 2809.35,
+  "trees": 78,
+  "gini": {
+   "lightgbm": 0.4339,
+   "glm": 0.4367,
+   "product_tables": 0.4347,
+   "true_premium": 0.4433
+  },
+  "rmse_to_true_premium_usd": {
+   "lightgbm": 1070.76,
+   "glm": 830.02,
+   "product_tables": 960.46
+  },
+  "calibration_lightgbm": [
+   {
+    "decile": 1,
+    "predicted": 55866.3,
+    "actual": 52177.7
+   },
+   {
+    "decile": 2,
+    "predicted": 94352.9,
+    "actual": 94036.1
+   },
+   {
+    "decile": 3,
+    "predicted": 123939.0,
+    "actual": 163590.1
+   },
+   {
+    "decile": 4,
+    "predicted": 152385.5,
+    "actual": 136575.7
+   },
+   {
+    "decile": 5,
+    "predicted": 183128.3,
+    "actual": 178735.3
+   },
+   {
+    "decile": 6,
+    "predicted": 218975.1,
+    "actual": 219483.4
+   },
+   {
+    "decile": 7,
+    "predicted": 264963.8,
+    "actual": 287794.7
+   },
+   {
+    "decile": 8,
+    "predicted": 326305.9,
+    "actual": 365487.7
+   },
+   {
+    "decile": 9,
+    "predicted": 423666.8,
+    "actual": 453437.7
+   },
+   {
+    "decile": 10,
+    "predicted": 748239.7,
+    "actual": 955117.3
+   }
+  ],
+  "calibration_glm": [
+   {
+    "decile": 1,
+    "predicted": 58929.4,
+    "actual": 63388.1
+   },
+   {
+    "decile": 2,
+    "predicted": 92859.0,
+    "actual": 82383.2
+   },
+   {
+    "decile": 3,
+    "predicted": 121316.9,
+    "actual": 141406.6
+   },
+   {
+    "decile": 4,
+    "predicted": 150599.6,
+    "actual": 143947.4
+   },
+   {
+    "decile": 5,
+    "predicted": 183882.4,
+    "actual": 198288.2
+   },
+   {
+    "decile": 6,
+    "predicted": 223565.8,
+    "actual": 232754.8
+   },
+   {
+    "decile": 7,
+    "predicted": 274582.9,
+    "actual": 288440.1
+   },
+   {
+    "decile": 8,
+    "predicted": 348311.8,
+    "actual": 322678.9
+   },
+   {
+    "decile": 9,
+    "predicted": 470777.3,
+    "actual": 480494.5
+   },
+   {
+    "decile": 10,
+    "predicted": 895438.3,
+    "actual": 954561.6
+   }
+  ],
+  "predicted_over_actual_total": {
+   "lightgbm": 0.8916,
+   "glm": 0.9698
+  },
+  "shap_mean_abs": {
+   "rebuild": 0.3521,
+   "age": 0.2273,
+   "kind": 0.227,
+   "contents": 0.2064,
+   "claims3y": 0.1544,
+   "structure": 0.1163,
+   "z_hurricane": 0.0943,
+   "z_theft": 0.0792,
+   "deductible": 0.0683,
+   "z_wildfire": 0.0682,
+   "size": 0.0183,
+   "z_flood": 0.0078,
+   "z_quake": 0.0042
+  },
+  "monotone_violations": 0,
+  "generator": {
+   "freq": 0.06,
+   "shape": 0.9,
+   "hidden": "age curve exp(0.008 x age) in place of the age bands; frame house x wildfire level 3 x1.5; hurricane level 3 x age over 40 x1.3; flood level 3 x house x1.15 (sewer backup)"
+  },
+  "gini_ci95": {
+   "lightgbm": [
+    0.396,
+    0.4669
+   ],
+   "glm": [
+    0.4005,
+    0.4719
+   ]
+  },
+  "gini_lightgbm_minus_glm_ci95": [
+   -0.0139,
+   0.0104
+  ]
+ },
+ "pet": {
+  "policies_train": 200000,
+  "policies_test": 50000,
+  "claims_train": 58353,
+  "loss_per_year_train_usd": 671.88,
+  "trees": 99,
+  "gini": {
+   "lightgbm": 0.3113,
+   "glm": 0.3108,
+   "product_tables": 0.3054,
+   "true_premium": 0.3131
+  },
+  "rmse_to_true_premium_usd": {
+   "lightgbm": 50.91,
+   "glm": 46.28,
+   "product_tables": 81.07
+  },
+  "calibration_lightgbm": [
+   {
+    "decile": 1,
+    "predicted": 28783.1,
+    "actual": 27835.5
+   },
+   {
+    "decile": 2,
+    "predicted": 37315.1,
+    "actual": 36151.5
+   },
+   {
+    "decile": 3,
+    "predicted": 43568.3,
+    "actual": 44073.4
+   },
+   {
+    "decile": 4,
+    "predicted": 49616.9,
+    "actual": 48855.8
+   },
+   {
+    "decile": 5,
+    "predicted": 55872.3,
+    "actual": 57339.5
+   },
+   {
+    "decile": 6,
+    "predicted": 62795.6,
+    "actual": 60345.8
+   },
+   {
+    "decile": 7,
+    "predicted": 70915.3,
+    "actual": 73298.7
+   },
+   {
+    "decile": 8,
+    "predicted": 81011.8,
+    "actual": 86555.0
+   },
+   {
+    "decile": 9,
+    "predicted": 96417.9,
+    "actual": 97292.0
+   },
+   {
+    "decile": 10,
+    "predicted": 142001.3,
+    "actual": 142744.9
+   }
+  ],
+  "calibration_glm": [
+   {
+    "decile": 1,
+    "predicted": 28263.4,
+    "actual": 28177.8
+   },
+   {
+    "decile": 2,
+    "predicted": 37037.4,
+    "actual": 36589.1
+   },
+   {
+    "decile": 3,
+    "predicted": 43501.3,
+    "actual": 43305.7
+   },
+   {
+    "decile": 4,
+    "predicted": 49597.0,
+    "actual": 46888.2
+   },
+   {
+    "decile": 5,
+    "predicted": 56027.2,
+    "actual": 57677.3
+   },
+   {
+    "decile": 6,
+    "predicted": 63243.5,
+    "actual": 67195.2
+   },
+   {
+    "decile": 7,
+    "predicted": 71612.0,
+    "actual": 67986.0
+   },
+   {
+    "decile": 8,
+    "predicted": 82372.4,
+    "actual": 88281.0
+   },
+   {
+    "decile": 9,
+    "predicted": 98313.8,
+    "actual": 95954.2
+   },
+   {
+    "decile": 10,
+    "predicted": 139267.0,
+    "actual": 142386.9
+   }
+  ],
+  "predicted_over_actual_total": {
+   "lightgbm": 0.9908,
+   "glm": 0.9922
+  },
+  "shap_mean_abs": {
+   "ageYears": 0.2331,
+   "breedSize": 0.1931,
+   "species": 0.175,
+   "limit": 0.148,
+   "copay": 0.1017,
+   "chipped": 0.0249
+  },
+  "monotone_violations": 0,
+  "generator": {
+   "freq": 0.45,
+   "shape": 1.5,
+   "hidden": "age curve exp(0.09 x ageYears) in place of the age bands; flat-faced breeds x1.2 more over age 6; chipped x0.95"
+  },
+  "gini_ci95": {
+   "lightgbm": [
+    0.2972,
+    0.3226
+   ],
+   "glm": [
+    0.297,
+    0.3231
+   ]
+  },
+  "gini_lightgbm_minus_glm_ci95": [
+   -0.0018,
+   0.0029
+  ]
+ },
+ "car": {
+  "policies_train": 200000,
+  "policies_test": 50000,
+  "claims_train": 16503,
+  "loss_per_year_train_usd": 1721.47,
+  "trees": 92,
+  "gini": {
+   "lightgbm": 0.4975,
+   "glm": 0.4942,
+   "product_tables": 0.4889,
+   "true_premium": 0.5047
+  },
+  "rmse_to_true_premium_usd": {
+   "lightgbm": 426.08,
+   "glm": 491.19,
+   "product_tables": 579.52
+  },
+  "calibration_lightgbm": [
+   {
+    "decile": 1,
+    "predicted": 22546.4,
+    "actual": 24493.6
+   },
+   {
+    "decile": 2,
+    "predicted": 39859.5,
+    "actual": 41948.0
+   },
+   {
+    "decile": 3,
+    "predicted": 56847.5,
+    "actual": 52081.1
+   },
+   {
+    "decile": 4,
+    "predicted": 75769.5,
+    "actual": 75874.7
+   },
+   {
+    "decile": 5,
+    "predicted": 97252.6,
+    "actual": 103170.7
+   },
+   {
+    "decile": 6,
+    "predicted": 125126.7,
+    "actual": 132020.4
+   },
+   {
+    "decile": 7,
+    "predicted": 160311.4,
+    "actual": 162419.9
+   },
+   {
+    "decile": 8,
+    "predicted": 208603.4,
+    "actual": 199790.3
+   },
+   {
+    "decile": 9,
+    "predicted": 291183.1,
+    "actual": 281181.7
+   },
+   {
+    "decile": 10,
+    "predicted": 562042.3,
+    "actual": 587568.8
+   }
+  ],
+  "calibration_glm": [
+   {
+    "decile": 1,
+    "predicted": 22743.0,
+    "actual": 22620.3
+   },
+   {
+    "decile": 2,
+    "predicted": 40064.5,
+    "actual": 44277.1
+   },
+   {
+    "decile": 3,
+    "predicted": 57047.2,
+    "actual": 49313.9
+   },
+   {
+    "decile": 4,
+    "predicted": 76703.1,
+    "actual": 82557.1
+   },
+   {
+    "decile": 5,
+    "predicted": 99648.2,
+    "actual": 98001.7
+   },
+   {
+    "decile": 6,
+    "predicted": 128548.1,
+    "actual": 138917.3
+   },
+   {
+    "decile": 7,
+    "predicted": 165373.0,
+    "actual": 162056.4
+   },
+   {
+    "decile": 8,
+    "predicted": 217554.8,
+    "actual": 196953.3
+   },
+   {
+    "decile": 9,
+    "predicted": 305086.2,
+    "actual": 294219.5
+   },
+   {
+    "decile": 10,
+    "predicted": 598783.3,
+    "actual": 569954.7
+   }
+  ],
+  "predicted_over_actual_total": {
+   "lightgbm": 0.9873,
+   "glm": 1.0317
+  },
+  "shap_mean_abs": {
+   "vehicle": 0.5386,
+   "milesMonth": 0.3022,
+   "level": 0.2995,
+   "accidents3y": 0.2461,
+   "z_theft": 0.1058,
+   "value": 0.1046,
+   "z_hurricane": 0.1001,
+   "parking": 0.0691,
+   "telematics": 0.0573,
+   "years": 0.0318,
+   "z_flood": 0.0067,
+   "z_wildfire": 0.0057,
+   "z_quake": 0.0015
+  },
+  "monotone_violations": 0,
+  "generator": {
+   "freq": 0.12,
+   "shape": 1.1,
+   "hidden": "experience curve 1 + 0.6 x exp(-years/3) in place of the bands; (milesMonth/800)^0.5 in place of the linear mileage; telematics x0.85; street parking x theft level 3 x1.4; hurricane level 3 x1.1"
+  },
+  "gini_ci95": {
+   "lightgbm": [
+    0.4758,
+    0.517
+   ],
+   "glm": [
+    0.473,
+    0.5149
+   ]
+  },
+  "gini_lightgbm_minus_glm_ci95": [
+   -0.0016,
+   0.0077
+  ]
+ }
+}

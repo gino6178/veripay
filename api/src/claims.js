@@ -46,6 +46,9 @@ export async function file(personId, { policy: pid, type, happenedAt, where = ""
   if (!pol || pol.person !== personId) return { error: "policy", message: "No such policy for this person." };
   const ct = claimType(pol.product, type);
   if (!ct) return { error: "type", message: `For ${pol.product}, type is one of: ${product(pol.product).claims.map((c) => c.type).join(", ")}.` };
+  // a kind of claim this policy's plan doesn't include is said up front, before any evidence is asked for
+  if (!pol.coverages.some((x) => x.id === ct.coverage) && !(ct.needsAddon && pol.addons.includes(ct.needsAddon))) return { error: "not_covered", clause: ct.clause, message: `This policy doesn't include ${ct.en.toLowerCase()} (${ct.clause})${ct.needsAddon ? `: it needs the ${ct.needsAddon} add-on` : pol.answers?.plan ? `: the ${pol.answers.plan} plan doesn't have it` : ""}. Nothing was filed.` };
+  if (ct.parametric) return { error: "automatic", message: `${ct.en} is paid automatically from the flight's status (${ct.clause}); there is nothing to file. flight_status shows each insured flight.` };
   const at = Date.parse(happenedAt);
   if (!Number.isFinite(at) || at > now() + 3600e3) return { error: "happenedAt", message: "When it happened, as an ISO date and time, not in the future." };
   const claimed = Math.round(+amount * 100);

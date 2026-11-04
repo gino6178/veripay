@@ -18,6 +18,12 @@ ${INSTRUCTIONS}
   Testing with a demo account: POST ${base}/api/auth/demo {"name": "..."} (keeps a cookie), then POST ${base}/api/tokens
   {"label": "my agent"} with that cookie returns a token.
 
+## Demo controls (this demo server only; off when DEMO_SIGNIN=0)
+
+- POST ${base}/api/demo/flight {"flight": "UA837", "date": "YYYY-MM-DD", "status": "departed" | "cancelled" | "delayed", "delayMin": 150}
+  reports a flight in the simulated flight feed. Insured travelers on a departed-late or cancelled flight are paid at once.
+- POST ${base}/api/demo/advance {"days": 15} moves Cover's clock forward. GET ${base}/api/info shows Cover's "now".
+
 ## Money
 
 All amounts the tools take are USD; what they return is formatted ($12.34). Every premium splits 20% to Cover's fee

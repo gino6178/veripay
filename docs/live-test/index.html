@@ -41,14 +41,26 @@ footer{color:var(--soft);font-size:14px;margin-top:32px}
 <h1>Cover, tested by AI agents</h1>
 <p class="lede">Claude Sonnet agents were given the address of the live server and nothing else: no source code, no docs, no account made for them. Each played a person or that person's agent, booked and paid in the PayPal sandbox, and reported every blocker, bug and thing it had to guess. After each round we fixed what they found and sent the next one.</p>
 <div class="stats">
-  <div class="stat"><b>0</b><span>rounds</span></div>
-  <div class="stat"><b>0</b><span>agent and persona runs</span></div>
-  <div class="stat"><b>0 → 0</b><span>blockers and bugs, round 1 → undefined</span></div>
-  <div class="stat"><b>0 → 0</b><span>things an agent had to guess</span></div>
+  <div class="stat"><b>1</b><span>rounds</span></div>
+  <div class="stat"><b>3</b><span>agent and persona runs</span></div>
+  <div class="stat"><b>1 → 1</b><span>blockers and bugs, round 1 → 1</span></div>
+  <div class="stat"><b>9 → 9</b><span>things an agent had to guess</span></div>
 </div>
 <section class="panel"><h2>Issues found per round</h2>
 <div class="legend"><span><i class="blocker"></i>Blocker</span><span><i class="bug"></i>Bug</span><span><i class="confusing"></i>Confusing</span></div>
-<svg viewBox="0 0 960 300" role="img" aria-label="Issues found per round"><line x1="40" x2="960" y1="264" y2="264" class="grid"/><text x="32" y="268" class="tick" text-anchor="end">0</text><line x1="40" x2="960" y1="NaN" y2="NaN" class="grid"/><text x="32" y="NaN" class="tick" text-anchor="end">-Infinity</text><line x1="40" x2="960" y1="NaN" y2="NaN" class="grid"/><text x="32" y="NaN" class="tick" text-anchor="end">-Infinity</text></svg></section>
-
+<svg viewBox="0 0 960 300" role="img" aria-label="Issues found per round"><line x1="40" x2="960" y1="264" y2="264" class="grid"/><text x="32" y="268" class="tick" text-anchor="end">0</text><line x1="40" x2="960" y1="140" y2="140" class="grid"/><text x="32" y="144" class="tick" text-anchor="end">5</text><line x1="40" x2="960" y1="16" y2="16" class="grid"/><text x="32" y="20" class="tick" text-anchor="end">10</text><rect x="477" y="239.20000000000002" width="46" height="23.299999999999983" rx="3" class="bug"><title>Round 1: 1 bug</title></rect><rect x="477" y="16" width="46" height="221.70000000000002" rx="3" class="confusing"><title>Round 1: 9 confusing</title></rect><text x="500" y="9" class="val" text-anchor="middle">10</text><text x="500" y="284" class="tick" text-anchor="middle">R1</text></svg></section>
+<article class="round" id="r1">
+  <header><div class="num">1</div><div><p class="date">Round 1 · 2026-11-04</p><h2>A person's own AI agent uses Cover: a trip, a tight budget, and a red-team agent</h2></div>
+    <div class="sums"><span class="chip blocker zero">0 blocker</span><span class="chip bug">1 bug</span><span class="chip confusing">9 confusing</span></div></header>
+  <p class="setup">Three Sonnet agents on the live server (localhost:8800, PayPal sandbox), each with only an agent token and /llms.txt. Maya's agent insures a Tokyo trip for two under $150 and simulates a late flight; Leo's agent works under a $30 limit with no autopay; Rin's agent is a security tester checking Cover's guardrails.</p>
+  <table><thead><tr><th>Tester</th><th>Played</th><th>Via</th><th class="n">Blocker</th><th class="n">Bug</th><th class="n">Confusing</th></tr></thead><tbody>
+  <tr><td><a href="round1-maya.md">Maya's agent</a></td><td>insure a trip for two, under $150, medical if reasonable</td><td><span class="via">REST</span></td><td class="n">0</td><td class="n">0</td><td class="n">2</td></tr>
+  <tr><td><a href="round1-leo.md">Leo's agent</a></td><td>a weekend trip within a $30 limit, plus a renters price</td><td><span class="via">REST</span></td><td class="n">0</td><td class="n">0</td><td class="n">4</td></tr>
+  <tr><td><a href="round1-rin.md">Rin's agent</a></td><td>red team: known disruptions, limits, payout address, injected claim text, others' ids</td><td><span class="via">REST</span></td><td class="n">0</td><td class="n warm">1</td><td class="n">3</td></tr>
+  </tbody></table>
+  
+  <div class="two"><div><h3>What happened</h3><p>Every guardrail held: an already-delayed flight was refused (TR-3.1), the agent couldn't raise its limit or change where money goes, an over-limit purchase was refused, the injected claim stalled for evidence, and others' ids were refused. Rin's trip paid $100 by PayPal Payouts about a second after AM410 was reported 2.5 hours late. Maya's agent stopped rather than overspend: medical cover costs more than her $150.</p></div>
+    <div><h3>What we fixed after</h3><ul><li>insure_trip no longer needs the oldest traveler's age for flight-only cover, and accepts its arguments wrapped as { answers } too</li><li>Flights may name their airports (from, to); otherwise they are still drawn from the flight number</li><li>A claim type the policy's plan doesn't include is refused up front with its clause, and flight claims say they are automatic</li><li>Trip premiums now count toward the person's monthly spending limit, and the limit message says so</li><li>The product list in errors includes travel; /llms.txt documents the demo controls as demo-only</li></ul></div></div>
+</article>
 <footer>Each tester's full report is linked by name. The write-up with every fix is <a href="../live-testing.md">live-testing.md</a>. Built from rounds.json by build.mjs.</footer>
 </main></body></html>

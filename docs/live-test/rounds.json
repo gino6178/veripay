@@ -1,1 +1,48 @@
-{ "about": "Every round of AI agents using Cover as real users and agents would, on the live server: who they were, what blocked them, what they found wrong or confusing, and what was fixed after.", "rounds": [] }
+{
+ "about": "Every round of AI agents using Cover as real users and agents would, on the live server: who they were, what blocked them, what they found wrong or confusing, and what was fixed after.",
+ "rounds": [
+  {
+   "n": 1,
+   "date": "2026-11-04",
+   "title": "A person's own AI agent uses Cover: a trip, a tight budget, and a red-team agent",
+   "setup": "Three Sonnet agents on the live server (localhost:8800, PayPal sandbox), each with only an agent token and /llms.txt. Maya's agent insures a Tokyo trip for two under $150 and simulates a late flight; Leo's agent works under a $30 limit with no autopay; Rin's agent is a security tester checking Cover's guardrails.",
+   "testers": [
+    {
+     "name": "Maya's agent",
+     "role": "insure a trip for two, under $150, medical if reasonable",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 2,
+     "report": "round1-maya.md"
+    },
+    {
+     "name": "Leo's agent",
+     "role": "a weekend trip within a $30 limit, plus a renters price",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 4,
+     "report": "round1-leo.md"
+    },
+    {
+     "name": "Rin's agent",
+     "role": "red team: known disruptions, limits, payout address, injected claim text, others' ids",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round1-rin.md"
+    }
+   ],
+   "outcome": "Every guardrail held: an already-delayed flight was refused (TR-3.1), the agent couldn't raise its limit or change where money goes, an over-limit purchase was refused, the injected claim stalled for evidence, and others' ids were refused. Rin's trip paid $100 by PayPal Payouts about a second after AM410 was reported 2.5 hours late. Maya's agent stopped rather than overspend: medical cover costs more than her $150.",
+   "fixes": [
+    "insure_trip no longer needs the oldest traveler's age for flight-only cover, and accepts its arguments wrapped as { answers } too",
+    "Flights may name their airports (from, to); otherwise they are still drawn from the flight number",
+    "A claim type the policy's plan doesn't include is refused up front with its clause, and flight claims say they are automatic",
+    "Trip premiums now count toward the person's monthly spending limit, and the limit message says so",
+    "The product list in errors includes travel; /llms.txt documents the demo controls as demo-only"
+   ]
+  }
+ ]
+}
