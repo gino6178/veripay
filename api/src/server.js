@@ -289,7 +289,7 @@ if (pp().mode === "mock") {
     const x = q(req), yes = req.body?.a === "yes";
     if (yes) pp().approve(x);
     if (x.invoice) return res.redirect("/policies");
-    const pol = policies.allPolicies().find((p) => p.payments[0]?.order === x.token || p.subscription?.id === x.subscription);
+    const pol = policies.allPolicies().find((p) => (x.token && p.payments[0]?.order === x.token) || (x.subscription && p.subscription?.id === x.subscription));
     res.redirect(pol ? (yes ? `/paypal/return?policy=${pol.id}` : `/policies/${pol.id}?cancelled=1`) : "/");
   });
 }

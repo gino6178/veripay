@@ -77,7 +77,8 @@ export function createPartner({ id, name, email, rate = 0.1, label } = {}) {
     while (partner(pid)) pid = `${pid.slice(0, 18)}-${crypto.randomBytes(2).toString("hex")}`;
     p = db.data.partners[pid] = { id: pid, name: String(name).trim().slice(0, 60), email: String(email).slice(0, 120), rate: r, keys: [], created: nowIso() };
   }
-  return { partner: viewPartner(p), key: issueKey(p, label), note: "Keep the key: Cover stores only its hash. Send it as Authorization: Bearer cvpk_..." };
+  const key = issueKey(p, label);
+  return { partner: viewPartner(p), key, note: "Keep the key: Cover stores only its hash. Send it as Authorization: Bearer cvpk_..." };
 }
 // the demo page's own key for Skyway, made fresh at each start and held only in this process (the old one is revoked)
 let demoSecret = null;

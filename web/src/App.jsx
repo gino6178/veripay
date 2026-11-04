@@ -14,6 +14,7 @@ import Carrier from "./pages/Carrier.jsx";
 import Reconcile from "./pages/Reconcile.jsx";
 import Models from "./pages/Models.jsx";
 import Neighborhood from "./pages/Neighborhood.jsx";
+import Partners from "./pages/Partners.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import Tour, { startTour } from "./components/Tour.jsx";
 
@@ -37,6 +38,7 @@ function routes(path) {
   if (p === "/reconcile") return <Reconcile />;
   if (p === "/models") return <Models />;
   if (p === "/neighborhood") return <Neighborhood />;
+  if (p === "/partners") return <Partners />;
   if (p === "/signin") return <SignIn />;
   return <NotFound />;
 }
@@ -83,6 +85,7 @@ function Header({ path }) {
           <Link to="/connect" className={on("/connect")}>{t("AI agent", "AI agent")}</Link>
           <Link to="/neighborhood" className={on("/neighborhood")}>{t("社區基金", "Neighborhood")}</Link>
           <Link to="/transparency" className={on("/transparency")}>{t("帳本", "Ledger")}</Link>
+          <Link to="/partners" className={on("/partners")}>{t("合作夥伴結帳", "Partner checkout")}</Link>
           <span className="sep" aria-hidden="true" />
           <Link to="/desk" className={`staff ${on("/desk") || ""}`}>{t("理賠審核", "Claims desk")}</Link>
           <Link to="/carrier" className={`staff ${on("/carrier") || ""}`}>{t("後台", "Back office")}</Link>
