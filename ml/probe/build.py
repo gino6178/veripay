@@ -5,10 +5,11 @@ been measured"). Builds the 50 cases, with the right answers known by code or wr
            cite the clause id. The clauses are a snapshot of cover/api/src/products/{renters,pet}.json (clauses.json),
            so the probe stays reproducible while the app line edits them.
   extract  25 receipts and claim texts (generated here from a seed): 統一發票 (electronic invoice proof copies), vet
-           receipts, repair slips, police report slips and claim narratives, with the fields date, amount, merchant,
-           item and the seller's 統一編號 (tax_id) known exactly. Dates are written as ROC or Western dates, amounts with
+           receipts, repair slips, police report slips and claim narratives, with the fields known exactly, named as
+           the app's reader (api/src/reader.js) names them: date, amount, merchant, taxId (the seller's 統一編號),
+           reportNo (a police report's number), and the item, which must be among the answer's items. Dates are written as ROC or Western dates, amounts with
            commas, NT$, full-width digits; some show a buyer's 統一編號 too (not the answer).
-  vision   5 of the 統一發票 cases rendered as images (PIL, Noto Sans CJK), the same right answers.
+  vision   5 of the 統一發票 cases rendered as images (PIL, a Traditional Chinese font), the same right answers.
 
 Every name, number and 統一編號 is made up (統一編號 pass the checksum but belong to no one). These are evaluation cases
 only: they are never used as training data.
@@ -70,7 +71,7 @@ def extract_cases(seed=20261104):
             no = f"{rng.randrange(10**9, 10**10)}"
             text = (f"受（處）理案件證明單\n報案人：王○明\n案件類別：竊盜\n受理單位：{station}\n受理日期：{fmt_date(rng, y, m, d, date_style)} {hh:02d}時{mm:02d}分\n"
                     f"案情摘要：報案人停放於住處之{item}遭竊。\n受理編號：{no}\n（本證明單僅證明有報案，不代表案件屬實）")
-            truth.update({"amount": None, "merchant": station, "item": item, "tax_id": None})
+            truth.update({"amount": None, "merchant": station, "item": item, "taxId": None, "reportNo": no})
         elif kind == "story":
             sub = rng.choice(["invoice", "vet", "repair"])
             merchant, items = rng.choice(MERCHANTS[sub]); item = rng.choice(items)
@@ -81,7 +82,7 @@ def extract_cases(seed=20261104):
                     "repair": f"我的手機壞了，{fmt_date(rng, y, m, d, date_style)}拿去{merchant}做{item}，維修費{fmt_amount(rng, a, amt_style)}，"}[sub]
             tail = {"invoice": "隔週家裡漏水就泡壞了，發票我只有拍照，上面沒有統編。", "vet": "收據在這裡，請幫我申請理賠，謝謝。", "repair": "單子上沒有寫統一編號，想問能不能申請。"}[sub]
             text = lead + tail
-            truth.update({"amount": a, "merchant": merchant, "item": item, "tax_id": None})
+            truth.update({"amount": a, "merchant": merchant, "item": item, "taxId": None, "reportNo": None})
         else:
             merchant, items = rng.choice(MERCHANTS[kind]); item = rng.choice(items)
             a = rng.randrange(6, 900) * 10 + rng.choice([0, 5])
@@ -105,7 +106,7 @@ def extract_cases(seed=20261104):
                 if show_tid: lines.append(rng.choice([f"統一編號：{tid}", f"統編 {tid}", f"營利事業統一編號 {tid}"]))
                 lines.append(rng.choice(["謝謝光臨", "本收據為正式收據", "保固 90 天"]))
                 text = "\n".join(lines)
-            truth.update({"amount": a, "merchant": merchant, "item": item, "tax_id": tid if show_tid else None})
+            truth.update({"amount": a, "merchant": merchant, "item": item, "taxId": tid if show_tid else None, "reportNo": None})
         out.append({"id": f"ex{i + 1:02d}", "kind": kind, "text": text, "truth": truth})
     return out
 

@@ -1,6 +1,7 @@
 // Cover's server: the website's API for people, the same actions for their agents (MCP, REST, A2A), PayPal's return
 // URLs and webhooks, the claims desk and the carrier's back office, and the built website. Configure with environment
 // variables (api/.env.example). Without PayPal keys it runs against the PayPal stand-in (pay/mock.js) and says so.
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,6 +18,8 @@ import { pools, CAUSES, lines as ledgerLines } from "./pool.js";
 import { forPerson, onActivity } from "./activity.js";
 import { advance, nowIso, skipped } from "./clock.js";
 import * as receipts from "./proof/receipts.js";
+import * as claims from "./claims.js";
+import * as carrier from "./carrier.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // a small .env reader, so the server needs no package for it
@@ -52,6 +55,9 @@ app.post("/paypal/webhook", express.raw({ type: "*/*", limit: "256kb" }), async 
   } catch (e) { console.error("webhook", e.message); }
 });
 
+// claims carry photos and documents (base64, up to 6 MB each); everything else stays small
+const limitBody = (req, res, next) => next();
+app.use(["/api/claims", "/api/agent/file_claim", "/api/agent/add_claim_evidence", "/mcp"], express.json({ limit: "9mb", verify: (req, res, buf) => { req.rawBody = buf; } }));
 app.use(express.json({ limit: "64kb", verify: (req, res, buf) => { req.rawBody = buf; } }));
 
 // Rate limits: a fixed window per caller (the agent's token when there is one, else the address)
@@ -106,6 +112,39 @@ app.get("/api/tokens", signedIn, (req, res) => res.json(tokensOf(req.person.id))
 app.post("/api/tokens", signedIn, (req, res) => res.json(makeToken(req.person.id, req.body?.label, { scopes: req.body?.scopes, days: req.body?.days, key: req.body?.key })));
 app.delete("/api/tokens/:id", signedIn, (req, res) => res.json({ ok: revoke(req.person.id, req.params.id) }));
 
+// ---- claims ----------------------------------------------------------------------------------------------------------
+app.post("/api/claims", signedIn, limitBody, async (req, res) => send(res, await claims.file(req.person.id, { ...req.body, device: req.headers["x-cover-device"], actor: { kind: "person", person: req.person.id } })));
+app.get("/api/claims", signedIn, (req, res) => res.json(claims.claimsOf(req.person.id).map((c) => claims.view(c))));
+const myClaim = (req, res, next) => { const c = claims.claim(req.params.id); if (!c || c.person !== req.person.id) return res.status(404).json({ error: "claim" }); req.claim = c; next(); };
+app.get("/api/claims/:id", signedIn, myClaim, (req, res) => res.json(claims.view(req.claim)));
+app.post("/api/claims/:id/evidence", signedIn, myClaim, limitBody, async (req, res) => send(res, await claims.addEvidence(req.claim.id, req.body || {}, { actor: { kind: "person", person: req.person.id } })));
+app.post("/api/claims/:id/appeal", signedIn, myClaim, (req, res) => send(res, claims.appeal(req.claim.id, req.person.id, req.body?.why)));
+app.post("/api/claims/:id/withdraw", signedIn, myClaim, (req, res) => send(res, claims.withdraw(req.claim.id, req.person.id)));
+app.get("/api/claims/:id/evidence/:eid", signedIn, myClaim, (req, res) => { const b = claims.evidenceFile(req.claim, req.params.eid); if (!b) return res.status(404).end(); res.type(b[0] === 0x89 ? "png" : "jpeg").send(b); });
+
+// ---- Cover's staff: the claims desk, underwriting, the back office (the demo signs in as staff with one click) -------
+const staffSessions = new Set();
+app.post("/api/auth/staff", (req, res) => { if (!DEMO && req.body?.key !== process.env.ADMIN_TOKEN) return res.status(403).end(); const sid = crypto.randomBytes(24).toString("base64url"); staffSessions.add(sid); res.set("Set-Cookie", `cover_staff=${sid}; HttpOnly; SameSite=Lax; Path=/`).json({ ok: true }); });
+const staff = (req, res, next) => { const sid = (req.headers.cookie || "").match(/(?:^|;\s*)cover_staff=([^;]+)/)?.[1]; if (!sid || !staffSessions.has(sid)) return res.status(401).json({ error: "staff", message: "Sign in as Cover staff." }); next(); };
+app.get("/api/staff/claims", staff, (req, res) => res.json({ queue: claims.queue().map((c) => claims.view(c, { staff: true })), recent: claims.allClaims().slice(-50).reverse().map((c) => claims.view(c, { staff: true })) }));
+app.get("/api/staff/claims/:id", staff, (req, res) => { const c = claims.claim(req.params.id); if (!c) return res.status(404).end(); res.json(claims.view(c, { staff: true })); });
+app.get("/api/staff/claims/:id/evidence/:eid", staff, (req, res) => { const c = claims.claim(req.params.id), b = c && claims.evidenceFile(c, req.params.eid); if (!b) return res.status(404).end(); res.type(b[0] === 0x89 ? "png" : "jpeg").send(b); });
+app.post("/api/staff/claims/:id", staff, async (req, res) => send(res, await claims.adjust(req.params.id, { ...req.body, adjuster: "Cover adjuster" })));
+app.get("/api/staff/underwriting", staff, (req, res) => res.json(policies.allPolicies().filter((p) => p.status === "review").map((p) => ({ ...policies.view(p), answers: p.answers }))));
+app.post("/api/staff/underwriting/:id", staff, async (req, res) => send(res, await policies.review(req.params.id, { approve: !!req.body?.approve, note: req.body?.note })));
+app.get("/api/staff/dashboard", staff, (req, res) => res.json(carrier.dashboard()));
+app.get("/api/staff/exposure", staff, (req, res) => res.json(carrier.exposure()));
+app.get("/api/staff/scenario", staff, (req, res) => res.json(carrier.scenario({ peril: req.query.peril, strength: req.query.strength })));
+app.get("/api/staff/rates", staff, (req, res) => res.json(carrier.filings()));
+app.post("/api/staff/rates", staff, (req, res) => send(res, carrier.fileRate(req.body || {})));
+app.post("/api/staff/rates/:id", staff, (req, res) => send(res, carrier.answerRate(req.params.id, !!req.body?.approve)));
+app.post("/api/staff/close-year", staff, async (req, res) => res.json(await carrier.closeYear()));
+app.get("/api/staff/report", staff, (req, res) => {
+  const d = carrier.dashboard(), rows = [["product", "in_force", "premiums_usd", "refunds_usd", "earned_usd", "claims_paid_usd", "recoveries_usd", "loss_ratio", "claims", "instant", "referred", "denied"]];
+  for (const r of d.products) rows.push([r.product, r.inForce, r.premiums / 100, r.refunds / 100, r.earned / 100, r.claimsPaid / 100, r.recoveries / 100, r.lossRatio ?? "", r.claims, r.instant, r.referred, r.denied]);
+  res.type("text/csv").set("Content-Disposition", `attachment; filename=cover-year-${d.year}.csv`).send(rows.map((r) => r.join(",")).join("\n"));
+});
+
 // ---- transparency: anyone can see where the money is ---------------------------------------------------------------
 app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: p.name, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })) }));
 
@@ -134,7 +173,7 @@ if (pp().mode === "mock") {
 }
 
 // ---- the demo's controls: move Cover's clock, make a premium fail ---------------------------------------------------
-app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); res.json(r); });
+app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); await claims.tick(); res.json(r); });
 app.post("/api/demo/fail-next-premium", signedIn, (req, res) => { if (pp().mode !== "mock") return res.status(404).json({ error: "only with the PayPal stand-in" }); res.json({ ok: pp().failNextCharge(req.person.vault) }); });
 
 // ---- receipts ---------------------------------------------------------------------------------------------------------
@@ -147,7 +186,7 @@ const WEB = path.join(HERE, "../../web/dist");
 app.all(/^\/(\.well-known|api)\//, (req, res) => res.status(404).json({ error: "not_found", message: `Nothing at ${req.path}. Agents: start at /llms.txt.` }));
 if (fs.existsSync(WEB)) { app.use(express.static(WEB)); app.get(/^\/(?!api|mcp|paypal|a2a|mock-paypal|\.well-known).*/, (req, res) => res.sendFile(path.join(WEB, "index.html"))); }
 
-setInterval(() => policies.tick().catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
+setInterval(() => Promise.all([policies.tick(), claims.tick()]).catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
 setInterval(() => receipts.batch().catch((e) => console.error("batch", e.message)), +(process.env.RECEIPT_BATCH_MS || 120e3)).unref();
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);

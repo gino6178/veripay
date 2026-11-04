@@ -1,8 +1,10 @@
 """Score the probe's answers by code (ml/probe/out/*.jsonl from run.py) and write ml/probe/out/results.json.
   qa       JSON valid; the cited clause exists in the product; it is the right one (one of the accepted ids); covered
            right; the answer in Traditional Chinese (no simplified-only characters).
-  extract  JSON valid; each field exactly right (date as YYYY-MM-DD, amount as an integer, merchant, item and tax_id
-           exactly as written, null where there is none); every field right in one answer.
+  extract  JSON valid (the app reader's schema, api/src/reader.js); each field exactly right: date as YYYY-MM-DD,
+           amount as the whole number, merchant, taxId (the seller's) and reportNo exactly as written or null where
+           there is none, and the item among the answer's items; every field right in one answer. Currency is
+           reported apart (TWD or a way of writing it, where there is an amount).
   vision   the same as extract, from the image.
 Self-agreement: for each case, whether its two answers are the same (qa: same clause and covered; extract: every field
 the same). Latency: seconds per answer at the concurrency it was asked with, and for one request alone (solo).
@@ -12,7 +14,8 @@ import collections, json, math, os, re, statistics as st
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SIMPLIFIED = set("们这险赔证医费发时说国对过还给让关图门问间电买卖钱单项补应该实际处认识读写选违规损坏宠货报经济务进连续条护满额质类变确资验检无产账属页么样东车请网历")
-FIELDS = ["date", "amount", "merchant", "item", "tax_id"]
+FIELDS = ["date", "amount", "merchant", "item", "taxId", "reportNo"]  # the app reader's names; item: among the answer's items
+TWD = {"TWD", "NTD", "NT$", "NT", "新臺幣", "新台幣", "台幣", "臺幣", "元"}
 
 def wilson(k, n, z=1.96):
     if not n: return [0, 0]
@@ -70,29 +73,35 @@ def score_qa():
 
 def score_extract(name, case_file):
     cases = {c["id"]: c for c in map(json.loads, open(os.path.join(HERE, case_file), encoding="utf8"))}
-    rs = rows(name); n = len(rs); valid = allright = 0; field = collections.Counter(); kind = collections.defaultdict(lambda: [0, 0]); fails = []; by = collections.defaultdict(dict)
+    rs = rows(name); n = len(rs); valid = allright = 0; field = collections.Counter(); kind = collections.defaultdict(lambda: [0, 0]); fails = []; by = collections.defaultdict(dict); cur = [0, 0]
     for r in rs:
         c = cases[r["id"]]; j = parse(r)
         if j is None: fails.append({"id": r["id"], "sample": r["sample"], "why": "invalid JSON", "got": (r.get("content") or "")[:200]}); by[r["id"]][r["sample"]] = None; kind[c["kind"]][1] += 1; continue
         valid += 1
-        got = {k: norm_field(k, j.get(k)) for k in FIELDS}
+        got = {k: norm_field(k, j.get(k)) for k in FIELDS if k != "item"}
+        items = [str(x).strip() for x in (j.get("items") or [])]
+        got["item"] = c["truth"]["item"] if c["truth"]["item"] in items else items
+        if isinstance(got.get("taxId"), str): got["taxId"] = got["taxId"].strip() or None
+        if isinstance(got.get("reportNo"), str): got["reportNo"] = got["reportNo"].strip() or None
         wrong = [k for k in FIELDS if got[k] != c["truth"][k]]
+        if c["truth"]["amount"] is not None: cur[0] += str(j.get("currency") or "").strip().upper() in {x.upper() for x in TWD}; cur[1] += 1
         for k in FIELDS: field[k] += k not in wrong
         allright += not wrong; kind[c["kind"]][0] += not wrong; kind[c["kind"]][1] += 1
         by[r["id"]][r["sample"]] = json.dumps(got, sort_keys=True, ensure_ascii=False)
         if wrong: fails.append({"id": r["id"], "sample": r["sample"], "kind": c["kind"], "wrong": {k: {"want": c["truth"][k], "got": got[k]} for k in wrong}})
     pairs = [(v[0] == v[1]) for v in by.values() if 0 in v and 1 in v]
     return {"answers": n, "json_valid": rate(valid, n), "all_fields_right": rate(allright, n), "fields": {k: rate(field[k], n) for k in FIELDS},
-            "by_kind": {k: rate(*v) for k, v in kind.items()}, "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
+            "by_kind": {k: rate(*v) for k, v in kind.items()}, "currency_twd": rate(*cur), "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
 
 def main():
-    out = {"qa": score_qa(), "extract": score_extract("extract", "extract_cases.jsonl"), "vision": score_extract("vision", "vision_cases.jsonl"), "solo": timing(rows("solo"))}
+    out = {"qa": score_qa(), "extract": score_extract("extract", "extract_cases.jsonl"), "vision": score_extract("vision", "vision_cases.jsonl"),
+           "vision_app": score_extract("vision_app", "vision_cases.jsonl"), "solo": timing(rows("solo"))}
     json.dump(out, open(os.path.join(HERE, "out", "results.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
     brief = lambda d: {k: (v["rate"] if isinstance(v, dict) and "rate" in v else v) for k, v in d.items() if k not in ("failures", "fields", "by_kind", "timing")}
     print(json.dumps({k: brief(v) if k != "solo" else v for k, v in out.items()}, ensure_ascii=False, indent=1))
     print("extract fields", {k: v["rate"] for k, v in out["extract"]["fields"].items()}, "by kind", {k: v["rate"] for k, v in out["extract"]["by_kind"].items()})
-    print("vision fields", {k: v["rate"] for k, v in out["vision"]["fields"].items()})
-    for k in ("qa", "extract", "vision"): print(k, "timing", out[k]["timing"])
+    for k in ("vision", "vision_app"): print(k, "fields", {f: v["rate"] for f, v in out[k]["fields"].items()})
+    for k in ("qa", "extract", "vision", "vision_app"): print(k, "timing", out[k]["timing"])
 
 if __name__ == "__main__":
     main()

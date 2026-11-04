@@ -32,7 +32,7 @@
  ],
  "addons": [
   { "id": "valuables", "zh": "貴重物品逐項保（含遺失、意外損壞，不扣自負額）", "en": "Valuables listed item by item (loss and accidental damage too, no deductible)", "rate": 0.018, "of": "valuables", "clause": "RT-5.1" },
-  { "id": "devices", "zh": "3C 意外損壞加強（手機、筆電摔壞、進水）", "en": "Device accidental damage (dropped or wet phones and laptops)", "price": 2400, "limit": 200000, "clause": "RT-5.2" }
+  { "id": "devices", "zh": "3C 意外損壞加強（手機、筆電摔壞、進水）", "en": "Device accidental damage (dropped or wet phones and laptops)", "price": 2400, "limit": 200000, "deductible": 5000, "clause": "RT-5.2" }
  ],
  "claims": [
   { "type": "theft", "coverage": "contents", "zh": "東西被偷", "en": "Something was stolen", "evidence": ["police_report", "receipt_or_photo"], "instantMax": 150000, "clause": "RT-2.1" },
@@ -61,7 +61,7 @@
   { "id": "RT-4.3", "kind": "condition", "zh": "單件物品超過 1,500 美元而未加保 RT-5.1 者，以 1,500 美元為上限；無法提供購買證明的物品，以同類物品的市價為準。", "en": "A single item over $1,500 that isn't listed under RT-5.1 is paid up to $1,500; an item with no proof of purchase is paid at the market price of similar items." },
   { "id": "RT-4.4", "kind": "condition", "zh": "每一事故扣除一次自負額。同一原因在 72 小時內造成的多項損失視為同一事故。", "en": "One deductible per event. Losses from one cause within 72 hours are one event." },
   { "id": "RT-5.1", "kind": "addon", "zh": "加保的貴重物品逐項列在保單上，以列載金額為上限；保障範圍擴及遺失和意外損壞，且不扣自負額。", "en": "Listed valuables are each covered up to the amount listed, including loss and accidental damage, with no deductible." },
-  { "id": "RT-5.2", "kind": "addon", "zh": "3C 意外損壞加強：你的手機、平板、筆電因掉落、碰撞或液體造成損壞，我們支付維修費，無法維修時依重置成本理賠，每年合計最高 2,000 美元，每件每年以兩次為限。", "en": "Device accidental damage: when your phone, tablet or laptop is damaged by a drop, a knock or liquid, we pay the repair, or replacement cost if it can't be repaired, up to $2,000 a year and twice a year per device." },
+  { "id": "RT-5.2", "kind": "addon", "zh": "3C 意外損壞加強：你的手機、平板、筆電因掉落、碰撞或液體造成損壞，我們支付維修費，無法維修時依重置成本理賠，每年合計最高 2,000 美元，每件每年以兩次為限。每次自負額 50 美元（不適用 RT-4.4 的自負額）。", "en": "Device accidental damage: when your phone, tablet or laptop is damaged by a drop, a knock or liquid, we pay the repair, or replacement cost if it can't be repaired, up to $2,000 a year and twice a year per device. The deductible is $50 a claim (instead of the policy's deductible under RT-4.4)." },
   { "id": "RT-6.1", "kind": "policy", "zh": "保費可月繳或年繳。月繳扣款失敗時，你有 14 日寬限期，期間保障照常；逾期未繳，保單自寬限期屆滿日起停效，補繳後復效，停效期間發生的事故不予理賠。", "en": "Pay monthly or yearly. If a monthly payment fails you have 14 days' grace with cover as usual; unpaid after that, the policy lapses from the end of the grace period and is reinstated when paid, but events while lapsed are not covered." },
   { "id": "RT-6.2", "kind": "policy", "zh": "你可以隨時退保，我們依未經過的日數退還保費，不收手續費。保單內容可隨時變更，變更後立即重新計價，多退少補。", "en": "Cancel any time: we refund the premium for the days left, with no fee. Change the policy any time: it is priced again at once, and we refund or charge the difference." },
   { "id": "RT-6.3", "kind": "policy", "zh": "保費的 20% 為 Cover 的固定費用，其餘進入理賠池，用於理賠與再保險。年度結算後，你所選公益組別的理賠池若有剩餘，捐給該公益團體，不退還給個人。", "en": "20% of the premium is Cover's flat fee; the rest goes to the claims pool, for claims and reinsurance. After the year closes, what is left in the pool of your chosen cause's group is given to that cause, not refunded to anyone." }

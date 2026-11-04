@@ -8,6 +8,7 @@ import crypto from "node:crypto";
 import { product } from "./products/index.js";
 import { zoneOf, ZONE_FACTOR } from "./zones.js";
 import { store, stateFile } from "./store.js";
+import { now, nowIso } from "./clock.js";
 
 export const FEE = 0.2;
 // the share of expected claims the reinsurer charges to take the catastrophe layer (typhoon and quake on one
@@ -89,7 +90,8 @@ function expected(p, a, zone, addons) {
     if (f !== 1) why.push({ factor: `zone.${kind}`, value: `${zone.district || zone.city || "Taiwan"}: level ${zone[kind]}`, times: f });
     x *= f;
   }
-  let claims = Math.round(base * x);
+  let claims = Math.round(base * x * (pr.rateChange || 1));
+  if (pr.rateChange && pr.rateChange !== 1) why.push({ factor: "rate", value: "approved rate change", times: +pr.rateChange.toFixed(3) });
   // add-ons: a fixed price, or a rate of an amount the person gave (their valuables)
   const extra = [];
   for (const id of addons) {
@@ -120,7 +122,7 @@ export function quote(productId, answers, { addons = [], person = null, lang = "
   const fee = Math.round(annual * FEE), pool = annual - fee;
   const q = {
     id: `q_${crypto.randomBytes(5).toString("hex")}`, product: p.id, person, answers: a, addons: addonIds, zone,
-    annual, monthly: annual / 12, decision: uw.decision, created: new Date().toISOString(), expires: new Date(Date.now() + QUOTE_MS).toISOString(),
+    annual, monthly: annual / 12, decision: uw.decision, created: nowIso(), expires: new Date(now() + QUOTE_MS).toISOString(),
     breakdown: { expectedClaims: claims, reinsurance, poolExtra: pool - claims - reinsurance, fee },
     why: est ? est.why : e.why, priced: est ? `Cover-Risk ${est.version}` : "product factors",
     coverages: limits(p, a, addonIds),

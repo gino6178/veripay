@@ -41,7 +41,7 @@ export async function buy(personId, { quote: qid, plan = "monthly", billing = "v
     if (!b.length || b.reduce((t, x) => t + (+x.share || 0), 0) !== 100 || b.some((x) => !String(x.name || "").trim())) return { error: "beneficiaries", message: "Name at least one beneficiary, with shares adding up to 100 (beneficiaries: [{ name, relation, share }])." };
   }
   const id = `pol_${crypto.randomBytes(5).toString("hex")}`;
-  const pol = { id, person: personId, product: q.product, quote: q.id, answers: q.answers, addons: q.addons, zone: q.zone, annual: q.annual, monthly: q.monthly,
+  const pol = { id, person: personId, product: q.product, quote: q.id, answers: q.answers, addons: q.addons, zone: q.zone, annual: q.annual, monthly: q.monthly, reinsShare: q.breakdown.reinsurance / q.annual,
     coverages: q.coverages, deductible: q.deductible, plan, billing, cause: cause && cause in CAUSES ? cause : who.cause || DEFAULT_CAUSE,
     beneficiaries: p.beneficiaries ? beneficiaries.map((x) => ({ name: String(x.name).slice(0, 60), relation: String(x.relation || "").slice(0, 30), share: +x.share })) : undefined,
     items: Array.isArray(items) ? items.slice(0, 20).map((x) => ({ what: String(x.what || "").slice(0, 80), value: Math.round(+x.value * 100) || 0 })) : undefined,
