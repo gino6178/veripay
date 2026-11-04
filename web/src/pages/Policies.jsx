@@ -20,13 +20,13 @@ export default function Policies() {
   if (me === null) return <div className="empty"><p>{t("登入後就能看到你的保單。", "Sign in to see your policies.")}</p><Link className="btn" to="/signin?next=/policies" style={{ marginTop: 16 }}>{t("登入", "Sign in")}</Link></div>;
   return (
     <div className="stack-l">
-      <div className="row between"><h1>{t("我的保單", "My policies")}</h1><Link to="/quote" className="btn accent sm">{t("再保一個", "Cover something else")}</Link></div>
+      <div className="page-head" style={{ marginBottom: 0 }}><h1>{t("我的保單", "My policies")}</h1><Link to="/quote" className="btn accent">{t("再保一個", "Cover something else")} →</Link></div>
       {pol.data?.length === 0 && <div className="empty card">{t("還沒有保單。", "No policies yet.")} <Link to="/quote" className="link">{t("90 秒投保", "Get covered in 90 seconds")}</Link></div>}
       <div className="grid">{(pol.data || []).map((p) => (
         <Link key={p.policy} to={`/policies/${p.policy}`} className="card link-card stack-s">
-          <div className="row between"><span className="glyph" style={{ color: "var(--accent)" }}><Icon name={p.product} /></span><Status s={p.status} /></div>
-          <h3>{p.name}</h3><p className="small muted mono">{p.number}</p>
-          <p className="num">{p.price}</p>
+          <div className="row between"><span className="data">{p.number}</span><Status s={p.status} /></div>
+          <h3 style={{ fontSize: 26 }}>{p.name}</h3>
+          <p className="big" style={{ fontSize: 40 }}>{p.monthly}<span className="data" style={{ marginLeft: 8 }}>{p.plan === "yearly" ? t(`年繳 ${p.annual}`, `${p.annual} / YEAR`) : t("/ 月", "/ MONTH")}</span></p>
           {p.status === "grace" && <p className="tiny" style={{ color: "var(--warn)" }}>{t(`請在 ${day(p.graceUntil)} 前繳費`, `Pay by ${day(p.graceUntil)}`)}</p>}
         </Link>))}</div>
       {cl.data?.length > 0 && <section className="stack"><h2>{t("理賠", "Claims")}</h2>
@@ -52,12 +52,12 @@ export function PolicyPage({ id }) {
   return (
     <div className="grid-2">
       <div className="stack">
-        <div className="row"><span className="glyph" style={{ color: "var(--accent)" }}><Icon name={p.product} size={28} /></span><div><h1>{p.name}</h1><p className="mono small muted">{p.number}</p></div><Status s={p.status} /></div>
+        <div className="page-head" style={{ marginBottom: 8 }}><div><p className="data">{p.number}</p><h1>{p.name}</h1></div><Status s={p.status} /></div>
         {cancelled && p.status === "awaiting_payment" && <div className="note warn">{t("付款沒有完成。你可以再試一次。", "The payment wasn't completed. You can try again.")}</div>}
         {p.approveUrl && <a className="btn paypal" href={p.approveUrl}>{t("在 PayPal 付第一期保費", "Pay the first premium in PayPal")}</a>}
         {p.status === "grace" && <div className="note warn stack-s"><b>{t("這期保費扣款失敗", "This premium couldn't be charged")}</b><p>{t(`保障照常到 ${day(p.graceUntil)}。PayPal 已寄出繳費單，繳了就恢復正常。`, `You're still covered until ${day(p.graceUntil)}. PayPal sent an invoice; paying it puts things right.`)}</p>{p.invoice && <a className="btn paypal sm" href={p.invoice}>{t("繳費", "Pay the invoice")}</a>}</div>}
         {p.status === "lapsed" && <div className="note bad stack-s"><b>{t("保單已停效", "This policy has lapsed")}</b><p>{t("停效期間發生的事故不理賠。繳清就復效。", "Nothing that happens while it is lapsed is covered. Paying reinstates it.")}</p>{p.invoice && <a className="btn paypal sm" href={p.invoice}>{t("繳費復效", "Pay to reinstate")}</a>}</div>}
-        <div className="card stack">
+        <div className="card marks stack">
           <dl className="kv">
             <dt>{t("保費", "Premium")}</dt><dd className="num">{p.price}</dd>
             <dt>{t("期間", "Cover")}</dt><dd>{day(p.start)} → {day(p.end)}</dd>
@@ -71,7 +71,7 @@ export function PolicyPage({ id }) {
           {p.items && <p className="small">{t("逐項保", "Listed")}: {p.items.map((x) => `${x.what} ${x.value}`).join("、")}</p>}
         </div>
         {["active", "grace"].includes(p.status) && <div className="row">
-          <Link className="btn accent" to={`/claim/new/${p.policy}`}><Icon name="bolt" size={18} /> {t("報理賠", "Make a claim")}</Link>
+          <Link className="btn accent" to={`/claim/new/${p.policy}`}>{t("報理賠", "Make a claim")} <span className="arrow">→</span></Link>
           {!confirmCancel ? <button className="btn ghost" onClick={() => setConfirmCancel(true)}>{t("退保", "Cancel")}</button>
             : <><button className="btn danger" disabled={busy} onClick={() => act("cancel")}>{t("確定退保（沒用到的天數會退款）", "Cancel now (unused days refunded)")}</button><button className="btn ghost" onClick={() => setConfirmCancel(false)}>{t("不要", "Keep it")}</button></>}
         </div>}

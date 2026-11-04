@@ -15,7 +15,7 @@ export default function Desk() {
   const sel = open && [...(desk.data?.queue || []), ...(desk.data?.recent || [])].find((c) => c.claim === open);
   return (
     <div className="stack-l">
-      <div className="row between"><h1>{t("理賠審核台", "Claims desk")}</h1><button className="btn ghost sm" onClick={() => { desk.reload(); uw.reload(); }}>{t("重新整理", "Refresh")}</button></div>
+      <div className="page-head" style={{ marginBottom: 0 }}><h1>{t("理賠審核台", "Claims desk")}</h1><button className="btn ghost sm" onClick={() => { desk.reload(); uw.reload(); }}>{t("重新整理", "Refresh")}</button></div>
       <div className="grid-2">
         <div className="stack">
           <h3>{t(`待處理（${desk.data?.queue.length ?? 0}）`, `Waiting (${desk.data?.queue.length ?? 0})`)}</h3>
@@ -33,7 +33,7 @@ export default function Desk() {
 
 function Row({ c, on, pick }) {
   const n = Array.isArray(c.decision?.signals) ? c.decision.signals.length : 0;
-  return <button className={`card row between ${on ? "" : ""}`} style={{ textAlign: "left", border: 0, cursor: "pointer", width: "100%", outline: on ? "2px solid var(--accent)" : "none" }} onClick={pick}>
+  return <button className={`deskrow ${on ? "on" : ""}`} aria-pressed={on} onClick={pick}>
     <span><b>{c.what}</b> <span className="mono tiny muted">{c.number}</span><br /><span className="tiny muted">{when(c.reportedAt)} · {c.claimed}</span></span>
     <span className="row" style={{ gap: 6 }}>{n > 0 && <span className="badge warn">⚑ {n}</span>}{c.appeal === "open" && <span className="badge agent">appeal</span>}<Status s={c.status} /></span>
   </button>;

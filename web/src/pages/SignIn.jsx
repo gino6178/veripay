@@ -11,7 +11,7 @@ export default function SignIn() {
   // and fraud.js flags one device behind several policyholders)
   const go = async (e) => { e.preventDefault(); setBusy(true); try { try { localStorage.removeItem("cover.device"); } catch {} await api("/api/auth/demo", { method: "POST", body: { name, email: email || null, lang } }); await reload(); navigate(back); } catch (err) { toast(err.message); } setBusy(false); };
   return (
-    <form className="card stack" style={{ maxWidth: 460, margin: "0 auto" }} onSubmit={go}>
+    <form className="card marks stack" style={{ maxWidth: 480, margin: "48px auto" }} onSubmit={go}>
       <h1>{t("開始使用 Cover", "Start with Cover")}</h1>
       <p className="muted small">{t("這是示範：只要名字就能開始。理賠款會付到你填的 PayPal email。", "This is a demo: a name is enough. Claims are paid to the PayPal email you give.")}</p>
       <label className="field"><span>{t("你的名字", "Your name")}</span><input className="input" value={name} onChange={(e) => setName(e.target.value)} required autoFocus /></label>

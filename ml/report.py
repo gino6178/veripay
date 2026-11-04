@@ -7,7 +7,7 @@ For each student (a predictions file from train.py --eval or eval_gguf.py):
   agreement with Glimmer: with each of its answers and with its majority answer;
   against code: the verdict right; the planted errors caught (recall: verdict not ok, picked not ok) and the false
     alarms (verdict ok, picked not ok);
-  applies: precision and recall of the clauses it reads as applying (P >= 0.5) against the rule engine;
+  checks: precision and recall of the checks it reads as passing (P >= 0.5) against the claim engine;
   selective: at each confidence threshold, the share of cases it answers (coverage) and its agreement there; the
     threshold is set on the validation cases as the lowest at which agreement with Glimmer there is at least Glimmer's
     agreement with itself;
@@ -17,7 +17,7 @@ Every rate has a 95% Wilson interval.
 """
 import argparse, collections, itertools, json, math, statistics as st, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from prompt import label_of
+from prompt import label_of, marker_keys, marker_truth
 
 def wilson(k, n, z=1.96):
     if not n: return [0, 0]
@@ -89,7 +89,9 @@ def main():
     pairs = [(x == y) for ys in labels.values() for x, y in itertools.combinations(ys, 2)]
     first = {i: ys[0] for i, ys in labels.items()}
     sec = [r["seconds"] for r in rows if r.get("answer")]; tok = [r["tokens"] for r in rows if r.get("tokens")]
-    gap = [{"applies_p": {k: (1.0 if k.split(":")[0] in r["answer"]["applies"] else 0.0) for k in cases[r["id"]]["applies"]}, "applies": cases[r["id"]]["applies"]} for r in rows if r.get("answer")]
+    # Glimmer's own reading of the checks, against the engine's
+    gap = [{"applies_p": {k: (1.0 if (r["answer"].get("checks") or {}).get(k) else 0.0) for k in marker_keys(cases[r["id"]])}, "applies": {k: marker_truth(cases[r["id"]], k) for k in marker_keys(cases[r["id"]])}}
+           for r in rows if r.get("answer") and isinstance(r["answer"].get("checks"), dict)]
     G = {"cases": len(labels), "answers": len(rows), "self_agreement": rate(sum(pairs), len(pairs)), "against_code_first_answer": against_code(first, cases), "applies": applies_pr(gap) if gap else None,
          "seconds_p50": pct(sec, .5), "seconds_p95": pct(sec, .95), "prompt_tokens_mean": round(st.mean(t["prompt"] for t in tok)) if tok else None,
          "output_tokens_mean": round(st.mean(t["output"] for t in tok)) if tok else None, "errors": sum(1 for r in rows if r.get("error"))}

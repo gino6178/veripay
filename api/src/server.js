@@ -170,7 +170,11 @@ app.get("/api/staff/report", staff, (req, res) => {
 app.get("/api/stats", (req, res) => {
   const all = claims.allClaims(), instant = all.filter((c) => c.status === "paid" && c.decision?.by === "rules").map((c) => c.secondsToPay).sort((a, b) => a - b);
   res.json({ policies: policies.allPolicies().filter((p) => p.start).length, claimsPaid: all.filter((c) => c.status === "paid").length, instantPaid: instant.length, medianSecondsToPay: instant.length ? instant[Math.floor(instant.length / 2)] : null,
-    givenBack: carrier.givebacks().reduce((t, g) => t + (g.payout ? g.amount : 0), 0), poolsNow: pools().reduce((t, p) => t + Math.max(0, p.balance), 0) });
+    givenBack: carrier.givebacks().reduce((t, g) => t + (g.payout ? g.amount : 0), 0), poolsNow: pools().reduce((t, p) => t + Math.max(0, p.balance), 0),
+    // the latest claim paid without a person, as the front page shows it: what kind, its checks, the amount, the seconds (no one's name)
+    last: (() => { const c = all.filter((x) => x.status === "paid" && x.decision?.by === "rules").at(-1); if (!c) return null; const ct = product(c.product).claims.find((x) => x.type === c.type);
+      return { what: { zh: ct.zh, en: ct.en }, product: c.product, amount: c.paid, seconds: c.secondsToPay, checks: c.decision.checks.map((x) => ({ id: x.id, clause: x.clause })), payout: c.payout?.batchId, at: c.paidAt }; })(),
+    premiums: pools().reduce((t, p) => t + p.premiums, 0), claimsPaidAmount: pools().reduce((t, p) => t + p.claims, 0) });
 });
 // ---- transparency: anyone can see where the money is ---------------------------------------------------------------
 app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: { zh: p.name.zh, en: p.name.en }, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })),

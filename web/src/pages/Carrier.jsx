@@ -18,7 +18,7 @@ export default function Carrier() {
   const close = async () => { setBusy(true); try { const g = await api("/api/staff/close-year", { method: "POST" }); toast(t(`年度結算完成：捐出 ${usd(g.reduce((s, x) => s + (x.payout ? x.amount : 0), 0))}`, `Year closed: ${usd(g.reduce((s, x) => s + (x.payout ? x.amount : 0), 0))} given`)); dash.reload(); } catch (e) { toast(e.message); } setBusy(false); };
   return (
     <div className="stack-l">
-      <div className="row between"><div><h1>{t("保險公司後台", "Back office")}</h1><p className="muted small">{t(`第 ${d?.year ?? "—"} 年 · 全部從帳本、保單和理賠算出來`, `Year ${d?.year ?? "—"} · all counted from the ledger, policies and claims`)}</p></div><a className="btn ghost sm" href="/api/staff/report">{t("下載監理報表 CSV", "Download the regulator's CSV")}</a></div>
+      <div className="page-head" style={{ marginBottom: 0 }}><div><h1>{t("後台", "Back office")}</h1><p className="muted small">{t(`第 ${d?.year ?? "—"} 年 · 全部從帳本、保單和理賠算出來`, `Year ${d?.year ?? "—"} · all counted from the ledger, policies and claims`)}</p></div><a className="btn ghost sm" href="/api/staff/report">{t("下載監理報表 CSV", "Download the regulator's CSV")}</a></div>
       {d && <div className="stat-row" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
         <div className="stat"><b>{usd(d.total.earned)}</b><span>{t("已收保費（扣退費）", "Premiums earned (less refunds)")}</span></div>
         <div className="stat"><b>{usd(d.total.claimsPaid)}</b><span>{t("理賠支出", "Claims paid")}</span></div>

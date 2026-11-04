@@ -6,14 +6,15 @@ Losses, at positions code knows (no text is generated):
            case (a distribution when Glimmer was asked more than once): distillation of the teacher's verdict.
            --target code trains on code's verdict instead (known by construction in ml/cases.mjs), and --target mix
            puts weight --code_w on code's verdict and the rest on Glimmer's distribution;
-  applies  two-way cross-entropy (" yes" against " no") at every clause's marker, against the rule engine's truth.
+  checks   two-way cross-entropy (" yes" against " no") at every check's "ok?" marker, against the claim engine's own result.
    python3 ml/train.py --train d1,d2 --val d3 --out runs/x [--base ~/models/meta-1b] [--epochs 3] [--target teacher]
    python3 ml/train.py --eval runs/x --test d4 --pred out.jsonl     (score a saved adapter on held-out cases)
+   python3 ml/train.py --eval base --test d4 --pred out.jsonl       (the untuned base, the same prompt and options)
 """
 import argparse, json, math, os, random, sys, time, collections
 import torch, torch.nn.functional as F
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from prompt import Builder, VERDICTS, clause_texts, label_of
+from prompt import Builder, VERDICTS, clause_texts, label_of, marker_truth
 
 PRODUCTS = os.environ.get("COVER_PRODUCTS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "api", "src", "products"))
 
@@ -43,7 +44,7 @@ class Data:
             tgt /= tgt.sum()
             if self.target == "mix": tgt = self.code_w * code + (1 - self.code_w) * tgt
         return {"ids": x["ids"], "answer": x["answer"], "letters": [self.b.letter[l] for l, _ in x["options"]], "target": tgt,
-                "markers": [p for _, p in x["markers"]], "mlabels": [1 if c["applies"][k] else 0 for k, _ in x["markers"]], "mids": [k for k, _ in x["markers"]]}
+                "markers": [p for _, p in x["markers"]], "mlabels": [1 if marker_truth(c, k) else 0 for k, _ in x["markers"]], "mids": [k for k, _ in x["markers"]]}
 
 def pad(seqs, val):
     n = max(len(s) for s in seqs)
@@ -80,7 +81,7 @@ def predict(model, data, items, dev, bs=8):
             p = F.softmax((h[i, e["answer"]] @ W[e["letters"]].T).float(), -1).tolist()
             pa = F.softmax((h[i, e["markers"]] @ W[[data.b.yes, data.b.no]].T).float(), -1)[:, 0].tolist() if e["markers"] else []
             rows.append({"id": c["id"], "probs": {v: round(q, 4) for v, q in zip(VERDICTS, p)}, "applies_p": dict(zip(e["mids"], [round(q, 4) for q in pa])),
-                         "applies": c["applies"], "verdict": c["verdict"], "glimmer": dict(n)})
+                         "applies": {k: marker_truth(c, k) for k in e["mids"]}, "verdict": c["verdict"], "glimmer": dict(n)})
     model.train()
     return rows
 
@@ -113,7 +114,7 @@ def main():
     tok = AutoTokenizer.from_pretrained(a.base)
     model = AutoModelForCausalLM.from_pretrained(a.base, torch_dtype=torch.bfloat16).to(dev)
     if a.eval:
-        model = PeftModel.from_pretrained(model, a.eval).to(dev)
+        if a.eval != "base": model = PeftModel.from_pretrained(model, a.eval).to(dev)  # "base": the untuned model, the same prompt
         d = Data(tok); items = load(a.test, need_teacher=False)
         t0 = time.time(); rows = predict(model, d, items, dev)
         s = summarize(rows); s["seconds"] = round(time.time() - t0, 1); print(json.dumps(s), flush=True)

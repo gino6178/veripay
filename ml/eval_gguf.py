@@ -5,7 +5,7 @@ both.
 """
 import argparse, collections, json, os, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from prompt import label_of
+from prompt import label_of, marker_truth
 from worker import Model, Tok
 
 def main():
@@ -28,7 +28,7 @@ def main():
         for i in ids:
             c = cases[i]; t0 = time.time()
             r = M.audit(c)
-            f.write(json.dumps({"id": i, "probs": {o["verdict"]: o["p"] for o in r["options"]}, "applies_p": r["applies_p"], "applies": c["applies"], "verdict": c["verdict"],
+            f.write(json.dumps({"id": i, "probs": {o["verdict"]: o["p"] for o in r["options"]}, "applies_p": r["applies_p"], "applies": {k: marker_truth(c, k) for k in r["applies_p"]}, "verdict": c["verdict"],
                                 "glimmer": dict(lab[i]), "ms": r["ms"], "wall_ms": round((time.time() - t0) * 1000, 1), "tokens": r["tokens"]}, ensure_ascii=False) + "\n"); f.flush()
     print("EVAL_DONE", len(ids))
 

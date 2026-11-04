@@ -2,8 +2,9 @@
 serving worker, so the three see the same tokens). Ported from Serve's jev/prompt.py.
 
 One forward pass reads it and returns, in parallel:
-  - for every clause the claim can turn on, P(applies) at that clause's "applies?" marker (the logits of " yes" against
-    " no"): the student's own reading of the rules, made before it sees the options;
+  - for each check the claim engine runs (in force, waiting period, covered, reported in time, police within 24 hours,
+    documents read) and "no fraud signal", P(ok) at that check's "ok?" marker (the logits of " yes" against " no"):
+    the student's own reading of the rules, made before it sees the options; the truth is the engine's;
   - at the last position, a distribution over the declared verdicts only (single-token letters):
       A ok, B overpay, C underpay, D wrong_clause, E human (it should have gone to a person).
 The prompt is token ids put together segment by segment, so the marker positions are known exactly.
@@ -19,6 +20,11 @@ SAY = {"ok": "the decision is right", "overpay": "it pays too much", "underpay":
 
 def usd(c): return f"${c / 100:,.2f}".replace(".00", "")
 
+# the engine's checks (api/src/claims.js decide()) and its fraud signals, as the student's markers
+CHECK_ZH = {"in_force": "事發時保單有效", "waiting": "已過等待期", "covered": "保單有此保障", "reported": "90 日內申請", "police_24h": "24 小時內報警",
+            "documents_read": "文件已讀出", "signal": "沒有防詐訊號"}
+OUTCOME_ZH = {"pay": "即時賠付", "deny": "不賠", "refer": "轉人工審核"}
+
 def clause_texts(products_dir):
     """{clause id: zh text} for every product (cover/api/src/products/*.json)."""
     import glob, os
@@ -27,16 +33,20 @@ def clause_texts(products_dir):
         for c in json.load(open(f, encoding="utf8")).get("clauses", []): out[c["id"]] = c["zh"]
     return out
 
+def marker_keys(case):
+    return [k for k in CHECK_ZH if k in case["applies"]]
+
+def marker_truth(case, k):
+    """The engine's answer at a marker: the check passed, or (signal) no fraud signal fired."""
+    return (not case["applies"]["signal"]) if k == "signal" else bool(case["applies"][k])
+
 def segments(case, texts):
-    """[(text, role)]: role 'marker:<clause key>' for the token where that clause's applies? is read."""
+    """[(text, role)]: role 'marker:<check>' for the token where that check's ok? is read."""
     d = case["decision"]
-    segs = [(f"{case['facts']}\n決定：賠 {usd(d['pay'])}，依 {d['clause']}，{'即時賠付' if d['route'] == 'instant' else '轉人工審核'}。\n條款：", None)]
-    for key in case["clauses"]:
-        cid, _, extra = key.partition(":")
-        t = texts.get(cid, "")
-        if extra == "report24h": t = "竊盜須於發現後 24 小時內報警。"
-        segs.append((f"\n[{cid}] {t} applies", None))
-        segs.append(("?", f"marker:{key}"))
+    segs = [(f"{case['facts']}\n決定：{OUTCOME_ZH[d['outcome']]}，{usd(d['amount'])}，依 {d['clause']}（{texts.get(d['clause'], '')[:60]}）。\n檢查：", None)]
+    for k in marker_keys(case):
+        segs.append((f"\n{CHECK_ZH[k]} ok", None))
+        segs.append(("?", f"marker:{k}"))
     segs.append(("\nVerdict: " + ", ".join(f"{l} = {SAY[v]}" for l, v in zip(LETTERS, VERDICTS)) + ".\nAnswer:", None))
     return segs
 

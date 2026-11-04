@@ -46,7 +46,7 @@ export default function App() {
     <Lang.Provider value={{ lang, set: setLang }}>
       <Me.Provider value={{ me, reload, info, toast, setInfo }}>
         <Header path={path} />
-        <main className="main">{routes(path)}</main>
+        <main className={path.split("?")[0] === "/" ? "main bleed" : "main"}>{routes(path)}</main>
         <Footer />
         <Demo />
         {msg && <div className="toast" role="status">{msg}</div>}
@@ -58,25 +58,23 @@ export default function App() {
 function Header({ path }) {
   const t = useT(), { me } = useMe(), { lang, set } = useContext(Lang);
   const on = (p) => (path === p || (p !== "/" && path.startsWith(p)) ? "on" : undefined);
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "");
-  const flip = () => { const next = theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = next; setTheme(next); try { localStorage.setItem("cover.theme", next); } catch {} };
   return (
     <header className="top">
       <div className="top-in">
-        <Link to="/" className="brand"><span className="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M18 8.5a7 7 0 1 0 0 7" /></svg></span>Cover</Link>
+        <Link to="/" className="brand" aria-label="Cover"><svg className="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true"><path d="M19 7.5A8 8 0 1 0 19 16.5" /><path d="M12 9v6M9 12h6" strokeWidth="1.6" /></svg>Cover</Link>
         <nav className="nav" aria-label={t("主要", "Main")}>
           <Link to="/quote" className={on("/quote")}>{t("投保", "Get covered")}</Link>
           <Link to="/policies" className={on("/policies")}>{t("我的保單", "My policies")}</Link>
           <Link to="/activity" className={on("/activity")}>{t("紀錄", "Activity")}</Link>
-          <Link to="/connect" className={on("/connect")}>{t("我的 AI agent", "My agent")}</Link>
-          <Link to="/transparency" className={on("/transparency")}>{t("錢去哪了", "Where the money goes")}</Link>
+          <Link to="/connect" className={on("/connect")}>{t("AI agent", "AI agent")}</Link>
+          <Link to="/transparency" className={on("/transparency")}>{t("帳本", "Ledger")}</Link>
+          <span className="sep" aria-hidden="true" />
           <Link to="/desk" className={`staff ${on("/desk") || ""}`}>{t("理賠審核", "Claims desk")}</Link>
-          <Link to="/carrier" className={`staff ${on("/carrier") || ""}`}>{t("保險公司後台", "Back office")}</Link>
+          <Link to="/carrier" className={`staff ${on("/carrier") || ""}`}>{t("後台", "Back office")}</Link>
         </nav>
-        <div className="row" style={{ gap: 6 }}>
-          <button className="btn ghost sm" onClick={() => set(lang === "en" ? "zh" : "en")} aria-label="Language">{lang === "en" ? "中文" : "EN"}</button>
-          <button className="btn ghost sm" onClick={flip} aria-label={t("切換深淺色", "Switch theme")}><Icon name={theme === "dark" ? "sun" : "moon"} size={16} /></button>
-          {me ? <Link to="/policies" className="btn sm">{me.name}</Link> : <Link to="/signin" className="btn sm">{t("登入", "Sign in")}</Link>}
+        <div className="row" style={{ gap: 8 }}>
+          <button className="btn sm" onClick={() => set(lang === "en" ? "zh" : "en")} aria-label="Language">{lang === "en" ? "中文" : "EN"}</button>
+          {me ? <Link to="/policies" className="btn sm">{me.name}</Link> : <Link to="/signin" className="btn sm accent">{t("登入", "Sign in")}</Link>}
         </div>
       </div>
     </header>
@@ -88,7 +86,7 @@ function Footer() {
   return (
     <footer className="foot"><div className="foot-in">
       <span>{t("Cover 是在 PayPal 沙盒上的示範，不是持牌保險公司，不販售真實保險。", "Cover is a demonstration on PayPal's sandbox. It is not a licensed insurer and sells no real insurance.")}</span>
-      <span>{info ? `PayPal: ${info.paypal === "mock" ? t("模擬（沒有沙盒金鑰）", "simulated (no sandbox keys)") : "sandbox"}` : ""} · <a href="/llms.txt">llms.txt</a> · <a href="/.well-known/mcp.json">MCP</a></span>
+      <span>{info ? `PAYPAL ${info.paypal === "mock" ? t("模擬", "SIMULATED") : "SANDBOX"}` : ""} · <a href="/llms.txt">LLMS.TXT</a> · <a href="/.well-known/mcp.json">MCP</a> · <a href="/.well-known/cover-receipts.json">{t("收據公鑰", "RECEIPT KEYS")}</a></span>
     </div></footer>
   );
 }
@@ -108,7 +106,7 @@ function Demo() {
         {me && info.paypal === "mock" && <button className="btn ghost sm" disabled={busy} onClick={() => run(async () => { await api("/api/demo/fail-next-premium", { method: "POST" }); toast(t("下一期保費會扣款失敗", "The next premium will be declined")); })}>{t("讓下一期保費扣款失敗", "Make the next premium fail")}</button>}
         <button className="btn ghost sm" disabled={busy} onClick={() => run(async () => { await api("/api/auth/staff", { method: "POST", body: {} }); toast(t("已用 Cover 員工身分登入", "Signed in as Cover staff")); navigate("/desk"); })}>{t("以員工身分登入（審核台、後台）", "Sign in as staff (desk, back office)")}</button>
       </div>}
-      <button className="demo-btn" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={t("示範控制台", "Demo panel")}>{open ? <Icon name="x" size={20} /> : "⏱"}</button>
+      <button className="demo-btn" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={t("示範控制台", "Demo panel")}>{open ? t("關閉", "Close") : t("示範控制", "Demo")}</button>
     </div>
   );
 }

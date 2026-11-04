@@ -17,8 +17,8 @@ export default function Connect() {
   return (
     <div className="grid-2">
       <div className="stack">
-        <h1>{t("我的 AI agent", "My AI agent")}</h1>
-        <p className="muted">{t("讓你自己的 agent（例如 Claude）透過 MCP 幫你報價、投保、報理賠。它能做什麼由這頁決定，agent 自己改不了。", "Let your own agent (Claude, for example) quote, buy and claim for you over MCP. What it may do is set here, and the agent can't change it.")}</p>
+        <h1>{t("AI agent", "AI agent")}</h1>
+        <p className="lede">{t("讓你自己的 agent（例如 Claude）透過 MCP 幫你報價、投保、報理賠。它能做什麼由這頁決定，agent 自己改不了。", "Let your own agent (Claude, for example) quote, buy and claim for you over MCP. What it may do is set here, and the agent can't change it.")}</p>
         {l && <div className="card stack">
           <h3>{t("限制", "Limits")}</h3>
           <label className="field"><span>{t("agent 每月最多能幫你增加的保費（所有保單合計，USD）", "The most your agent may add to your premiums a month, all policies (USD)")}</span><input className="input" type="number" min="0" step="1" value={l.monthlyMax} onChange={(e) => setL({ ...l, monthlyMax: e.target.value })} /></label>

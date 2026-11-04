@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# The teacher runs for Cover-Audit, in order (on the A100 VM, against its own Ollama with Muse Glimmer), ported from
-# Serve's jev/run_teacher.sh:
-#   test   500 audit cases (seed 7), 3 answers each (Glimmer's own agreement is the ceiling for the student)
-#   val    300 cases (seed 19), 2 answers each (for the confidence threshold)
-#   train  4000 cases (seed 11), 1 answer each
-# A step whose answers are all there is quick (teacher.mjs resumes, and asks again for any answer that never came).
+# The teacher runs, in order (on the A100 VM, against its own Ollama with Muse Glimmer, 96 requests at once), ported
+# from Serve's jev/run_teacher.sh. Each step resumes where it stopped (ml/teacher.mjs keeps done answers).
+#   1. Cover-1B generation: qa, story, dialog (train and test), from ml/build_1b.mjs gen
+#   2. Cover-Audit: test (3 answers each), val (2), train (1), from ml/build_audit.mjs
+#   3. Cover-1B teacher column (after ml/build_1b.mjs assemble): Glimmer answers the test prompts
 set -u
 cd "$(dirname "$0")/.."
 PAR="${PAR:-96}"
-mkdir -p ml/data
-node ml/teacher.mjs ml/data/test 7 500 3 "$PAR" > ml/data/test.log 2>&1
-node ml/teacher.mjs ml/data/val 19 300 2 "$PAR" > ml/data/val.log 2>&1
-node ml/teacher.mjs ml/data/train 11 4000 1 "$PAR" > ml/data/train.log 2>&1
-echo ALL_TEACHER_DONE
+mkdir -p ml/logs
+for d in ml/data/1b/gen/qa/train ml/data/1b/gen/qa/test ml/data/1b/gen/story/train ml/data/1b/gen/story/test ml/data/1b/gen/dialog/train ml/data/1b/gen/dialog/test \
+         ml/data/audit/test ml/data/audit/val ml/data/audit/train; do
+  node ml/teacher.mjs "$d" "$PAR" >> ml/logs/teacher.log 2>&1
+done
+[ -f ml/data/1b/teacher_eval/jobs.jsonl ] && node ml/teacher.mjs ml/data/1b/teacher_eval "$PAR" >> ml/logs/teacher.log 2>&1
+echo ALL_TEACHER_DONE >> ml/logs/teacher.log

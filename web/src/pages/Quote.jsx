@@ -9,9 +9,9 @@ export default function Quote({ product }) {
   const t = useT(), { lang } = useLang();
   const { data: products } = useApi(`/api/products?lang=${lang}`);
   if (!product) return (
-    <div className="stack-l">
-      <div><h1>{t("你想保什麼？", "What would you like to cover?")}</h1><p className="muted" style={{ marginTop: 8 }}>{t("選一種，Lumi 會問你幾個問題，大約 90 秒。", "Pick one and Lumi asks a few questions: about 90 seconds.")}</p></div>
-      <div className="grid">{(products || []).map((p) => <Link key={p.id} to={`/quote/${p.id}`} className="card link-card product-card"><span className="glyph"><Icon name={p.id} /></span><h3>{p.name}</h3><p className="small muted">{p.for}</p></Link>)}</div>
+    <div>
+      <div className="page-head"><div><h1>{t("保什麼", "Cover what")}</h1><p className="lede">{t("選一種。Lumi 照那張保單的條款問你幾個問題，大約 90 秒。", "Pick one. Lumi asks the questions that policy needs: about 90 seconds.")}</p></div></div>
+      <ol className="partlist">{(products || []).map((p, i) => <li key={p.id} style={{ gridTemplateColumns: "56px 1fr auto" }}><span className="big" style={{ fontSize: 40, color: "var(--signal)" }}>{String(i + 1).padStart(2, "0")}</span><Link to={`/quote/${p.id}`} style={{ textDecoration: "none" }}><b style={{ fontSize: 20 }}>{p.name}</b><span className="muted" style={{ display: "block", marginTop: 4 }}>{p.for}</span></Link><Link to={`/quote/${p.id}`} className="btn sm">{t(`${p.questions.length} 題`, `${p.questions.length} questions`)} →</Link></li>)}</ol>
     </div>
   );
   return <Conversation key={`${product}-${lang}`} id={product} />;
@@ -31,7 +31,7 @@ function Conversation({ id }) {
   const shown = (qq, v) => qq.options ? qq.options.find((o) => o.value === String(v))?.label : qq.type === "bool" ? (v ? t("是", "Yes") : t("否", "No")) : `${v}${qq.unit ? ` ${qq.unit}` : ""}`;
   return (
     <div className="chat stack">
-      <div className="row between"><div className="row"><span className="glyph" style={{ width: 40, height: 40, borderRadius: 12, background: "var(--accent-soft)", color: "var(--accent)", display: "grid", placeItems: "center" }}><Icon name={id} /></span><div><h2>{p.name}</h2><p className="tiny muted">{p.for}</p></div></div><Link to="/quote" className="small muted">{t("換一種", "Change")}</Link></div>
+      <div className="page-head" style={{ marginBottom: 24 }}><div><h1>{p.name}</h1><p className="muted small">{p.for}</p></div><Link to="/quote" className="btn sm">{t("換一種", "Change")}</Link></div>
       <div className="msgs">
         <div className="msg bot"><span className="who">Lumi</span>{t(`嗨！我是 Lumi。我會照 Cover ${p.name}的條款問你 ${qs.length} 個問題，答案由程式檢查，價格怎麼算的會全部攤開給你看。`, `Hi, I'm Lumi. I'll ask you the ${qs.length} questions Cover's ${p.name.toLowerCase()} policy needs. Code checks the answers, and you'll see exactly how the price is worked out.`)}</div>
         {qs.slice(0, step).map((qq, i) => (
@@ -76,14 +76,14 @@ function Result({ p, q, answers, addons, toggle, seconds, busy }) {
   return (
     <div className="stack">
       <div className="msg bot"><span className="who">Lumi</span>{t(`好了，花了 ${seconds} 秒。這是你的價格，每一塊錢去哪裡都寫在下面。`, `Done in ${seconds} seconds. Here's your price, and where every dollar goes.`)}</div>
-      <div className="card stack">
+      <div className="card marks stack">
         <div className="row between" style={{ alignItems: "flex-end" }}>
           <div><p className="eyebrow">{p.name}</p><div className="price">{q.monthly}<small>{t("/ 月", "/ month")}</small></div><p className="small muted">{t(`或 ${q.annual} / 年`, `or ${q.annual} a year`)}</p></div>
           {q.zone && <div className="small" style={{ textAlign: "right" }}><b>{q.zone.district}</b><div className="row" style={{ justifyContent: "flex-end", gap: 4, marginTop: 4 }}>{["flood", "quake", "typhoon", "theft"].map((k) => <span key={k} title={t(...FACTOR[`zone.${k}`])} className={`lv l${q.zone[k]}`}>{q.zone[k]}</span>)}</div><p className="tiny muted">{t("淹水 · 地震 · 颱風 · 竊盜", "flood · quake · typhoon · theft")}</p></div>}
         </div>
         <div className="stack-s">
           <div className="split"><i className="pool" style={{ width: `${pct(w.claimsPool)}%` }} /><i className="re" style={{ width: `${pct(w.reinsurance)}%` }} /><i className="fee" style={{ width: `${pct(w.coverFee)}%` }} /></div>
-          <div className="legend"><span><i style={{ background: "var(--accent)" }} />{t("理賠池", "Claims pool")} {w.claimsPool}</span><span><i style={{ background: "color-mix(in srgb, var(--accent) 45%, var(--card))" }} />{t("再保險", "Reinsurance")} {w.reinsurance}</span><span><i style={{ background: "var(--ink-3)" }} />{t("Cover 費用 20%", "Cover's 20% fee")} {w.coverFee}</span></div>
+          <div className="legend"><span><i className="pool" style={{ background: "repeating-linear-gradient(135deg, var(--signal) 0 2px, transparent 2px 5px)" }} />{t("理賠池", "Claims pool")} {w.claimsPool}</span><span><i style={{ background: "oklch(1 0 0 / 0.1)" }} />{t("再保險", "Reinsurance")} {w.reinsurance}</span><span><i style={{ background: "oklch(1 0 0 / 0.2)" }} />{t("Cover 費用 20%", "Cover's 20% fee")} {w.coverFee}</span></div>
           <p className="tiny muted">{t(`預期理賠 ${w.ofWhichExpectedClaims} / 年。理賠池沒用完的錢年底捐給你選的公益。`, `Expected claims ${w.ofWhichExpectedClaims} a year. What the pool doesn't pay out goes to your cause at the end of the year.`)}</p>
         </div>
         <details><summary className="small" style={{ cursor: "pointer" }}>{t("為什麼是這個價格", "Why it costs this")} <span className="muted">({q.priced})</span></summary>
