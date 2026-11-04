@@ -15,6 +15,7 @@ import { quote as makeQuote, getQuote, limits } from "./quote.js";
 import { person, updatePerson } from "./people.js";
 import { post, DEFAULT_CAUSE, CAUSES } from "./pool.js";
 import { record } from "./activity.js";
+import { statusOf } from "./flights.js";
 import { pp, publicUrl, usd, why } from "./pay/index.js";
 
 const db = store(stateFile("policies"), { policies: {} });
@@ -28,14 +29,17 @@ const say = (p, action, summary, data = null, actor = { kind: "platform" }) => r
 const save = () => db.save();
 
 // Buy what a quote priced. plan: "monthly" | "yearly"; billing: "vault" | "subscription" (monthly only)
-export async function buy(personId, { quote: qid, plan = "monthly", billing = "vault", cause, beneficiaries, items, actor }) {
+export async function buy(personId, { quote: qid, plan = "monthly", billing = "vault", cause, beneficiaries, items, pay = "paypal", actor }) {
   const who = person(personId), q = getQuote(qid);
   if (!who) return { error: "person" };
   if (!q || (q.person && q.person !== personId)) return { error: "quote", message: "No such quote for this person: get one with get_quote." };
   if (Date.parse(q.expires) < now()) return { error: "quote_expired", message: "That quote has expired: get a new one." };
-  if (!["monthly", "yearly"].includes(plan)) return { error: "plan", message: "plan is monthly or yearly." };
-  if (plan === "yearly") billing = "vault";
   const p = product(q.product);
+  if (p.term === "trip") { plan = "trip"; billing = "vault"; }
+  else if (!["monthly", "yearly"].includes(plan)) return { error: "plan", message: "plan is monthly or yearly." };
+  if (plan === "yearly") billing = "vault";
+  // TR-3.1: a flight already delayed or cancelled can't be insured
+  if (p.term === "trip") for (const f of q.answers.flights || []) { const st = await statusOf(f, q.answers.destination); if (st.firstSeenDisrupted) return { error: "known_disruption", message: `${f.flight} on ${f.date} is already ${st.status === "cancelled" ? "cancelled" : `${Math.round(st.delayMin / 60 * 10) / 10} hours late`}; a disruption known before buying isn't covered (TR-3.1).` }; }
   if (p.beneficiaries) {
     const b = Array.isArray(beneficiaries) ? beneficiaries : [];
     if (!b.length || b.reduce((t, x) => t + (+x.share || 0), 0) !== 100 || b.some((x) => !String(x.name || "").trim())) return { error: "beneficiaries", message: "Name at least one beneficiary, with shares adding up to 100 (beneficiaries: [{ name, relation, share }])." };
@@ -46,9 +50,9 @@ export async function buy(personId, { quote: qid, plan = "monthly", billing = "v
     beneficiaries: p.beneficiaries ? beneficiaries.map((x) => ({ name: String(x.name).slice(0, 60), relation: String(x.relation || "").slice(0, 30), share: +x.share })) : undefined,
     items: Array.isArray(items) ? items.slice(0, 20).map((x) => ({ what: String(x.what || "").slice(0, 80), value: Math.round(+x.value * 100) || 0 })) : undefined,
     status: q.decision === "review" ? "review" : "awaiting_payment", created: nowIso(), start: null, end: null, nextDue: null, waitingUntil: null,
-    payments: [], changes: [], number: `CV-${q.product.slice(0, 2).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-6)}` };
+    payWith: pay === "card" && pp().testCard ? "card" : "paypal", payments: [], changes: [], number: `CV-${q.product.slice(0, 2).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-6)}` };
   db.data.policies[id] = pol; save();
-  say(pol, "policy_created", `${who.name} chose ${p.name.en} (${plan}${plan === "monthly" ? `, ${usd(pol.monthly)} a month` : `, ${usd(pol.annual)} a year`}).`, { quote: q.id }, actor);
+  say(pol, "policy_created", `${who.name} chose ${p.name.en} (${plan === "trip" ? `one trip, ${usd(pol.annual)}` : `${plan}${plan === "monthly" ? `, ${usd(pol.monthly)} a month` : `, ${usd(pol.annual)} a year`}`}).`, { quote: q.id }, actor);
   if (pol.status === "review") return view(pol);
   return startFirstPayment(pol);
 }
@@ -56,7 +60,7 @@ export async function buy(personId, { quote: qid, plan = "monthly", billing = "v
 // The first premium. With saved PayPal (from an earlier policy) it is charged at once; otherwise the person approves
 // it in PayPal, and their PayPal is saved in the same approval for the monthly premiums.
 async function startFirstPayment(pol) {
-  const who = person(pol.person), amount = pol.plan === "yearly" ? pol.annual : pol.monthly;
+  const who = person(pol.person), amount = pol.plan === "monthly" ? pol.monthly : pol.annual;
   if (pol.billing === "subscription") {
     try {
       const plan = await pp().subscriptionPlan({ name: `${pol.number} ${product(pol.product).name.en}`, monthly: pol.monthly, requestId: `${pol.id}:plan` });
@@ -67,12 +71,28 @@ async function startFirstPayment(pol) {
   }
   try {
     const r = await pp().createPayment({ amount, reference: pol.id, description: `${product(pol.product).name.en} ${pol.number}: first premium`, returnUrl: `${publicUrl()}/paypal/return?policy=${pol.id}`, cancelUrl: `${publicUrl()}/policies?cancelled=${pol.id}`,
-      vaultId: who.vault || null, save: !who.vault, requestId: `${pol.id}:first` });
+      vaultId: who.vault || null, save: !who.vault, card: pol.payWith === "card", requestId: `${pol.id}:first` });
     pol.payments.push({ n: 1, kind: "premium", amount, order: r.id, status: r.status, at: nowIso() });
     if (r.status === "COMPLETED") { settleFirst(pol, r); return view(pol); }
     pol.approveUrl = r.approveUrl; save();
     return view(pol);
   } catch (e) { return { ...view(pol), error: "paypal", message: why(e) }; }
+}
+
+// Pay a waiting first premium with PayPal's published sandbox test card instead (judges have no sandbox buyer login;
+// sandbox only, PAYPAL_TEST_CARD=1). The waiting PayPal order is simply left unapproved.
+export async function payByCard(id) {
+  const pol = policy(id);
+  if (!pol || pol.status !== "awaiting_payment" || pol.billing === "subscription") return { error: "policy", message: "Only a policy waiting for its first payment." };
+  if (!pp().testCard) return { error: "test_card", message: "The sandbox test card is off (PAYPAL_TEST_CARD)." };
+  const amount = pol.plan === "monthly" ? pol.monthly : pol.annual;
+  try {
+    const r = await pp().createPayment({ amount, reference: pol.id, description: `${product(pol.product).name.en} ${pol.number}: first premium`, save: true, card: true, requestId: `${pol.id}:first:card` });
+    pol.payments = [{ n: 1, kind: "premium", amount, order: r.id, status: r.status, at: nowIso(), card: true }];
+    if (r.status !== "COMPLETED") { save(); return { ...view(pol), error: "paypal", message: `PayPal answered ${r.status}` }; }
+    pol.payWith = "card"; settleFirst(pol, r);
+  } catch (e) { return { ...view(pol), error: "paypal", message: why(e) }; }
+  return view(pol);
 }
 
 // The person came back from PayPal (or a webhook says they approved): capture the first premium and start the policy
@@ -104,8 +124,10 @@ function settleFirst(pol, r) {
 }
 function activate(pol) {
   const t = now(), p = product(pol.product);
-  pol.status = "active"; pol.start = new Date(t).toISOString(); pol.end = new Date(t + YEAR).toISOString();
-  pol.nextDue = pol.plan === "monthly" ? new Date(t + MONTH).toISOString() : null; pol.paidUntil = new Date(t + (pol.plan === "monthly" ? MONTH : YEAR)).toISOString();
+  // a trip is covered from purchase to the day after it comes home; everything else for a year
+  const end = p.term === "trip" ? Date.parse(`${pol.answers.return}T23:59:59Z`) + DAY : t + YEAR;
+  pol.status = "active"; pol.start = new Date(t).toISOString(); pol.end = new Date(end).toISOString();
+  pol.nextDue = pol.plan === "monthly" ? new Date(t + MONTH).toISOString() : null; pol.paidUntil = new Date(pol.plan === "monthly" ? t + MONTH : end).toISOString();
   pol.waitingUntil = p.waitingDays ? new Date(t + p.waitingDays * DAY).toISOString() : null;
   delete pol.approveUrl; save();
   say(pol, "policy_active", `Policy ${pol.number} started: ${p.name.en}, cover until ${pol.end.slice(0, 10)}.${pol.waitingUntil ? ` Claims other than ${p.id === "pet" ? "accidents" : "fire and theft"} are paid from ${pol.waitingUntil.slice(0, 10)} (waiting period).` : ""}`);
@@ -182,9 +204,11 @@ export function inForce(pol, at) {
   return { ok: true };
 }
 
-// The part of the current paid period not yet used, as a share (0 to 1)
+// The part of the current paid period not yet used, as a share (0 to 1). A trip refunds in full until its first insured
+// flight leaves, and nothing after (TR-6.1).
 function unused(pol) {
   const t = now(), until = Date.parse(pol.paidUntil), len = pol.plan === "monthly" ? MONTH : YEAR;
+  if (pol.plan === "trip") { const first = Math.min(...(pol.answers.flights || []).map((f) => Date.parse(`${f.date}T00:00:00Z`))); return t < first ? 1 : 0; }
   return Math.max(0, Math.min(1, (until - t) / len));
 }
 // Money back to the person: refunded against their latest premium captures, newest first
@@ -270,7 +294,8 @@ export async function review(id, { approve, note = "" }) {
 export function view(pol, lang = "en") {
   const p = product(pol.product);
   return { policy: pol.id, number: pol.number, product: pol.product, name: p.name[lang], status: pol.status, plan: pol.plan, billing: pol.billing,
-    price: pol.plan === "monthly" ? (lang === "zh" ? `每月 ${usd(pol.monthly)}` : `${usd(pol.monthly)} a month`) : (lang === "zh" ? `每年 ${usd(pol.annual)}` : `${usd(pol.annual)} a year`), annual: usd(pol.annual), monthly: usd(pol.monthly),
+    ...(pol.plan === "trip" ? { trip: { destination: pol.answers.destination, departure: pol.answers.departure, return: pol.answers.return, flights: pol.answers.flights, travelers: pol.answers.travelers, plan: pol.answers.plan } } : {}),
+    price: pol.plan === "trip" ? (lang === "zh" ? `本趟 ${usd(pol.annual)}` : `${usd(pol.annual)} for the trip`) : pol.plan === "monthly" ? (lang === "zh" ? `每月 ${usd(pol.monthly)}` : `${usd(pol.monthly)} a month`) : (lang === "zh" ? `每年 ${usd(pol.annual)}` : `${usd(pol.annual)} a year`), annual: usd(pol.annual), monthly: pol.monthly == null ? null : usd(pol.monthly),
     start: pol.start, end: pol.end, nextPremium: pol.nextDue, waitingUntil: pol.waitingUntil, cause: pol.cause,
     covers: pol.coverages.map((c) => ({ id: c.id, clause: c.clause, limit: c.limit != null ? usd(c.limit) : null })), deductible: pol.deductible != null ? usd(pol.deductible) : null, addons: pol.addons,
     ...(pol.items?.length ? { items: pol.items.map((x) => ({ what: x.what, value: usd(x.value) })) } : {}),

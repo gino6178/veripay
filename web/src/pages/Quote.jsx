@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, Link, navigate, useApi, useT, useLang, cents, usd } from "../api.jsx";
 import { useMe } from "../App.jsx";
-import Icon from "../components/Icon.jsx";
 
 export default function Quote({ product }) {
   const t = useT(), { lang } = useLang();
@@ -25,10 +24,14 @@ function Conversation({ id }) {
   const qs = p?.questions || [], done = p && step >= qs.length;
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [step, q]);
   const price = async (adds = addons) => { setBusy(true); try { setQ(await api("/api/quote", { method: "POST", body: { product: id, answers, addons: adds, lang } })); } catch (e) { toast(e.body?.bad?.join("; ") || e.message); } setBusy(false); };
-  useEffect(() => { if (done && !q) price(); }, [done]);
+  // the judge tour's "fill this for me": every answer at once (and add-ons), then the price as usual
+  const [filled, setFilled] = useState(0);
+  useEffect(() => { const f = (e) => { if (!e.detail?.answers) return; setAnswers(e.detail.answers); setAddons(e.detail.addons || []); setStep(Object.keys(e.detail.answers).length); setQ(null); setFilled((n) => n + 1); }; addEventListener("cover:fill-quote", f); return () => removeEventListener("cover:fill-quote", f); }, []);
+  useEffect(() => { if (done && !q) price(); }, [done, filled]);
   if (!p) return null;
   const answer = (v) => { setAnswers((a) => ({ ...a, [qs[step].id]: v })); setStep(step + 1); setQ(null); };
-  const shown = (qq, v) => qq.options ? qq.options.find((o) => o.value === String(v))?.label : qq.type === "bool" ? (v ? t("是", "Yes") : t("否", "No")) : `${v}${qq.unit ? ` ${qq.unit}` : ""}`;
+  const shown = (qq, v) => qq.options ? qq.options.find((o) => o.value === String(v))?.label : qq.type === "bool" ? (v ? t("是", "Yes") : t("否", "No"))
+    : Array.isArray(v) ? v.map((f) => `${f.flight} ${f.date}`).join(" · ") : qq.type === "flights" ? String(v).split(/\n+/).join(" · ") : `${v}${qq.unit ? ` ${unitName(t, qq.unit)}` : ""}`;
   return (
     <div className="chat stack">
       <div className="page-head" style={{ marginBottom: 24 }}><div><h1>{p.name}</h1><p className="muted small">{p.for}</p></div><Link to="/quote" className="btn sm">{t("換一種", "Change")}</Link></div>
@@ -51,22 +54,39 @@ function Conversation({ id }) {
   );
 }
 
+// units in the reader's language, whichever language the product file wrote them in
+const UNIT = { 年: ["年", "years"], years: ["年", "years"], 歲: ["歲", "years old"], 坪: ["坪", "ping"], "sq ft": ["平方英尺", "sq ft"], miles: ["英里", "miles"] };
+const unitName = (t, u) => (UNIT[u] ? t(...UNIT[u]) : u);
 function Answer({ q, value, onAnswer }) {
-  const t = useT(), [v, setV] = useState(value ?? "");
+  const t = useT(), { info } = useMe(), [v, setV] = useState(value ?? "");
+  const today = new Date(info?.now || Date.now()).toISOString().slice(0, 10);
   useEffect(() => setV(value ?? ""), [q.id]);
   if (q.options) return <div className="chips">{q.options.map((o) => <button key={o.value} className={`chip ${String(value) === o.value ? "on" : ""}`} onClick={() => onAnswer(o.value)}>{o.label}</button>)}</div>;
   if (q.type === "bool") return <div className="chips"><button className="chip" onClick={() => onAnswer(true)}>{t("是", "Yes")}</button><button className="chip" onClick={() => onAnswer(false)}>{t("否", "No")}</button></div>;
   const num = q.type === "number", ok = num ? v !== "" && +v >= q.min && +v <= q.max : String(v).trim().length > 0;
+  // a trip's dates (on Cover's clock, which the demo may have moved), and its flights, one per line
+  if (q.type === "date") return (
+    <form className="row" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(v); }}>
+      <input className="input" style={{ flex: 1, minWidth: 160 }} type="date" autoFocus value={v} min={today} onChange={(e) => setV(e.target.value)} />
+      <button className="btn" disabled={!ok}>{t("下一題", "Next")}</button>
+    </form>);
+  if (q.type === "flights") return (
+    <form className="stack-s" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(String(v).trim()); }}>
+      <textarea className="input mono" rows={3} autoFocus value={Array.isArray(v) ? v.map((f) => `${f.flight} ${f.date}`).join("\n") : v} onChange={(e) => setV(e.target.value)} placeholder={t(`每行一班：航班 日期\nUA857 ${today}`, `One flight a line: number and date\nUA857 ${today}`)} />
+      <div><button className="btn" disabled={!ok}>{t("下一題", "Next")}</button></div>
+    </form>);
   return (
     <form className="row" onSubmit={(e) => { e.preventDefault(); if (ok) onAnswer(num ? +v : String(v).trim()); }}>
       <input className="input" style={{ flex: 1, minWidth: 160 }} autoFocus value={v} onChange={(e) => setV(e.target.value)} inputMode={num ? "decimal" : undefined} type={num ? "number" : "text"} min={q.min} max={q.max}
-        placeholder={num ? `${q.min}–${q.max}${q.unit ? ` ${q.unit}` : ""}` : q.type === "place" ? t("例如：台北市大安區、捷運公館站", "e.g. Taipei Da'an, or a station") : ""} />
+        placeholder={num ? `${q.min}–${q.max}${q.unit ? ` ${unitName(t, q.unit)}` : ""}` : q.type === "place" ? t("例如：78704，或 Austin, TX", "e.g. 78704, or Austin, TX") : ""} />
       <button className="btn" disabled={!ok}>{t("下一題", "Next")}</button>
     </form>
   );
 }
 
-const FACTOR = { base: ["起始價", "Starting price"], rate: ["核准的費率調整", "Approved rate change"], "zone.flood": ["淹水潛勢", "Flood level"], "zone.quake": ["地震風險", "Earthquake level"], "zone.typhoon": ["颱風", "Typhoon level"], "zone.theft": ["竊盜率", "Theft level"] };
+const FACTOR = { base: ["起始價", "Starting price"], rate: ["核准的費率調整", "Approved rate change"], "zone.flood": ["淹水風險", "Flood level"], "zone.wildfire": ["野火風險", "Wildfire level"], "zone.hurricane": ["颶風風險", "Hurricane level"], "zone.quake": ["地震風險", "Earthquake level"], "zone.theft": ["竊盜率", "Theft level"] };
+// the place's five hazard levels, each with its name (1 low, 3 high)
+const PERILS = [["flood", "淹水", "flood"], ["wildfire", "野火", "wildfire"], ["hurricane", "颶風", "hurricane"], ["quake", "地震", "quake"], ["theft", "竊盜", "theft"]];
 function Result({ p, q, answers, addons, toggle, seconds, busy }) {
   const t = useT(), { me } = useMe();
   const w = q.whereYourMoneyGoes, total = cents(q.annual) || 1;
@@ -78,15 +98,17 @@ function Result({ p, q, answers, addons, toggle, seconds, busy }) {
       <div className="msg bot"><span className="who">Lumi</span>{t(`好了，花了 ${seconds} 秒。這是你的價格，每一塊錢去哪裡都寫在下面。`, `Done in ${seconds} seconds. Here's your price, and where every dollar goes.`)}</div>
       <div className="card marks stack">
         <div className="row between" style={{ alignItems: "flex-end" }}>
-          <div><p className="eyebrow">{p.name}</p><div className="price">{q.monthly}<small>{t("/ 月", "/ month")}</small></div><p className="small muted">{t(`或 ${q.annual} / 年`, `or ${q.annual} a year`)}</p></div>
-          {q.zone && <div className="small" style={{ textAlign: "right" }}><b>{q.zone.district}</b><div className="row" style={{ justifyContent: "flex-end", gap: 4, marginTop: 4 }}>{["flood", "quake", "typhoon", "theft"].map((k) => <span key={k} title={t(...FACTOR[`zone.${k}`])} className={`lv l${q.zone[k]}`}>{q.zone[k]}</span>)}</div><p className="tiny muted">{t("淹水 · 地震 · 颱風 · 竊盜", "flood · quake · typhoon · theft")}</p></div>}
+          <div><p className="eyebrow">{p.name}</p>{q.trip ? <><div className="price">{q.trip}<small>{t("/ 這趟", "for the trip")}</small></div><p className="small muted">{(q.flights || []).map((f) => `${f.flight} ${f.date}`).join(" · ")}</p></>
+            : <><div className="price">{q.monthly}<small>{t("/ 月", "/ month")}</small></div><p className="small muted">{t(`或 ${q.annual} / 年`, `or ${q.annual} a year`)}</p></>}</div>
+          {q.zone && <div className="small" style={{ textAlign: "right" }}><b>{q.zone.area || q.zone.state}</b><div className="row" style={{ justifyContent: "flex-end", gap: 10, marginTop: 6 }}>{PERILS.filter(([k]) => q.zone[k] != null).map(([k, zh, en]) => <span key={k} title={t(...FACTOR[`zone.${k}`])} style={{ display: "grid", justifyItems: "center", gap: 4 }}><span className={`lv l${q.zone[k]}`}>{q.zone[k]}</span><span className="data" style={{ fontSize: 10 }}>{t(zh, en)}</span></span>)}</div></div>}
         </div>
         <div className="stack-s">
           <div className="split"><i className="pool" style={{ width: `${pct(w.claimsPool)}%` }} /><i className="re" style={{ width: `${pct(w.reinsurance)}%` }} /><i className="fee" style={{ width: `${pct(w.coverFee)}%` }} /></div>
           <div className="legend"><span><i className="pool" style={{ background: "repeating-linear-gradient(135deg, var(--signal) 0 2px, transparent 2px 5px)" }} />{t("理賠池", "Claims pool")} {w.claimsPool}</span><span><i style={{ background: "oklch(1 0 0 / 0.1)" }} />{t("再保險", "Reinsurance")} {w.reinsurance}</span><span><i style={{ background: "oklch(1 0 0 / 0.2)" }} />{t("Cover 費用 20%", "Cover's 20% fee")} {w.coverFee}</span></div>
-          <p className="tiny muted">{t(`預期理賠 ${w.ofWhichExpectedClaims} / 年。理賠池沒用完的錢年底捐給你選的公益。`, `Expected claims ${w.ofWhichExpectedClaims} a year. What the pool doesn't pay out goes to your cause at the end of the year.`)}</p>
+          <p className="tiny muted">{q.trip ? t(`這趟預期理賠 ${w.ofWhichExpectedClaims}。理賠池沒用完的錢年底捐給你選的公益。`, `Expected claims ${w.ofWhichExpectedClaims} for this trip. What the pool doesn't pay out goes to your cause at the end of the year.`)
+            : t(`預期理賠 ${w.ofWhichExpectedClaims} / 年。理賠池沒用完的錢年底捐給你選的公益。`, `Expected claims ${w.ofWhichExpectedClaims} a year. What the pool doesn't pay out goes to your cause at the end of the year.`)}</p>
         </div>
-        <details><summary className="small" style={{ cursor: "pointer" }}>{t("為什麼是這個價格", "Why it costs this")} <span className="muted">({q.priced})</span></summary>
+        <details><summary className="small" style={{ cursor: "pointer" }}>{t("為什麼是這個價格", "Why it costs this")} <span className="muted">({q.priced === "product factors" ? t("依產品因子", "product factors") : q.priced})</span></summary>
           <ul className="why" style={{ marginTop: 8 }}>{q.why.map((x, i) => <li key={i}><span>{label(x.factor)}{x.value != null && x.factor !== "base" ? <span className="muted"> · {String(x.value)}</span> : null}</span><span className="num">{x.effect || `×${x.times}`}</span></li>)}</ul>
         </details>
         <div><p className="small" style={{ fontWeight: 500, marginBottom: 6 }}>{t("保障內容", "What it covers")}</p>
@@ -105,24 +127,27 @@ function Buy({ p, q, addons, answers }) {
   const { data: causes } = useApi("/api/causes");
   const [plan, setPlan] = useState("monthly"), [billing, setBilling] = useState("vault"), [cause, setCause] = useState(me?.cause || "disaster"), [busy, setBusy] = useState(false);
   const [bens, setBens] = useState([{ name: "", relation: "", share: 100 }]), [items, setItems] = useState([{ what: "", value: "" }]);
-  const life = p.id === "life", listing = addons.includes("valuables");
+  const life = p.id === "life", listing = addons.includes("valuables"), trip = !!q.trip;
   const benOk = !life || (bens.every((b) => b.name.trim()) && bens.reduce((s, b) => s + (+b.share || 0), 0) === 100);
-  const buy = async () => {
+  const { info } = useMe();
+  const buy = async (pay = "paypal") => {
     setBusy(true);
     try {
-      const r = await api("/api/policies", { method: "POST", body: { quote: q.quote, plan, billing, cause, ...(life ? { beneficiaries: bens.map((b) => ({ ...b, share: +b.share })) } : {}), ...(listing ? { items: items.filter((x) => x.what && +x.value > 0).map((x) => ({ what: x.what, value: +x.value })) } : {}) } });
+      const r = await api("/api/policies", { method: "POST", body: { quote: q.quote, plan, billing, cause, pay, ...(life ? { beneficiaries: bens.map((b) => ({ ...b, share: +b.share })) } : {}), ...(listing ? { items: items.filter((x) => x.what && +x.value > 0).map((x) => ({ what: x.what, value: +x.value })) } : {}) } });
       if (r.error) throw new Error(r.message);
-      if (r.approveUrl) location.href = r.approveUrl; else navigate(`/policies/${r.policy}`);
+      // the mock's approval page is Cover's own; with the sandbox, the policy page shows PayPal's buttons
+      if (r.approveUrl && info?.paypal === "mock") location.href = r.approveUrl; else navigate(`/policies/${r.policy}`);
     } catch (e) { toast(e.message); setBusy(false); }
   };
   return (
     <div className="card stack">
       <h3>{t("購買", "Buy")}</h3>
-      <div className="chips">
+      {/* a trip is paid once; a year's cover monthly or yearly */}
+      {!trip && <div className="chips">
         <button className={`chip ${plan === "monthly" ? "on" : ""}`} onClick={() => setPlan("monthly")}>{t(`月繳 ${q.monthly}`, `Monthly ${q.monthly}`)}</button>
         <button className={`chip ${plan === "yearly" ? "on" : ""}`} onClick={() => setPlan("yearly")}>{t(`年繳 ${q.annual}`, `Yearly ${q.annual}`)}</button>
-      </div>
-      {plan === "monthly" && <div className="chips">
+      </div>}
+      {!trip && plan === "monthly" && <div className="chips">
         <button className={`chip ${billing === "vault" ? "on" : ""}`} onClick={() => setBilling("vault")}>{t("存好 PayPal，Cover 每月扣款", "Save PayPal; Cover charges monthly")}</button>
         <button className={`chip ${billing === "subscription" ? "on" : ""}`} onClick={() => setBilling("subscription")}>{t("PayPal 訂閱（PayPal 每月扣）", "PayPal subscription (PayPal bills monthly)")}</button>
       </div>}
@@ -137,9 +162,11 @@ function Buy({ p, q, addons, answers }) {
         {items.map((x, i) => <div key={i} className="row"><input className="input" style={{ flex: 2 }} placeholder={t("物品（例如 Sony A7 相機）", "Item (e.g. Sony A7 camera)")} value={x.what} onChange={(e) => setItems(items.map((y, j) => (j === i ? { ...y, what: e.target.value } : y)))} /><input className="input" style={{ width: 130 }} type="number" placeholder="USD" value={x.value} onChange={(e) => setItems(items.map((y, j) => (j === i ? { ...y, value: e.target.value } : y)))} /></div>)}
         <button className="link small" onClick={() => setItems([...items, { what: "", value: "" }])}>{t("+ 再加一項", "+ Add another")}</button>
       </div>}
-      {q.decision === "review" && <div className="note warn">{q.note}</div>}
-      <button className="btn paypal" disabled={busy || !benOk} onClick={buy}>{q.decision === "review" ? t("送出核保", "Send for review") : t(`用 PayPal 付第一期 ${plan === "monthly" ? q.monthly : q.annual}`, `Pay the first premium with PayPal: ${plan === "monthly" ? q.monthly : q.annual}`)}</button>
-      <p className="tiny muted">{t("第一次付款時 PayPal 會同時存好你的付款方式，之後的月繳就不用再跳轉。隨時可以退保，沒用到的天數全額退回。", "Your first payment also saves PayPal for the monthly premiums, so there's no redirect next time. Cancel any time and the unused days are refunded.")}</p>
+      {q.decision === "review" && <div className="note warn">{t("Cover 的核保人員會先看過，才能開始。", q.note)}</div>}
+      {info?.testCard && q.decision !== "review" && <button className="btn" data-tour="pay-card" disabled={busy || !benOk} onClick={() => buy("card")}>{t("用 PayPal 沙盒測試卡付款（評審不用登入）", "Pay with PayPal's sandbox test card (no sign-in, for judges)")}</button>}
+      <button className="btn paypal" data-tour="pay-paypal" disabled={busy || !benOk} onClick={() => buy("paypal")}>{q.decision === "review" ? t("送出核保", "Send for review") : trip ? t(`用 PayPal 付這趟 ${q.trip}`, `Pay for the trip with PayPal: ${q.trip}`) : t(`用 PayPal 付第一期 ${plan === "monthly" ? q.monthly : q.annual}`, `Pay the first premium with PayPal: ${plan === "monthly" ? q.monthly : q.annual}`)}</button>
+      <p className="tiny muted">{trip ? t("班機延誤或取消時，Cover 從航班狀態看到就自動付款，不用申請。第一班起飛前取消，全額退款。", "If a flight is delayed or cancelled, Cover sees it in the flight status and pays automatically, with no claim to file. Cancel before the first flight for a full refund.")
+        : t("第一次付款時 PayPal 會同時存好你的付款方式，之後的月繳就不用再跳轉。隨時可以退保，沒用到的天數全額退回。", "Your first payment also saves PayPal for the monthly premiums, so there's no redirect next time. Cancel any time and the unused days are refunded.")}</p>
     </div>
   );
 }

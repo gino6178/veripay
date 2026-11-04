@@ -10,11 +10,11 @@ import { nowIso } from "./clock.js";
 // The causes. Their PayPal addresses are sandbox accounts standing in for the real organisations a live Cover would
 // partner with: the names say what they do, not who they are.
 export const CAUSES = {
-  animals: { zh: "流浪動物救援", en: "Rescuing stray animals", email: "cause-animals@cover-demo.example" },
-  kids: { zh: "偏鄉兒童教育", en: "Schooling for children in remote areas", email: "cause-kids@cover-demo.example" },
-  ocean: { zh: "海洋與海岸保育", en: "Protecting the ocean and coast", email: "cause-ocean@cover-demo.example" },
-  disaster: { zh: "颱風地震災後重建", en: "Rebuilding after typhoons and earthquakes", email: "cause-disaster@cover-demo.example" },
-  elders: { zh: "獨居長者陪伴", en: "Company for elders living alone", email: "cause-elders@cover-demo.example" },
+  animals: { zh: "流浪動物救援", en: "Animal rescue and shelters", email: "cause-animals@cover-demo.example" },
+  kids: { zh: "兒童教育", en: "Schooling for kids who need it most", email: "cause-kids@cover-demo.example" },
+  ocean: { zh: "海洋與海岸保育", en: "Protecting oceans and coasts", email: "cause-ocean@cover-demo.example" },
+  disaster: { zh: "颶風、野火與地震災後重建", en: "Rebuilding after hurricanes, wildfires and earthquakes", email: "cause-disaster@cover-demo.example" },
+  hunger: { zh: "食物銀行", en: "Food banks", email: "cause-hunger@cover-demo.example" },
 };
 export const DEFAULT_CAUSE = "disaster";
 export const FEE = 0.2;

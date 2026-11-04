@@ -24,7 +24,7 @@ export function setLimits(pid, l) {
   updatePerson(pid, { limits: { ...next, updated: new Date().toISOString() } });
   return limitsOf(pid);
 }
-const monthlyNow = (pid) => policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status)).reduce((t, p) => t + p.monthly, 0);
+const monthlyNow = (pid) => policies.policiesOf(pid).filter((p) => ["active", "grace", "awaiting_payment"].includes(p.status) && p.monthly != null).reduce((t, p) => t + p.monthly, 0);
 const by = (a) => ({ kind: "agent", person: a.person, client: a.client });
 const lang = (a) => person(a.person)?.lang || "en";
 
@@ -46,7 +46,7 @@ export async function buyPolicy(a, { quote, plan = "monthly", billing = "vault",
   const l = limitsOf(a.person), q = getQuote(quote);
   if (!l.mayBuy) return { error: "limits", message: "Your person hasn't let you buy policies. Give them the quote; they can buy it on the website." };
   if (!q) return { error: "quote", message: "No such quote: get_quote first." };
-  if (monthlyNow(a.person) + q.monthly > l.monthlyMax) return { error: "limits", message: `This adds ${usd(q.monthly)} a month; with what they already pay (${usd(monthlyNow(a.person))}) that is over your person's limit of ${usd(l.monthlyMax)} a month. Tell them; only they can raise it.` };
+  if (monthlyNow(a.person) + (q.monthly ?? q.annual) > l.monthlyMax) return { error: "limits", message: `This adds ${usd(q.monthly)} a month; with what they already pay (${usd(monthlyNow(a.person))}) that is over your person's limit of ${usd(l.monthlyMax)} a month. Tell them; only they can raise it.` };
   const p = person(a.person);
   // without autopay the agent's purchase waits for the person in PayPal, even when PayPal is saved
   const saved = p.vault;
@@ -55,6 +55,23 @@ export async function buyPolicy(a, { quote, plan = "monthly", billing = "vault",
   finally { if (saved && !l.autopay) p.vault = saved; }
 }
 const ownPolicy = (a, id) => { const p = policies.policy(id); return p && p.person === a.person ? p : null; };
+// Insure a trip in one step, as an agent planning it would: price it, and buy it if your person's limits allow
+export async function insureTrip(a, { destination, departure, return: back, flights, tripCost = 0, travelers = 1, oldest, plan = "flight", cause }) {
+  const q = getQuote_(a, { product: "travel", answers: { destination, departure, return: back, flights, tripCost, travelers, oldest, plan } });
+  if (q.error) return q;
+  const l = limitsOf(a.person), cost = getQuote(q.quote).annual;
+  if (!l.mayBuy) return { quote: q, error: "limits", message: "Your person hasn't let you buy. Show them this quote; they can buy it on the website." };
+  if (cost > l.monthlyMax) return { quote: q, error: "limits", message: `This trip costs ${q.trip}, over your person's limit of ${usd(l.monthlyMax)}. Show them the quote.` };
+  const r = await buyPolicy(a, { quote: q.quote, cause });
+  return { quote: { trip: q.trip, whereYourMoneyGoes: q.whereYourMoneyGoes, covers: q.covers }, policy: r };
+}
+export async function flightStatus(a, { policy }) {
+  const p = ownPolicy(a, policy);
+  if (!p || p.product !== "travel") return { error: "policy", message: "A travel policy id." };
+  const { statusOf } = await import("./flights.js");
+  return { flights: await Promise.all((p.answers.flights || []).map((f) => statusOf(f, p.answers.destination).then((s) => ({ flight: s.flight, date: s.date, from: s.from, to: s.to, scheduled: s.scheduled, status: s.status, delayMin: s.delayMin, source: s.source })))),
+    pays: "TR-2.1: $100 a traveler at 2 h late, $300 at 6 h; TR-2.2: $300 if cancelled. Paid automatically once the flight departs or is cancelled." };
+}
 export const myPolicies = (a) => policies.policiesOf(a.person).map((p) => policies.view(p, lang(a)));
 export function policyStatus(a, { policy }) { const p = ownPolicy(a, policy); return p ? policies.view(p, lang(a)) : { error: "policy" }; }
 export async function changePolicy(a, x) {

@@ -282,3 +282,100 @@ details summary { cursor: pointer; font-family: var(--mono); font-size: var(--fs
 .deskrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 14px 12px; cursor: pointer; transition: background .2s; }
 .deskrow:hover { background: oklch(1 0 0 / 0.03); }
 .deskrow.on { background: var(--signal-soft); outline: 1px solid oklch(0.72 0.19 42 / 0.5); outline-offset: -1px; }
+
+/* PayPal's own buttons (JS SDK v6) sit on a light plate so they keep PayPal's colours */
+.pp-box { display: grid; gap: 10px; max-width: 420px; }
+.pp-box:not(:empty) { background: oklch(0.97 0 0); padding: 14px; border-radius: var(--r); }
+
+/* ==== back office on AG Grid and AG Charts (components/backoffice/*, pages/Desk.jsx, pages/Carrier.jsx) ==== */
+.bo-grid { display: grid; gap: var(--s3); min-width: 0; }
+.bo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.bo-bar h3 { margin-right: auto; }
+.bo-search { flex: 0 1 260px; min-width: 160px; }
+.bo-search .input { min-height: 34px; padding: 6px 10px; font-size: var(--fs-12); }
+.bo-count { color: var(--ink-3); min-width: 4ch; text-align: right; }
+.bo-presets { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.bo-chips, .bo-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.bo-chip { border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2); border-radius: var(--r); padding: 6px 10px; font: 500 var(--fs-11)/1.2 var(--mono); letter-spacing: 0.02em; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+.bo-chip:hover { border-color: var(--ink); color: var(--ink); }
+.bo-chips .bo-chip { border-color: oklch(0.72 0.19 42 / 0.55); color: var(--signal); background: var(--signal-soft); }
+.bo-cell { display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap; height: 100%; }
+.bo-sig { display: inline-flex; align-items: center; gap: 8px; font: 500 var(--fs-12)/1 var(--mono); color: var(--warn); }
+.bo-sig.zero { color: var(--ink-3); }
+.bo-sig.hot { color: var(--bad); }
+.bo-sig .ticks { display: inline-flex; gap: 2px; }
+.bo-sig .ticks i { width: 2px; height: 10px; background: currentColor; opacity: .8; }
+.bo-ratio { display: flex; align-items: center; gap: 10px; height: 100%; }
+.bo-ratio .bar { position: relative; flex: 1; }
+.bo-ratio .bar em { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--signal); }
+.bo-ratio .num { font-size: var(--fs-12); min-width: 4ch; text-align: right; }
+.bo-neg { color: var(--bad); }
+.ag-row.bo-on { background: var(--signal-soft); outline: 1px solid oklch(0.72 0.19 42 / 0.5); outline-offset: -1px; }
+.ag-cell.num, .ag-cell .num { font-family: var(--mono); font-size: var(--fs-12); font-variant-numeric: tabular-nums; }
+.ag-header-cell-text { letter-spacing: 0.04em; text-transform: uppercase; }
+.bo-desk { display: grid; gap: var(--s5); grid-template-columns: minmax(0, 1.75fr) minmax(320px, 1fr); align-items: start; }
+.bo-detail { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; }
+@media (max-width: 1100px) { .bo-desk { grid-template-columns: 1fr; } .bo-detail { position: static; max-height: none; } }
+.bo-chart { min-width: 0; padding: var(--s3); }
+.bo-chart > div { width: 100%; }
+
+/* the anomaly-alert agent */
+.bo-agent { display: grid; gap: var(--s4); }
+.bo-agent-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); }
+.bo-agent-head p { margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+.bo-live { width: 7px; height: 7px; background: var(--ok); border-radius: 50%; animation: bo-pulse 2s var(--ease) infinite; }
+.bo-live.off { background: var(--bad); animation: none; }
+@keyframes bo-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.bo-tally { text-align: right; }
+.bo-tally b { display: block; font: 800 clamp(36px, 4vw, 56px)/0.9 var(--display); font-variant-numeric: tabular-nums; }
+.bo-tally b.hot { color: var(--bad); }
+.bo-alerts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+.bo-alert { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: var(--s3); align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.bo-alert.none { display: block; }
+.bo-alert.acked { opacity: .55; }
+.bo-alert-body p { margin-top: 4px; }
+.bo-alert-act { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.bo-sev { display: inline-grid; place-items: center; height: 22px; border: 1px solid; border-radius: var(--r); font-size: 10px; letter-spacing: 0.06em; margin-top: 2px; }
+.bo-alert.high .bo-sev { color: var(--bad); background: var(--bad-soft); }
+.bo-alert.medium .bo-sev { color: var(--warn); background: var(--warn-soft); }
+.bo-ask { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.bo-ask .input { flex: 1 1 280px; }
+.bo-ask select.input { flex: 0 0 160px; }
+.bo-trace { list-style: none; margin: 0; padding: var(--s3) var(--s4); background: var(--ground); border: 1px solid var(--line); border-radius: var(--r); display: grid; gap: 6px; color: var(--ink-2); }
+.bo-trace li { display: grid; grid-template-columns: 64px 1fr; gap: var(--s3); animation: rise .35s var(--ease) both; }
+.bo-trace .who { color: var(--agent); }
+.bo-trace .said { color: var(--ink); font-family: var(--font); font-size: var(--fs-14); }
+.bo-trace .err { color: var(--bad); }
+@media (max-width: 640px) { .bo-alert { grid-template-columns: 40px minmax(0, 1fr); } .bo-alert-act { grid-column: 2; justify-content: flex-start; } }
+.bo-split { display: grid; gap: var(--s6); grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
+@media (max-width: 900px) { .bo-split { grid-template-columns: 1fr; } }
+/* ==== end back office ==== */
+
+/* the judge tour: a small ruled panel at the bottom left (the demo panel has the right), steps as ticks on a scale */
+.tour { position: fixed; left: 16px; bottom: 16px; z-index: var(--z-pop); width: min(380px, calc(100vw - 32px)); max-height: calc(100svh - 96px); overflow-y: auto; background: var(--ground-2); border: 1px solid var(--line-strong); border-radius: var(--r); box-shadow: 0 24px 60px oklch(0 0 0 / 0.5); animation: rise .45s var(--ease) both; }
+.tour-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: 10px 10px 10px var(--s4); border-bottom: 1px solid var(--line); }
+.tour-head .data { color: var(--signal); }
+.tour-x { width: 30px; height: 30px; display: grid; place-items: center; background: none; border: 1px solid transparent; border-radius: var(--r); color: var(--ink-2); cursor: pointer; font: 500 18px/1 var(--mono); }
+.tour-x:hover { border-color: var(--line-strong); color: var(--ink); }
+.tour-ticks { list-style: none; margin: 0; padding: 12px var(--s4) 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.tour-ticks li { height: 4px; background: var(--line-strong); }
+.tour-ticks li.done { background: var(--ink-3); }
+.tour-ticks li.now { background: var(--signal); }
+.tour-body { padding: var(--s4); display: grid; gap: var(--s3); }
+.tour-body h3 { font-size: var(--fs-18); }
+.tour-body > p { font-size: var(--fs-14); color: var(--ink); }
+.tour-why { border-top: 1px solid var(--line); padding-top: var(--s3); display: grid; gap: 6px; }
+.tour-why p { font-size: var(--fs-14); color: var(--ink-2); }
+.tour-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); padding: 0 var(--s4) var(--s4); }
+.tour-tab { position: fixed; left: 16px; bottom: 16px; z-index: var(--z-pop); height: 46px; padding: 0 16px; border-radius: var(--r); border: 1px solid var(--signal); background: var(--ground-2); color: var(--signal); cursor: pointer; font: 500 var(--fs-11)/1 var(--mono); letter-spacing: 0.04em; }
+/* on a phone the tour sits above the demo button instead of beside it */
+@media (max-width: 720px) { .tour { left: 16px; right: 16px; width: auto; bottom: 74px; max-height: 55svh; } }
+
+/* the departure board line in the flight instrument */
+.instrument .board { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: baseline; padding: 22px 16px 14px; }
+.instrument .board b { font: 800 clamp(44px, 5.4vw, 68px)/0.9 var(--display); letter-spacing: 0.02em; }
+.instrument .board span { font-family: var(--mono); font-size: var(--fs-12); color: var(--ink-2); }
+.instrument .board em { font: 800 clamp(22px, 2.4vw, 30px)/1 var(--display); font-style: normal; color: var(--ok); transition: color .3s; }
+.instrument .board em.warn { color: var(--warn); }
+.instrument .board em.bad { color: var(--bad); }
+.tour-said { font-size: var(--fs-11); color: var(--ink-2); background: var(--ground); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; overflow-wrap: anywhere; }

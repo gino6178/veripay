@@ -21,20 +21,20 @@ SAY = {"ok": "the decision is right", "overpay": "it pays too much", "underpay":
 def usd(c): return f"${c / 100:,.2f}".replace(".00", "")
 
 # the engine's checks (api/src/claims.js decide()) and its fraud signals, as the student's markers
-CHECK_ZH = {"in_force": "事發時保單有效", "waiting": "已過等待期", "covered": "保單有此保障", "reported": "90 日內申請", "police_24h": "24 小時內報警",
-            "documents_read": "文件已讀出", "signal": "沒有防詐訊號"}
-OUTCOME_ZH = {"pay": "即時賠付", "deny": "不賠", "refer": "轉人工審核"}
+CHECK = {"in_force": "in force when it happened", "waiting": "past the waiting period", "covered": "the policy has this cover", "reported": "filed within 90 days", "police_24h": "police told within 24 hours",
+         "documents_read": "documents read", "signal": "no fraud signal"}
+OUTCOME = {"pay": "pay now", "deny": "deny", "refer": "send to an adjuster"}
 
 def clause_texts(products_dir):
-    """{clause id: zh text} for every product (cover/api/src/products/*.json)."""
+    """{clause id: English text} for every product (cover/api/src/products/*.json)."""
     import glob, os
     out = {}
     for f in glob.glob(os.path.join(products_dir, "*.json")):
-        for c in json.load(open(f, encoding="utf8")).get("clauses", []): out[c["id"]] = c["zh"]
+        for c in json.load(open(f, encoding="utf8")).get("clauses", []): out[c["id"]] = c.get("en") or c.get("zh", "")
     return out
 
 def marker_keys(case):
-    return [k for k in CHECK_ZH if k in case["applies"]]
+    return [k for k in CHECK if k in case["applies"]]
 
 def marker_truth(case, k):
     """The engine's answer at a marker: the check passed, or (signal) no fraud signal fired."""
@@ -43,9 +43,9 @@ def marker_truth(case, k):
 def segments(case, texts):
     """[(text, role)]: role 'marker:<check>' for the token where that check's ok? is read."""
     d = case["decision"]
-    segs = [(f"{case['facts']}\n決定：{OUTCOME_ZH[d['outcome']]}，{usd(d['amount'])}，依 {d['clause']}（{texts.get(d['clause'], '')[:60]}）。\n檢查：", None)]
+    segs = [(f"{case['facts']}\nDecision: {OUTCOME[d['outcome']]}, {usd(d['amount'])}, under {d['clause']} ({texts.get(d['clause'], '')[:80]}).\nChecks:", None)]
     for k in marker_keys(case):
-        segs.append((f"\n{CHECK_ZH[k]} ok", None))
+        segs.append((f"\n{CHECK[k]}, ok", None))
         segs.append(("?", f"marker:{k}"))
     segs.append(("\nVerdict: " + ", ".join(f"{l} = {SAY[v]}" for l, v in zip(LETTERS, VERDICTS)) + ".\nAnswer:", None))
     return segs

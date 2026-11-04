@@ -9,6 +9,10 @@
     "preview": "vite preview --port 5195"
   },
   "dependencies": {
+    "ag-charts-community": "14.2.0",
+    "ag-charts-react": "14.2.0",
+    "ag-grid-community": "36.2.0",
+    "ag-grid-react": "36.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

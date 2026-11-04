@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const dir = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-export const PRODUCTS = Object.fromEntries(["renters", "home", "pet", "life", "car"].map((id) => [id, JSON.parse(fs.readFileSync(path.join(dir, `${id}.json`), "utf8"))]));
+export const PRODUCTS = Object.fromEntries(["travel", "renters", "home", "pet", "life", "car"].map((id) => [id, JSON.parse(fs.readFileSync(path.join(dir, `${id}.json`), "utf8"))]));
 export const product = (id) => PRODUCTS[id] || null;
 export const clause = (id) => { for (const p of Object.values(PRODUCTS)) { const c = p.clauses.find((x) => x.id === id); if (c) return { ...c, product: p.id }; } return null; };
 export const claimType = (p, type) => product(p)?.claims.find((c) => c.type === type) || null;

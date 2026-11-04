@@ -146,6 +146,37 @@ export function mockPaypal({ publicUrl = "http://localhost:8790", file = stateFi
       if (method === "list_disputes") return { items: Object.values(db.data.disputes) };
       return null;
     },
+    // ---- for the reconciliation agent (recon.js): the Agent Toolkit's read-only tools as PayPal answers them, with
+    // the fields recon reads (custom_field, paypal_reference_id, event codes), and the Payouts API's batch detail.
+    // Refunds are kept in their own table (refundsLog) as they happen, so get_refund can answer.
+    reconToolkit(method, arg = {}) {
+      const money = (c, neg = false) => ({ currency_code: "USD", value: ((neg ? -c : c) / 100).toFixed(2) });
+      const refs = db.data.refundsLog || {};
+      if (method === "list_transactions") {
+        const tx = [];
+        for (const o of Object.values(db.data.orders)) {
+          const c = o.capture && captures.get(o.capture);
+          if (c) tx.push({ transaction_info: { transaction_id: o.capture, transaction_event_code: "T0006", transaction_amount: money(c.amount), fee_amount: money(c.amount - c.net, true), custom_field: o.reference, transaction_status: "S" } });
+        }
+        for (const r of Object.values(refs)) tx.push({ transaction_info: { transaction_id: r.id, transaction_event_code: "T1107", transaction_amount: money(r.amount, true), paypal_reference_id: r.capture, paypal_reference_id_type: "TXN", transaction_status: "S" } });
+        for (const p of Object.values(db.data.payouts)) if (p.status === "SUCCESS") tx.push({ transaction_info: { transaction_id: `TX${p.batchId.slice(7)}`, transaction_event_code: "T0000", transaction_amount: money(p.amount, true), transaction_status: "S" } });
+        const t = arg.transaction_id ? tx.filter((x) => x.transaction_info.transaction_id === arg.transaction_id) : tx;
+        return { transaction_details: t, total_items: t.length, total_pages: 1, page: 1 };
+      }
+      if (method === "list_invoices") { const all = Object.values(db.data.invoices); return { total_items: all.length, total_pages: 1, items: all.map((v) => ({ id: v.id, status: v.status, amount: money(v.amount), primary_recipients: [{ billing_info: { email_address: v.recipient } }] })) }; }
+      if (method === "get_invoice") { const v = invoices.get(arg.invoice_id); if (!v) return { error: { message: "RESOURCE_NOT_FOUND", type: "paypal_error" } }; return { id: v.id, status: v.status, amount: money(v.amount), items: [{ name: v.item, quantity: "1", unit_amount: money(v.amount) }], payments: v.status === "PAID" ? { paid_amount: money(v.amount) } : undefined }; }
+      if (method === "list_disputes") return { items: Object.values(db.data.disputes).filter((d) => !arg.disputed_transaction_id || d.disputed_transactions.some((t) => t.seller_transaction_id === arg.disputed_transaction_id)) };
+      if (method === "show_subscription_details") { const s = db.data.subs?.[arg.subscription_id]; if (!s) return { error: { message: "RESOURCE_NOT_FOUND", type: "paypal_error" } }; const p = db.data.plans[s.plan]; return { id: s.id, status: s.status, plan_id: s.plan, billing_info: { last_payment: s.payments ? { amount: money(p.monthly), time: s.lastAt } : undefined, cycle_executions: [{ tenure_type: "REGULAR", cycles_completed: s.payments }] } }; }
+      if (method === "get_dispute") return disputes.get(arg.dispute_id) || { error: { message: "RESOURCE_NOT_FOUND", type: "paypal_error" } };
+      if (method === "get_refund") { const r = refs[arg.refund_id]; if (!r) return { error: { message: "RESOURCE_NOT_FOUND", type: "paypal_error" } }; return { id: r.id, status: "COMPLETED", amount: money(r.amount), links: [{ rel: "up", href: `/v2/payments/captures/${r.capture}` }] }; }
+      return null;
+    },
+    payoutDetail(batchId) {
+      const p = payouts.get(batchId);
+      if (!p) return null;
+      const sender = Object.entries(db.data.byRequest).find(([k, v]) => k.startsWith("payout:") && v?.batchId === batchId)?.[0].slice(7) || null;
+      return { batchId, status: "SUCCESS", sender, items: [{ transaction_id: p.status === "SUCCESS" ? `TX${batchId.slice(7)}` : null, status: p.status, amount: p.amount, receiver: p.receiver, sender_item_id: sender }] };
+    },
     // what the simulated approval page does
     approve({ token, setup, invoice, subscription }) {
       if (subscription) { const x = db.data.subs?.[subscription]; if (!x) return false; x.status = "ACTIVE"; x.payments = 1; x.lastAt = new Date().toISOString(); db.save(); return true; }
@@ -161,6 +192,14 @@ export function mockPaypal({ publicUrl = "http://localhost:8790", file = stateFi
       if (setup) { const s = setups.get(setup); return s ? { kind: "vault", status: s.status } : null; }
       return null;
     },
+  };
+  // (recon) each refund is also kept with its capture and amount, for get_refund; the refund itself is unchanged
+  const refundOnly = api.refund;
+  api.refund = async (cid, opts) => {
+    const r = await refundOnly(cid, opts);
+    db.data.refundsLog ||= {};
+    if (!db.data.refundsLog[r.id]) { db.data.refundsLog[r.id] = { id: r.id, capture: cid, amount: opts.amount }; db.save(); }
+    return r;
   };
   return api;
 }

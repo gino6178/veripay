@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api.jsx";
 
-// PayPal's JS SDK v6 on the page: the person approves their payment in a PayPal popup (PayPal, Pay Later, or Venmo where
-// they are eligible) without leaving Join. The order already exists (Join made it when they joined); the buttons only
-// approve it, and Join authorizes it on the server. Without PayPal sandbox keys (the stand-in), or if the SDK can't load,
-// it falls back to the plain link to PayPal's approval page.
+// PayPal's JS SDK v6 on the page: the person approves their first premium in a PayPal popup (PayPal, Pay Later, or Venmo
+// where they are eligible) without leaving Cover. The order already exists (Cover made it when they bought); the buttons
+// only approve it, and Cover captures it on the server. Without PayPal sandbox keys (the stand-in), or if the SDK can't
+// load, it falls back to the plain link to PayPal's approval page.
 let sdkLoad = null;
 const loadSdk = (src) => (sdkLoad ||= new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = bad; document.head.appendChild(s); }));
 
-export default function PayPalButtons({ bookingId, orderId, approveUrl, label, onDone }) {
+export default function PayPalButtons({ policyId, orderId, approveUrl, label, onDone }) {
   const box = useRef(null);
   const [state, setState] = useState("loading"), [err, setErr] = useState(null);
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function PayPalButtons({ bookingId, orderId, approveUrl, label, o
       const sdk = await window.paypal.createInstance({ clientToken: cfg.token, components: ["paypal-payments", "venmo-payments"], pageType: "checkout" });
       const methods = await sdk.findEligibleMethods({ currencyCode: "USD" });
       const options = {
-        onApprove: async () => { try { await api(`/api/bookings/${bookingId}/approved`, { method: "POST" }); onDone?.(); } catch (e) { setErr(e.message); } },
+        onApprove: async () => { try { await api(`/api/policies/${policyId}/confirm`, { method: "POST" }); onDone?.(); } catch (e) { setErr(e.message); } },
         onCancel: () => setErr("You closed PayPal without approving."),
         onError: (e) => setErr(String(e?.message || e)),
       };
@@ -38,13 +38,13 @@ export default function PayPalButtons({ bookingId, orderId, approveUrl, label, o
       setState(box.current.children.length ? "buttons" : "link");
     })().catch(() => !off && setState("link"));
     return () => { off = true; if (box.current) box.current.innerHTML = ""; };
-  }, [bookingId, orderId]);
+  }, [policyId, orderId]);
   return (
     <div className="pp-buttons">
       <div ref={box} className="pp-box" />
       {state === "loading" && <span className="small muted">Loading PayPal…</span>}
-      {state === "link" && approveUrl && <a className="btn primary" href={approveUrl}>{label || "Approve in PayPal"}</a>}
-      {err && <span className="small err">{err}</span>}
+      {state === "link" && approveUrl && <a className="btn paypal" href={approveUrl}>{label || "Approve in PayPal"}</a>}
+      {err && <span className="small" style={{ color: "var(--bad)" }}>{err}</span>}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { advance } from "../src/clock.js";
 import { poolOf } from "../src/pool.js";
 
 setPay(mockPaypal({ file: null }), "http://test");
-const renters = { place: "台北市大安區", size: 10, floor: "low", building: "managed", contents: 8000, valuables: 0, claims3y: 0, deductible: "250" };
+const renters = { place: "Austin, TX 78704", size: 650, floor: "low", building: "managed", contents: 8000, valuables: 0, claims3y: 0, deductible: "250" };
 
 test("every clause the products cite exists", () => assert.deepEqual(check(), []));
 
@@ -21,7 +21,7 @@ test("a quote says where the money goes: 20% fee, the rest the claims pool", () 
   const cents = (s) => Math.round(parseFloat(s.slice(1)) * 100), w = q.whereYourMoneyGoes;
   assert.equal(cents(w.coverFee), Math.round(cents(q.annual) * 0.2));
   assert.equal(cents(w.claimsPool) + cents(w.coverFee) + cents(w.reinsurance), cents(q.annual));
-  assert.equal(q.zone.district, "臺北市大安區");
+  assert.equal(q.zone.area, "Austin, TX 78704"); assert.equal(q.zone.state, "TX");
 });
 
 test("missing answers are named, out-of-range ones refused", () => {

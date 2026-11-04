@@ -6,14 +6,14 @@
   { "id": "species", "type": "choice", "zh": "狗還是貓？", "en": "Dog or cat?", "options": [ { "v": "dog", "zh": "狗", "en": "Dog" }, { "v": "cat", "zh": "貓", "en": "Cat" } ] },
   { "id": "petName", "type": "text", "zh": "牠叫什麼名字？", "en": "What's their name?" },
   { "id": "breedSize", "type": "choice", "zh": "體型（狗）／品種類型（貓）？", "en": "Size (dogs) or breed type (cats)?", "options": [ { "v": "small", "zh": "小型犬／一般貓", "en": "Small dog or a typical cat" }, { "v": "medium", "zh": "中型犬", "en": "Medium dog" }, { "v": "large", "zh": "大型犬", "en": "Large dog" }, { "v": "flat", "zh": "短鼻品種（法鬥、英鬥、巴哥、波斯、異國短毛）", "en": "Flat-faced breed (French or English bulldog, pug, Persian, exotic shorthair)" } ] },
-  { "id": "ageYears", "type": "number", "min": 0, "max": 14, "unit": "歲", "zh": "幾歲？（新投保限 14 歲以下）", "en": "How old? (new policies up to 14)" },
-  { "id": "chipped", "type": "bool", "zh": "有植入晶片並完成寵物登記嗎？", "en": "Microchipped and registered?" },
+  { "id": "ageYears", "type": "number", "min": 0, "max": 14, "unit": "years", "zh": "幾歲？（新投保限 14 歲以下）", "en": "How old? (new policies up to 14)" },
+  { "id": "chipped", "type": "bool", "zh": "有植入晶片嗎？", "en": "Are they microchipped?" },
   { "id": "conditions", "type": "text", "zh": "有沒有已知的病或過去一年看過的病？（沒有就寫「沒有」）", "en": "Any known conditions, or anything treated in the last year? (\"none\" if not)" },
   { "id": "limit", "type": "choice", "zh": "每年醫療保額？", "en": "Yearly limit?", "options": [ { "v": "3000", "zh": "3,000 美元", "en": "$3,000" }, { "v": "6000", "zh": "6,000 美元", "en": "$6,000" }, { "v": "12000", "zh": "12,000 美元", "en": "$12,000" } ] },
   { "id": "copay", "type": "choice", "zh": "每次自己付幾成？", "en": "Your share of each bill?", "options": [ { "v": "10", "zh": "1 成", "en": "10%" }, { "v": "20", "zh": "2 成", "en": "20%" }, { "v": "30", "zh": "3 成", "en": "30%" } ] }
  ],
  "price": {
-  "base": 22000,
+  "base": 52000,
   "factors": {
    "species": { "dog": 1.0, "cat": 0.7 },
    "breedSize": { "small": 0.9, "medium": 1.0, "large": 1.25, "flat": 1.5 },
@@ -22,7 +22,7 @@
    "limit": { "3000": 0.8, "6000": 1.0, "12000": 1.25 },
    "copay": { "10": 1.15, "20": 1.0, "30": 0.85 }
   },
-  "min": 9000
+  "min": 18000
  },
  "coverages": [
   { "id": "vet", "zh": "意外和疾病的醫療（門診、住院、手術、檢查、藥）", "en": "Accident and illness care (visits, stays, surgery, tests, medicine)", "limitFrom": "limit", "clause": "PT-2.1" },

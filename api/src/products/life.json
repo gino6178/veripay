@@ -1,50 +1,305 @@
 {
  "id": "life",
- "name": { "zh": "定期壽險", "en": "Term life" },
- "for": { "zh": "有人靠你生活的人：在保障期間身故，一次給付保額給你指定的受益人", "en": "People someone depends on: if you die during the term, the amount goes to the people you name, in one payment" },
+ "name": {
+  "zh": "定期壽險",
+  "en": "Term life"
+ },
+ "for": {
+  "zh": "有人靠你生活的人：在保障期間身故，一次給付保額給你指定的受益人",
+  "en": "People someone depends on: if you die during the term, the amount goes to the people you name, in one payment"
+ },
  "questions": [
-  { "id": "ageYears", "type": "number", "min": 20, "max": 60, "unit": "歲", "zh": "你幾歲？", "en": "How old are you?" },
-  { "id": "sex", "type": "choice", "zh": "生理性別（只用於死亡率表）", "en": "Sex at birth (used only for the mortality table)", "options": [ { "v": "f", "zh": "女", "en": "Female" }, { "v": "m", "zh": "男", "en": "Male" } ] },
-  { "id": "smoker", "type": "bool", "zh": "過去 12 個月有抽菸（含電子菸）嗎？", "en": "Smoked anything (e-cigarettes too) in the last 12 months?" },
-  { "id": "health", "type": "choice", "zh": "目前健康狀況？", "en": "Your health now?", "options": [ { "v": "good", "zh": "沒有慢性病、沒在服藥", "en": "No long-term conditions, no regular medicine" }, { "v": "managed", "zh": "有控制良好的慢性病（如高血壓、氣喘）", "en": "A well-managed condition (such as high blood pressure or asthma)" }, { "v": "serious", "zh": "過去 5 年有癌症、心臟病、中風或其他重大疾病", "en": "Cancer, heart disease, a stroke or another serious illness in the last 5 years" } ] },
-  { "id": "job", "type": "choice", "zh": "工作類型？", "en": "What kind of work?", "options": [ { "v": "office", "zh": "內勤、學生", "en": "Office work or studying" }, { "v": "field", "zh": "外勤、需要騎車或開車跑業務", "en": "Out and about, riding or driving for work" }, { "v": "hazard", "zh": "高處、工地、漁船、保全等高風險", "en": "Heights, construction, fishing boats, security and other high-risk work" } ] },
-  { "id": "amount", "type": "choice", "zh": "保額？", "en": "How much cover?", "options": [ { "v": "100000", "zh": "10 萬美元", "en": "$100,000" }, { "v": "250000", "zh": "25 萬美元", "en": "$250,000" }, { "v": "500000", "zh": "50 萬美元", "en": "$500,000" } ] },
-  { "id": "term", "type": "choice", "zh": "保障幾年？", "en": "For how many years?", "options": [ { "v": "10", "zh": "10 年", "en": "10 years" }, { "v": "20", "zh": "20 年", "en": "20 years" }, { "v": "30", "zh": "30 年", "en": "30 years" } ] }
+  {
+   "id": "ageYears",
+   "type": "number",
+   "min": 20,
+   "max": 60,
+   "unit": "years",
+   "zh": "你幾歲？",
+   "en": "How old are you?"
+  },
+  {
+   "id": "sex",
+   "type": "choice",
+   "zh": "生理性別（只用於死亡率表）",
+   "en": "Sex at birth (used only for the mortality table)",
+   "options": [
+    {
+     "v": "f",
+     "zh": "女",
+     "en": "Female"
+    },
+    {
+     "v": "m",
+     "zh": "男",
+     "en": "Male"
+    }
+   ]
+  },
+  {
+   "id": "smoker",
+   "type": "bool",
+   "zh": "過去 12 個月有抽菸（含電子菸）嗎？",
+   "en": "Smoked anything (e-cigarettes too) in the last 12 months?"
+  },
+  {
+   "id": "health",
+   "type": "choice",
+   "zh": "目前健康狀況？",
+   "en": "Your health now?",
+   "options": [
+    {
+     "v": "good",
+     "zh": "沒有慢性病、沒在服藥",
+     "en": "No long-term conditions, no regular medicine"
+    },
+    {
+     "v": "managed",
+     "zh": "有控制良好的慢性病（如高血壓、氣喘）",
+     "en": "A well-managed condition (such as high blood pressure or asthma)"
+    },
+    {
+     "v": "serious",
+     "zh": "過去 5 年有癌症、心臟病、中風或其他重大疾病",
+     "en": "Cancer, heart disease, a stroke or another serious illness in the last 5 years"
+    }
+   ]
+  },
+  {
+   "id": "job",
+   "type": "choice",
+   "zh": "工作類型？",
+   "en": "What kind of work?",
+   "options": [
+    {
+     "v": "office",
+     "zh": "內勤、學生",
+     "en": "Office work or studying"
+    },
+    {
+     "v": "field",
+     "zh": "外勤、需要騎車或開車跑業務",
+     "en": "Out and about, riding or driving for work"
+    },
+    {
+     "v": "hazard",
+     "zh": "高處、工地、漁船、保全等高風險",
+     "en": "Heights, construction, fishing boats, security and other high-risk work"
+    }
+   ]
+  },
+  {
+   "id": "amount",
+   "type": "choice",
+   "zh": "保額？",
+   "en": "How much cover?",
+   "options": [
+    {
+     "v": "100000",
+     "zh": "10 萬美元",
+     "en": "$100,000"
+    },
+    {
+     "v": "250000",
+     "zh": "25 萬美元",
+     "en": "$250,000"
+    },
+    {
+     "v": "500000",
+     "zh": "50 萬美元",
+     "en": "$500,000"
+    }
+   ]
+  },
+  {
+   "id": "term",
+   "type": "choice",
+   "zh": "保障幾年？",
+   "en": "For how many years?",
+   "options": [
+    {
+     "v": "10",
+     "zh": "10 年",
+     "en": "10 years"
+    },
+    {
+     "v": "20",
+     "zh": "20 年",
+     "en": "20 years"
+    },
+    {
+     "v": "30",
+     "zh": "30 年",
+     "en": "30 years"
+    }
+   ]
+  }
  ],
  "price": {
   "model": "mortality",
-  "perThousand": { "20-29": 0.55, "30-39": 0.8, "40-49": 1.7, "50-60": 4.2 },
+  "perThousand": {
+   "20-29": 0.55,
+   "30-39": 0.8,
+   "40-49": 1.7,
+   "50-60": 4.2
+  },
   "factors": {
-   "sex": { "f": 0.82, "m": 1.0 },
-   "smoker": { "true": 2.3, "false": 1.0 },
-   "health": { "good": 1.0, "managed": 1.35, "serious": null },
-   "job": { "office": 1.0, "field": 1.2, "hazard": 1.8 },
-   "term": { "10": 0.85, "20": 1.0, "30": 1.25 }
+   "sex": {
+    "f": 0.82,
+    "m": 1.0
+   },
+   "smoker": {
+    "true": 2.3,
+    "false": 1.0
+   },
+   "health": {
+    "good": 1.0,
+    "managed": 1.35,
+    "serious": null
+   },
+   "job": {
+    "office": 1.0,
+    "field": 1.2,
+    "hazard": 1.8
+   },
+   "term": {
+    "10": 0.85,
+    "20": 1.0,
+    "30": 1.25
+   }
   },
   "min": 6000
  },
  "coverages": [
-  { "id": "death", "zh": "保障期間內身故，一次給付保額", "en": "One payment of the amount on death within the term", "limitFrom": "amount", "clause": "LF-2.1", "noDeductible": true },
-  { "id": "terminal", "zh": "末期疾病提前給付（保額的一半）", "en": "Half the amount early on a terminal diagnosis", "limitFrom": "amount", "share": 0.5, "clause": "LF-2.2", "noDeductible": true }
+  {
+   "id": "death",
+   "zh": "保障期間內身故，一次給付保額",
+   "en": "One payment of the amount on death within the term",
+   "limitFrom": "amount",
+   "clause": "LF-2.1",
+   "noDeductible": true
+  },
+  {
+   "id": "terminal",
+   "zh": "末期疾病提前給付（保額的一半）",
+   "en": "Half the amount early on a terminal diagnosis",
+   "limitFrom": "amount",
+   "share": 0.5,
+   "clause": "LF-2.2",
+   "noDeductible": true
+  }
  ],
  "addons": [],
  "claims": [
-  { "type": "death", "coverage": "death", "zh": "被保險人身故", "en": "The insured person died", "evidence": ["death_certificate", "id_beneficiary", "household_record"], "instantMax": 0, "clause": "LF-2.1" },
-  { "type": "terminal", "coverage": "terminal", "zh": "末期疾病", "en": "Terminal illness", "evidence": ["medical", "specialist_statement"], "instantMax": 0, "clause": "LF-2.2" }
+  {
+   "type": "death",
+   "coverage": "death",
+   "zh": "被保險人身故",
+   "en": "The insured person died",
+   "evidence": [
+    "death_certificate",
+    "id_beneficiary"
+   ],
+   "instantMax": 0,
+   "clause": "LF-2.1"
+  },
+  {
+   "type": "terminal",
+   "coverage": "terminal",
+   "zh": "末期疾病",
+   "en": "Terminal illness",
+   "evidence": [
+    "medical",
+    "specialist_statement"
+   ],
+   "instantMax": 0,
+   "clause": "LF-2.2"
+  }
  ],
  "waitingDays": 0,
  "beneficiaries": true,
- "underwriting": { "decline": [ { "q": "health", "v": "serious", "zh": "過去 5 年有重大疾病，線上無法核保；請改由人工核保", "en": "A serious illness in the last 5 years can't be underwritten online; a person reviews it instead" } ], "review": [ { "q": "amount", "v": "500000", "and": { "q": "ageYears", "min": 45 }, "zh": "45 歲以上投保 50 萬美元，需人工核保", "en": "$500,000 at 45 or older needs a person's review" } ] },
+ "underwriting": {
+  "decline": [
+   {
+    "q": "health",
+    "v": "serious",
+    "zh": "過去 5 年有重大疾病，線上無法核保；請改由人工核保",
+    "en": "A serious illness in the last 5 years can't be underwritten online; a person reviews it instead"
+   }
+  ],
+  "review": [
+   {
+    "q": "amount",
+    "v": "500000",
+    "and": {
+     "q": "ageYears",
+     "min": 45
+    },
+    "zh": "45 歲以上投保 50 萬美元，需人工核保",
+    "en": "$500,000 at 45 or older needs a person's review"
+   }
+  ]
+ },
  "clauses": [
-  { "id": "LF-1.1", "kind": "definition", "zh": "「受益人」指你在保單上指定、身故時領取保險金的人，可以指定多人並分配比例，合計須為 100%。未指定或受益人已先身故者，保險金給付你的法定繼承人。", "en": "A \"beneficiary\" is someone you name to receive the payment, several in shares adding up to 100% if you like. With none named, or if they died first, it goes to your legal heirs." },
-  { "id": "LF-1.2", "kind": "definition", "zh": "「末期疾病」指經專科醫師診斷，依目前醫療技術無法治癒，且預期存活時間在 12 個月以內的疾病。", "en": "\"Terminal illness\" is an illness a specialist diagnoses as incurable with today's medicine, with life expected to be 12 months or less." },
-  { "id": "LF-2.1", "kind": "coverage", "zh": "被保險人於保障期間內身故，我們依保額一次給付身故保險金給受益人，扣除已提前給付的末期疾病保險金。", "en": "If the insured person dies within the term, we pay the amount once to the beneficiaries, less any terminal illness payment made earlier." },
-  { "id": "LF-2.2", "kind": "coverage", "zh": "被保險人於保障期間內經診斷為末期疾病，得申請提前給付保額的 50%；提前給付後，保單其餘部分繼續有效。", "en": "If the insured person is diagnosed with a terminal illness within the term, they may claim 50% of the amount early; the rest of the policy stays in force." },
-  { "id": "LF-3.1", "kind": "exclusion", "zh": "保單生效或復效後 2 年內自殺，不予理賠，退還已繳保費。", "en": "No payment for suicide within 2 years of the policy starting or being reinstated; the premiums paid are refunded." },
-  { "id": "LF-3.2", "kind": "exclusion", "zh": "受益人故意致被保險人於死，該受益人喪失受益權。戰爭或被保險人犯罪被處死刑，不予理賠。", "en": "A beneficiary who caused the death on purpose loses their share. No payment for death in war or by execution for a crime." },
-  { "id": "LF-4.1", "kind": "condition", "zh": "投保時應據實告知健康問卷。保單生效 2 年內，如發現未據實告知且影響核保，我們得解除契約；超過 2 年不再解除（不可抗辯條款）。", "en": "Answer the health questions truthfully. Within 2 years of the start, a false answer that would have changed our decision lets us rescind the policy; after 2 years we can't (the incontestability clause)." },
-  { "id": "LF-4.2", "kind": "condition", "zh": "申請身故保險金須提供死亡證明書、受益人身分證明及除戶戶籍謄本。所有壽險理賠皆由人工審核，不自動給付。", "en": "A death claim needs the death certificate, the beneficiary's ID and the household record showing the death. Every life claim is reviewed by a person; none is paid automatically." },
-  { "id": "LF-4.3", "kind": "condition", "zh": "你可以隨時變更受益人，或在保障期間內調降保額，調降後立即重新計價並退還差額；調高保額須重新核保。", "en": "Change beneficiaries any time, or lower the amount within the term, priced again at once with the difference refunded; raising it needs new underwriting." },
-  { "id": "LF-6.1", "kind": "policy", "zh": "保費月繳或年繳；月繳扣款失敗有 30 日寬限期，逾期停效，2 年內可申請復效（須重新告知健康狀況）。可隨時退保，按未經過日數退費。保費的 20% 為 Cover 的固定費用，其餘進入理賠池；年度結算後剩餘捐給你選的公益團體。", "en": "Pay monthly or yearly; a failed payment has 30 days' grace, then the policy lapses and can be reinstated within 2 years (with the health questions again). Cancel any time for a refund of the days left. 20% of the premium is Cover's flat fee, the rest the claims pool; what is left after the year goes to your chosen cause." }
+  {
+   "id": "LF-1.1",
+   "kind": "definition",
+   "zh": "「受益人」指你在保單上指定、身故時領取保險金的人，可以指定多人並分配比例，合計須為 100%。未指定或受益人已先身故者，保險金給付你的遺產。",
+   "en": "A \"beneficiary\" is someone you name to receive the payment, several in shares adding up to 100% if you like. With none named, or if they died first, it goes to your estate."
+  },
+  {
+   "id": "LF-1.2",
+   "kind": "definition",
+   "zh": "「末期疾病」指經專科醫師診斷，依目前醫療技術無法治癒，且預期存活時間在 12 個月以內的疾病。",
+   "en": "\"Terminal illness\" is an illness a specialist diagnoses as incurable with today's medicine, with life expected to be 12 months or less."
+  },
+  {
+   "id": "LF-2.1",
+   "kind": "coverage",
+   "zh": "被保險人於保障期間內身故，我們依保額一次給付身故保險金給受益人，扣除已提前給付的末期疾病保險金。",
+   "en": "If the insured person dies within the term, we pay the amount once to the beneficiaries, less any terminal illness payment made earlier."
+  },
+  {
+   "id": "LF-2.2",
+   "kind": "coverage",
+   "zh": "被保險人於保障期間內經診斷為末期疾病，得申請提前給付保額的 50%；提前給付後，保單其餘部分繼續有效。",
+   "en": "If the insured person is diagnosed with a terminal illness within the term, they may claim 50% of the amount early; the rest of the policy stays in force."
+  },
+  {
+   "id": "LF-3.1",
+   "kind": "exclusion",
+   "zh": "保單生效或復效後 2 年內自殺，不予理賠，退還已繳保費。",
+   "en": "No payment for suicide within 2 years of the policy starting or being reinstated; the premiums paid are refunded."
+  },
+  {
+   "id": "LF-3.2",
+   "kind": "exclusion",
+   "zh": "受益人故意致被保險人於死，該受益人喪失受益權。戰爭或被保險人犯罪被處死刑，不予理賠。",
+   "en": "A beneficiary who caused the death on purpose loses their share. No payment for death in war or by execution for a crime."
+  },
+  {
+   "id": "LF-4.1",
+   "kind": "condition",
+   "zh": "投保時應據實告知健康問卷。保單生效 2 年內，如發現未據實告知且影響核保，我們得解除契約；超過 2 年不再解除（不可抗辯條款）。",
+   "en": "Answer the health questions truthfully. Within 2 years of the start, a false answer that would have changed our decision lets us rescind the policy; after 2 years we can't (the incontestability clause)."
+  },
+  {
+   "id": "LF-4.2",
+   "kind": "condition",
+   "zh": "申請身故保險金須提供經認證的死亡證明書及受益人身分證明。所有壽險理賠皆由人工審核，不自動給付。",
+   "en": "A death claim needs a certified death certificate and the beneficiary's ID. Every life claim is reviewed by a person; none is paid automatically."
+  },
+  {
+   "id": "LF-4.3",
+   "kind": "condition",
+   "zh": "你可以隨時變更受益人，或在保障期間內調降保額，調降後立即重新計價並退還差額；調高保額須重新核保。",
+   "en": "Change beneficiaries any time, or lower the amount within the term, priced again at once with the difference refunded; raising it needs new underwriting."
+  },
+  {
+   "id": "LF-6.1",
+   "kind": "policy",
+   "zh": "保費月繳或年繳；月繳扣款失敗有 30 日寬限期，逾期停效，2 年內可申請復效（須重新告知健康狀況）。可隨時退保，按未經過日數退費。保費的 20% 為 Cover 的固定費用，其餘進入理賠池；年度結算後剩餘捐給你選的公益團體。",
+   "en": "Pay monthly or yearly; a failed payment has 30 days' grace, then the policy lapses and can be reinstated within 2 years (with the health questions again). Cancel any time for a refund of the days left. 20% of the premium is Cover's flat fee, the rest the claims pool; what is left after the year goes to your chosen cause."
+  }
  ]
 }

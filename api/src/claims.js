@@ -22,6 +22,8 @@ import { signals } from "./fraud.js";
 import { read } from "./reader.js";
 import * as receipts from "./proof/receipts.js";
 import { tr } from "./zh.js";
+import { statusOf } from "./flights.js";
+import { allPolicies } from "./policy.js";
 import { pp, usd, why } from "./pay/index.js";
 
 const db = store(stateFile("claims"), { claims: {} });
@@ -33,7 +35,7 @@ export const claimsOf = (personId) => Object.values(db.data.claims).filter((c) =
 export const allClaims = () => Object.values(db.data.claims);
 const save = () => db.save();
 const say = (c, action, summary, actor = { kind: "platform" }, data = null) => record({ actor, who: [c.person], action, summary, ref: c.id, data });
-const KINDS = ["photo", "receipt", "receipt_or_photo", "police_report", "repair_quote", "vet_invoice", "diagnosis", "records", "fire_report", "list", "statement", "medical", "inspection", "death_certificate", "id_beneficiary", "household_record", "specialist_statement", "registration", "other"];
+const KINDS = ["photo", "receipt", "receipt_or_photo", "police_report", "repair_quote", "vet_invoice", "diagnosis", "records", "fire_report", "list", "statement", "medical", "inspection", "death_certificate", "id_beneficiary", "specialist_statement", "registration", "flight_record", "pir", "other"];
 const READS = ["receipt", "receipt_or_photo", "police_report", "repair_quote", "vet_invoice", "fire_report", "medical", "diagnosis"];
 // these may start in the waiting period (the clauses say so)
 const NO_WAIT = { renters: ["theft", "fire"], home: ["theft", "fire"] };
@@ -80,7 +82,7 @@ export async function addEvidence(id, { kind, name = "", data = null, dhash = nu
 export const evidenceFile = (c, eid) => (EVIDENCE ? (fs.existsSync(path.join(EVIDENCE, c.id, eid)) ? fs.readFileSync(path.join(EVIDENCE, c.id, eid)) : null) : mem.get(eid) || null);
 
 function missingEvidence(c) {
-  const need = claimType(c.product, c.type).evidence, have = new Set(c.evidence.map((e) => e.kind));
+  const need = claimType(c.product, c.type)?.evidence || [], have = new Set(c.evidence.map((e) => e.kind));
   return need.filter((k) => !(have.has(k) || (k === "receipt_or_photo" && (have.has("receipt") || have.has("photo"))) || (k === "list" && c.items.length) || (k === "statement" && c.story.length > 20)));
 }
 async function decideIfReady(c, actor) {
@@ -173,7 +175,7 @@ async function pay(c, amount, { by, note = null }) {
     c.status = "paid"; c.paid = amount; c.paidAt = nowIso(); c.secondsToPay = Math.round((Date.parse(c.paidAt) - Date.parse(c.reportedAt)) / 1000);
     save();
     post({ kind: "claim", cause: pol.cause, amount, policy: pol.id, claim: c.id, product: c.product, ref: r.batchId });
-    say(c, "claim_paid", `Claim ${c.number} paid: ${usd(amount)} sent with PayPal Payouts to ${c.payout.to}${by === "rules" ? `, ${c.secondsToPay} seconds after it was filed` : ""}.`, { kind: "paypal" });
+    say(c, "claim_paid", `Claim ${c.number} paid: ${usd(amount)} sent with PayPal Payouts to ${c.payout.to}${by === "rules" ? `, ${c.secondsToPay} seconds after it was filed` : by === "parametric" ? ", with no claim filed" : ""}.`, { kind: "paypal" });
     issue(c, "paid");
     (await import("./carrier.js")).afterClaim?.(c);
   } catch (e) { c.status = "referred"; c.payoutError = why(e); save(); say(c, "payout_failed", `The payout for claim ${c.number} failed (${c.payoutError}); an adjuster will retry it.`); }
@@ -183,6 +185,54 @@ function issue(c, event) {
   const r = receipts.issue({ kind: "claim", subject: c.id, event, people: [c.person],
     data: { number: c.number, policy: c.policy, product: c.product, type: c.type, happenedAt: c.happenedAt, claimed: c.claimed, outcome: c.decision?.outcome, amount: c.paid ?? 0, by: c.decision?.by, basis: c.decision?.basis, checks: c.decision?.checks.map((x) => ({ id: x.id, ok: x.ok, clause: x.clause })), signals: c.decision?.signals.map((s) => s.signal), payout: c.payout?.batchId || null, evidence: c.evidence.map((e) => e.sha).filter(Boolean) } });
   c.receipts = [...(c.receipts || []), r.id]; save();
+}
+
+// ---- travel: flights that pay by themselves (TR-2.1, TR-2.2) ----------------------------------------------------------
+// Every run, each insured flight on a live travel policy is looked up. Once it has departed 2 hours or more late, or
+// been cancelled, Cover files the claim itself, checks it like any other (in force, the flight is on the policy, the
+// disruption wasn't already known when the policy was bought, the trip's cap) and pays every traveler on the policy
+// with PayPal Payouts. Nobody files anything; the flight's record is the evidence, its hash in the receipt.
+const TIER = (st) => (st.status === "cancelled" ? { type: "flight_cancelled", each: 30000, clause: "TR-2.2" } : st.delayMin >= 360 ? { type: "flight_delay", each: 30000, clause: "TR-2.1" } : st.delayMin >= 120 ? { type: "flight_delay", each: 10000, clause: "TR-2.1" } : null);
+export async function flightTick() {
+  const out = [];
+  for (const pol of allPolicies().filter((p) => p.product === "travel" && ["active", "grace", "expired"].includes(p.status) && p.start)) {
+    for (const f of pol.answers.flights || []) {
+      if (allClaims().some((c) => c.policy === pol.id && c.flight === `${f.flight}@${f.date}` && c.status !== "withdrawn")) continue;
+      const st = await statusOf(f, pol.answers.destination), tier = TIER(st);
+      if (!tier || (st.status !== "departed" && st.status !== "cancelled")) continue;
+      out.push(await parametric(pol, f, st, tier));
+    }
+  }
+  return out;
+}
+async function parametric(pol, f, st, tier) {
+  const n = +pol.answers.travelers || 1, p = product("travel");
+  const record = { flight: f.flight, date: f.date, from: st.from, to: st.to, scheduled: st.scheduled, status: st.status, delayMin: st.delayMin, source: st.source, reportedAt: st.reportedAt, firstSeenDisrupted: st.firstSeenDisrupted, seenAt: st.at };
+  const recordJson = JSON.stringify(record), sha = crypto.createHash("sha256").update(recordJson).digest("hex");
+  const id = `clm_${crypto.randomBytes(5).toString("hex")}`;
+  const c = { id, number: `CL-${Date.now().toString(36).toUpperCase().slice(-7)}`, person: pol.person, policy: pol.id, product: "travel", type: tier.type, coverage: tier.type, flight: `${f.flight}@${f.date}`,
+    happenedAt: `${f.date}T12:00:00.000Z`, reportedAt: nowIso(), where: `${st.from} → ${st.to}`, story: "", claimed: tier.each * n, items: [], payee: "me", vetEmail: null, device: null, event: `${st.from}:${f.date}`,
+    evidence: [{ id: `ev_${crypto.randomBytes(4).toString("hex")}`, kind: "flight_record", name: `${f.flight} ${f.date}`, at: nowIso(), size: recordJson.length, sha, dhash: null, exif: null, typed: recordJson, read: { date: f.date, amount: null, merchant: f.flight, items: [], text: recordJson, confidence: 1, by: "flight status" } }],
+    status: "deciding", decision: null, payout: null, history: [], auto: true, flightReportedAt: st.reportedAt || st.at };
+  db.data.claims[id] = c; save();
+  const checks = [], check = (cid, ok, clauseId, says, hard = true) => checks.push({ id: cid, ok, clause: clauseId, says, hard });
+  const force = inForce(pol, new Date(Math.min(Date.parse(pol.end) - 1, Math.max(Date.parse(pol.start), Date.parse(`${f.date}T12:00:00Z`)))).toISOString());
+  check("in_force", force.ok, "TR-6.1", force.ok ? "the policy was in force for this flight" : `the flight was ${force.why}`);
+  check("listed", true, "TR-1.1", `${f.flight} on ${f.date} is an insured flight on this policy`);
+  const known = st.firstSeenDisrupted && Date.parse(st.firstSeenDisrupted) < Date.parse(pol.created);
+  check("not_known", !known, "TR-3.1", known ? `the disruption was known (${st.firstSeenDisrupted.slice(0, 16)}) before the policy was bought` : "the disruption wasn't known when the policy was bought");
+  check("threshold", true, tier.clause, st.status === "cancelled" ? "the airline cancelled the flight" : `departed ${Math.floor(st.delayMin / 60)} h ${st.delayMin % 60} min late (${st.source})`);
+  const paidSoFar = allClaims().filter((x) => x.policy === pol.id && x.auto && x.status === "paid").reduce((t, x) => t + (x.paid || 0), 0);
+  const cap = 60000 * n, amount = Math.max(0, Math.min(tier.each * n, cap - paidSoFar));
+  check("cap", amount > 0, "TR-2.2", amount > 0 ? `${usd(paidSoFar)} paid on this trip so far; the cap is ${usd(cap)}` : `the trip's cap of ${usd(cap)} is reached`);
+  const fail = checks.filter((x) => !x.ok);
+  c.decision = { outcome: fail.length ? "deny" : "pay", amount: fail.length ? 0 : amount, reason: fail.length ? fail.map((x) => x.says).join("; ") : "every check passed", checks, signals: [],
+    steps: [{ step: "parametric", clause: tier.clause, amount: tier.each * n, says: `${usd(tier.each)} for each of ${n} traveler${n > 1 ? "s" : ""}` }, ...(amount < tier.each * n ? [{ step: "cap", clause: "TR-2.2", amount: amount - tier.each * n, says: "the trip's cap" }] : [])],
+    by: "parametric", at: nowIso(), basis: [...new Set(checks.map((x) => x.clause))] };
+  c.history.push({ at: nowIso(), outcome: c.decision.outcome, amount: c.decision.amount, by: "parametric" });
+  say(c, "flight_disrupted", `${f.flight} on ${f.date} (${st.from} → ${st.to}) ${st.status === "cancelled" ? "was cancelled" : `departed ${Math.round(st.delayMin / 6) / 10} hours late`}. Cover filed claim ${c.number} for you.`);
+  if (fail.length) { c.status = "denied"; save(); say(c, "claim_denied", `Claim ${c.number} isn't covered: ${c.decision.reason}.`); issue(c, "denied"); return view(c); }
+  return pay(c, amount, { by: "parametric" });
 }
 
 // ---- the adjusters' desk ------------------------------------------------------------------------------------------
@@ -232,7 +282,8 @@ export async function tick() {
 }
 
 export function view(c, { staff = false, lang = "en" } = {}) {
-  const p = product(c.product), ct = claimType(c.product, c.type), d = c.decision, L = (x) => (lang === "zh" ? tr(x) : x);
+  // (a claim whose type a later product version dropped still shows, under its own type id)
+  const p = product(c.product), ct = claimType(c.product, c.type) || { en: c.type, zh: c.type, evidence: [] }, d = c.decision, L = (x) => (lang === "zh" ? tr(x) : x);
   return { claim: c.id, number: c.number, policy: c.policy, product: c.product, type: c.type, what: ct[lang] || ct.en, status: c.status, happenedAt: c.happenedAt, reportedAt: c.reportedAt, claimed: usd(c.claimed),
     ...(c.status === "needs_evidence" ? { missing: missingEvidence(c), next: "Add the missing evidence (add_claim_evidence)." } : {}),
     ...(c.status === "needs_info" ? { asked: c.asked } : {}),

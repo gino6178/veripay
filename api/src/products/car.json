@@ -1,62 +1,61 @@
 {
  "id": "car",
- "name": { "zh": "汽機車險", "en": "Car and scooter" },
- "for": { "zh": "騎車開車的人：依你實際騎多少、怎麼騎來算保費；保你撞到別人、車子受損和被偷", "en": "Riders and drivers: priced on how much and how you really ride; covers hitting someone, damage to your vehicle and theft" },
+ "name": { "en": "Car and motorcycle", "zh": "汽機車險" },
+ "for": { "en": "Drivers and riders: priced on how much and how you really drive; covers hitting someone, damage to your vehicle and theft", "zh": "開車騎車的人：依你實際開多少、怎麼開來算保費；保你撞到別人、車子受損和被偷" },
  "questions": [
-  { "id": "vehicle", "type": "choice", "zh": "什麼車？", "en": "What vehicle?", "options": [ { "v": "scooter", "zh": "機車（250cc 以下）", "en": "Scooter (up to 250cc)" }, { "v": "escooter", "zh": "電動機車", "en": "Electric scooter" }, { "v": "car", "zh": "自用小客車", "en": "Private car" } ] },
-  { "id": "value", "type": "number", "min": 500, "max": 80000, "unit": "USD", "zh": "車子現在大約值多少？", "en": "What is it worth now, roughly?" },
-  { "id": "place", "type": "place", "zh": "平常停在哪裡？（區）", "en": "Where is it usually parked? (district)" },
-  { "id": "parking", "type": "choice", "zh": "停車方式？", "en": "Parked how?", "options": [ { "v": "garage", "zh": "室內車位", "en": "Indoor space" }, { "v": "street", "zh": "路邊", "en": "On the street" } ] },
-  { "id": "years", "type": "number", "min": 0, "max": 40, "unit": "年", "zh": "考到駕照幾年？", "en": "Years since you got your licence?" },
-  { "id": "accidents3y", "type": "number", "min": 0, "max": 10, "zh": "過去三年有幾次是你的責任的事故？", "en": "At-fault accidents in the last three years?" },
-  { "id": "kmMonth", "type": "number", "min": 0, "max": 5000, "unit": "km", "zh": "一個月大約騎（開）多少公里？", "en": "About how many km a month?" },
-  { "id": "telematics", "type": "bool", "zh": "願意讓 Cover 的 App 記錄行程來算保費嗎？（不記錄位置，只記里程、急煞、超速和夜間行駛的次數）", "en": "Let Cover's app record your trips to price your cover? (no locations: only distance, hard braking, speeding and night riding counts)" },
-  { "id": "level", "type": "choice", "zh": "保障範圍？", "en": "How much cover?", "options": [ { "v": "third", "zh": "只保撞到別人（第三人責任）", "en": "Only hitting someone (third party)" }, { "v": "theft", "zh": "第三人責任＋竊盜", "en": "Third party plus theft" }, { "v": "full", "zh": "第三人責任＋竊盜＋自己的車損", "en": "Third party, theft and damage to your own vehicle" } ] }
+  { "id": "vehicle", "type": "choice", "en": "What do you drive?", "zh": "什麼車？", "options": [ { "v": "car", "en": "A car, SUV or pickup", "zh": "汽車、休旅車或皮卡" }, { "v": "motorcycle", "en": "A motorcycle", "zh": "重型機車" }, { "v": "moped", "en": "A scooter or moped (50cc to 250cc, or electric)", "zh": "速克達或輕型機車（50–250cc 或電動）" } ] },
+  { "id": "value", "type": "number", "min": 500, "max": 120000, "unit": "USD", "en": "What is it worth now, roughly?", "zh": "車子現在大約值多少？" },
+  { "id": "place", "type": "place", "en": "Where is it garaged? (ZIP code)", "zh": "平常停在哪裡？（郵遞區號）" },
+  { "id": "parking", "type": "choice", "en": "Parked how, overnight?", "zh": "晚上停在哪？", "options": [ { "v": "garage", "en": "Garage or private lot", "zh": "車庫或私人停車場" }, { "v": "street", "en": "On the street", "zh": "路邊" } ] },
+  { "id": "years", "type": "number", "min": 0, "max": 60, "unit": "years", "en": "Years since you got your license?", "zh": "考到駕照幾年？" },
+  { "id": "accidents3y", "type": "number", "min": 0, "max": 10, "en": "At-fault accidents in the last three years?", "zh": "過去三年有幾次是你的責任的事故？" },
+  { "id": "milesMonth", "type": "number", "min": 0, "max": 5000, "unit": "miles", "en": "About how many miles a month?", "zh": "一個月大約開幾英里？" },
+  { "id": "telematics", "type": "bool", "en": "Let Cover's app record your trips to price your cover? (no locations: only distance, hard braking, speeding and late-night driving counts)", "zh": "願意讓 Cover 的 App 記錄行程來算保費嗎？（不記錄位置，只記里程、急煞、超速和深夜行駛次數）" },
+  { "id": "level", "type": "choice", "en": "How much cover?", "zh": "保障範圍？", "options": [ { "v": "third", "en": "Liability only (others' injuries and property)", "zh": "只保第三人責任" }, { "v": "theft", "en": "Liability plus theft", "zh": "第三人責任＋竊盜" }, { "v": "full", "en": "Liability, theft and collision (your own vehicle)", "zh": "第三人責任＋竊盜＋自己的車損" } ] }
  ],
  "price": {
-  "base": { "scooter": 4800, "escooter": 4200, "car": 26000 },
-  "per": { "value": { "every": 1000, "add": 0.012, "only": ["theft", "full"] }, "kmMonth": { "every": 100, "add": 0.03 } },
+  "base": { "car": 60000, "motorcycle": 30000, "moped": 12000 },
+  "per": { "value": { "every": 1000, "add": 0.01, "only": ["theft", "full"] }, "milesMonth": { "every": 100, "add": 0.025 } },
   "factors": {
-   "parking": { "garage": 0.85, "street": 1.0 },
-   "years": { "0-1": 1.6, "2-4": 1.25, "5-9": 1.0, "10+": 0.9 },
-   "accidents3y": { "0": 1.0, "1": 1.35, "2": 1.8, "3+": 2.5 },
-   "level": { "third": 1.0, "theft": 1.3, "full": 2.1 },
-   "telematics": { "true": 1.0, "false": 1.0 }
+   "parking": { "garage": 0.88, "street": 1.0 },
+   "years": { "0-1": 1.7, "2-4": 1.3, "5-9": 1.0, "10+": 0.9 },
+   "accidents3y": { "0": 1.0, "1": 1.4, "2": 1.85, "3+": 2.5 },
+   "level": { "third": 1.0, "theft": 1.2, "full": 1.9 }
   },
   "drive": { "score": { "90+": 0.8, "75-89": 0.9, "60-74": 1.0, "0-59": 1.25 } },
-  "zone": { "theft": true },
-  "min": 3000
+  "zone": { "theft": true, "hurricane": true },
+  "min": 6000
  },
  "coverages": [
-  { "id": "third_party", "zh": "第三人責任（撞到人、撞壞別人的車或東西）", "en": "Third party (injuring someone, damaging their vehicle or property)", "limit": 15000000, "clause": "CR-2.1" },
-  { "id": "theft", "zh": "整車失竊", "en": "Theft of the whole vehicle", "limitFrom": "value", "clause": "CR-2.2", "levels": ["theft", "full"] },
-  { "id": "own_damage", "zh": "自己的車碰撞、刮傷、天災損壞", "en": "Your vehicle's collision, scratches and storm damage", "limitFrom": "value", "clause": "CR-2.3", "levels": ["full"] }
+  { "id": "third_party", "en": "Liability (injuring someone, damaging their vehicle or property)", "zh": "第三人責任（撞傷人、撞壞別人的車或財物）", "limit": 30000000, "clause": "CR-2.1" },
+  { "id": "theft", "en": "Theft of the vehicle", "zh": "整車失竊", "limitFrom": "value", "clause": "CR-2.2", "levels": ["theft", "full"] },
+  { "id": "own_damage", "en": "Collision and other damage to your vehicle (scrapes, vandalism, storms, flood)", "zh": "自己的車碰撞與其他損壞（刮傷、惡意破壞、風災、淹水）", "limitFrom": "value", "clause": "CR-2.3", "levels": ["full"] }
  ],
- "deductibleFixed": { "theft": 0.1, "own_damage": 10000 },
+ "deductibleFixed": { "theft": 0.1, "own_damage": 50000 },
  "addons": [
-  { "id": "roadside", "zh": "道路救援（拖吊 20 公里、送油、換胎、接電）", "en": "Roadside help (a 20 km tow, fuel, a tyre change, a jump start)", "price": 1500, "clause": "CR-5.1" }
+  { "id": "roadside", "en": "Roadside help (a 20-mile tow, fuel, a tire change, a jump start)", "zh": "道路救援（拖吊 20 英里、送油、換胎、接電）", "price": 2400, "clause": "CR-5.1" }
  ],
  "claims": [
-  { "type": "parked_scratch", "coverage": "own_damage", "zh": "停車時被刮傷或撞到（不知道是誰）", "en": "Scratched or hit while parked (unknown who)", "evidence": ["photo", "repair_quote"], "instantMax": 60000, "clause": "CR-2.3" },
-  { "type": "collision", "coverage": "own_damage", "zh": "我撞到東西或跌倒", "en": "I hit something or fell", "evidence": ["photo", "repair_quote", "statement"], "instantMax": 40000, "clause": "CR-2.3" },
-  { "type": "third_party_property", "coverage": "third_party", "zh": "我撞壞別人的車或東西", "en": "I damaged someone else's vehicle or property", "evidence": ["photo", "police_report", "repair_quote"], "instantMax": 0, "clause": "CR-2.1" },
-  { "type": "third_party_injury", "coverage": "third_party", "zh": "有人受傷", "en": "Someone was hurt", "evidence": ["police_report", "medical"], "instantMax": 0, "clause": "CR-2.1" },
-  { "type": "theft", "coverage": "theft", "zh": "整台車被偷", "en": "The vehicle was stolen", "evidence": ["police_report", "registration"], "instantMax": 0, "clause": "CR-2.2" }
+  { "type": "parked_scratch", "coverage": "own_damage", "en": "Scraped, dented or vandalized while parked (unknown who)", "zh": "停車時被刮、被撞或被破壞（不知道是誰）", "evidence": ["photo", "repair_quote"], "instantMax": 150000, "clause": "CR-2.3" },
+  { "type": "collision", "coverage": "own_damage", "en": "I hit something or crashed", "zh": "我撞到東西或發生碰撞", "evidence": ["photo", "repair_quote", "statement"], "instantMax": 100000, "clause": "CR-2.3" },
+  { "type": "third_party_property", "coverage": "third_party", "en": "I damaged someone else's vehicle or property", "zh": "我撞壞別人的車或財物", "evidence": ["photo", "police_report", "repair_quote"], "instantMax": 0, "clause": "CR-2.1" },
+  { "type": "third_party_injury", "coverage": "third_party", "en": "Someone was hurt", "zh": "有人受傷", "evidence": ["police_report", "medical"], "instantMax": 0, "clause": "CR-2.1" },
+  { "type": "theft", "coverage": "theft", "en": "The vehicle was stolen", "zh": "整台車被偷", "evidence": ["police_report", "registration"], "instantMax": 0, "clause": "CR-2.2" }
  ],
  "waitingDays": 0,
  "clauses": [
-  { "id": "CR-1.1", "kind": "definition", "zh": "「承保車輛」指保單所載車牌號碼之車輛。「駕駛人」指經你允許使用承保車輛、持有有效駕照之人。", "en": "The \"insured vehicle\" is the one with the plate on the policy. A \"driver\" is anyone with a valid licence using it with your permission." },
-  { "id": "CR-1.2", "kind": "definition", "zh": "「駕駛分數」由行程紀錄計算（0–100），依每百公里的急煞、急加速、超速及夜間 0–5 時行駛的次數扣分。分數每月更新，下個月的保費依此調整，最多調降 20%、調升 25%。", "en": "The \"driving score\" (0 to 100) comes from trip records: points off per 100 km for hard braking, hard acceleration, speeding and riding between midnight and 5 am. It updates monthly and next month's premium moves with it, down by up to 20% or up by up to 25%." },
-  { "id": "CR-2.1", "kind": "coverage", "zh": "駕駛人使用承保車輛，因意外致第三人死亡、受傷或財物損失，依法應負賠償責任時，我們代為賠償，每一事故最高 15 萬美元（強制險給付的部分除外）。", "en": "When a driver of the insured vehicle is legally liable for someone else's death, injury or property damage in an accident, we pay, up to $150,000 per event (beyond what compulsory insurance pays)." },
-  { "id": "CR-2.2", "kind": "coverage", "zh": "承保車輛整車失竊，自報案日起 30 日內未尋回者，我們依車輛現值扣除 10% 自負額理賠。尋回時車輛有損壞者，依 CR-2.3 處理。", "en": "If the insured vehicle is stolen and not found within 30 days of the police report, we pay its current value less a 10% deductible. If it is found damaged, CR-2.3 applies." },
-  { "id": "CR-2.3", "kind": "coverage", "zh": "承保車輛因碰撞、傾覆、刮損、他人惡意破壞、颱風或淹水而受損，我們支付修理費用扣除 100 美元自負額，以車輛現值為上限。修理費超過現值 75% 者，視為全損，依現值理賠。", "en": "When the insured vehicle is damaged by a collision, rolling over, scratches, vandalism, a typhoon or flooding, we pay the repair less a $100 deductible, up to its current value. A repair over 75% of the value counts as a total loss, paid at value." },
-  { "id": "CR-3.1", "kind": "exclusion", "zh": "酒後駕駛（吐氣酒精濃度達每公升 0.15 毫克以上）、吸毒、無照駕駛、駕照被吊扣期間駕駛，或肇事逃逸，不予理賠；但第三人的損害我們仍先行賠付，再向駕駛人求償。", "en": "No payment when driving over the alcohol limit (0.15 mg/L of breath), on drugs, without a licence or while it is suspended, or after leaving the scene; we still pay the other party first, then recover it from the driver." },
-  { "id": "CR-3.2", "kind": "exclusion", "zh": "競速、營業載客載貨（含外送平台）、故意行為，以及輪胎、零件的自然耗損，不予理賠。", "en": "No payment for racing, carrying passengers or goods for pay (delivery apps too), damage on purpose, or wear of tyres and parts." },
-  { "id": "CR-3.3", "kind": "exclusion", "zh": "未上鎖或鑰匙留在車上時的失竊，不予理賠。", "en": "No payment for theft while the vehicle was unlocked or the key was left in it." },
-  { "id": "CR-4.1", "kind": "condition", "zh": "發生事故後應立即報警並通知我們；涉及他人受傷或對方不同意和解時，須有警方的道路交通事故證明。單方事故請提供現場照片。", "en": "After an accident, call the police and tell us at once; when someone is hurt or the other party disagrees, we need the police accident report. For an accident with no one else, give photos of the scene." },
-  { "id": "CR-4.2", "kind": "condition", "zh": "修理前應先提供估價單，經我們同意後再修理；緊急必要的拖吊不在此限。", "en": "Get a repair quote and our agreement before repairs, except an urgent tow." },
-  { "id": "CR-4.3", "kind": "condition", "zh": "提供不實資料、偽造行程紀錄或讓未申報之主要駕駛人使用者，我們得拒絕理賠並終止保單。", "en": "False information, faked trip records, or an undeclared main driver lets us refuse the claim and end the policy." },
-  { "id": "CR-5.1", "kind": "addon", "zh": "道路救援：每年 4 次，拖吊 20 公里內免費、送油、換備胎、接電。", "en": "Roadside help: 4 times a year, a free tow up to 20 km, fuel, a spare tyre fitted, a jump start." },
-  { "id": "CR-6.1", "kind": "policy", "zh": "保費月繳，啟用行程紀錄者每月依駕駛分數調整。月繳扣款失敗有 14 日寬限期，逾期停效，補繳後復效。可隨時退保，按未經過日數退費。保費的 20% 為 Cover 的固定費用，其餘進入理賠池；年度結算後剩餘捐給你選的公益團體。", "en": "Paid monthly; with trip records, adjusted each month by the driving score. A failed payment has 14 days' grace, then lapses until paid. Cancel any time for a refund of the days left. 20% of the premium is Cover's flat fee, the rest the claims pool; what is left after the year goes to your chosen cause." }
+  { "id": "CR-1.1", "kind": "definition", "en": "The \"insured vehicle\" is the one with the VIN on the policy. A \"driver\" is anyone with a valid license using it with your permission.", "zh": "「承保車輛」指保單所載車身號碼（VIN）之車輛。「駕駛人」指經你允許使用承保車輛、持有有效駕照之人。" },
+  { "id": "CR-1.2", "kind": "definition", "en": "The \"driving score\" (0 to 100) comes from trip records: points off per 100 miles for hard braking, hard acceleration, speeding and driving between midnight and 4 am. It updates monthly and next month's premium moves with it, down by up to 20% or up by up to 25%.", "zh": "「駕駛分數」由行程紀錄計算（0–100），依每 100 英里的急煞、急加速、超速及凌晨 0–4 時行駛次數扣分。分數每月更新，下個月保費依此調整，最多調降 20%、調升 25%。" },
+  { "id": "CR-2.1", "kind": "coverage", "en": "When a driver of the insured vehicle is legally liable for someone else's injury, death or property damage in an accident, we pay and defend you, up to $300,000 per accident, which meets or exceeds every state's minimum liability limits.", "zh": "駕駛人使用承保車輛，因意外致他人受傷、死亡或財物損失，依法應負賠償責任時，我們代為賠償並為你抗辯，每一事故最高 30 萬美元，高於各州法定最低責任保額。" },
+  { "id": "CR-2.2", "kind": "coverage", "en": "If the insured vehicle is stolen and not recovered within 30 days of the police report, we pay its actual cash value less a 10% deductible. If it is recovered damaged, CR-2.3 applies.", "zh": "承保車輛失竊，自報案日起 30 日內未尋回者，我們依車輛實際現值扣除 10% 自負額理賠。尋回時有損壞者，依 CR-2.3 處理。" },
+  { "id": "CR-2.3", "kind": "coverage", "en": "When the insured vehicle is damaged by a collision, rolling over, scrapes, vandalism, a storm, hail or flood, we pay the repair less a $500 deductible, up to its actual cash value. A repair over 75% of the value counts as a total loss, paid at value.", "zh": "承保車輛因碰撞、翻覆、刮損、惡意破壞、風災、冰雹或淹水而受損，我們支付修理費用扣除 500 美元自負額，以車輛實際現值為上限。修理費超過現值 75% 者，視為全損，依現值理賠。" },
+  { "id": "CR-3.1", "kind": "exclusion", "en": "No payment when driving over the legal blood alcohol limit (0.08%, or any amount under 21), on drugs, without a valid license, or after leaving the scene; we still pay the injured party first, then recover it from the driver.", "zh": "酒駕（血液酒精濃度 0.08% 以上，未滿 21 歲者任何濃度）、吸毒、無照或駕照失效時駕駛，或肇事逃逸，不予理賠；但受害人的損害我們仍先行賠付，再向駕駛人求償。" },
+  { "id": "CR-3.2", "kind": "exclusion", "en": "No payment for racing, carrying passengers or goods for pay (rideshare and delivery apps included, unless endorsed), damage on purpose, or wear of tires and parts.", "zh": "競速、營業載客載貨（含共乘與外送平台，除非另行批註）、故意行為，以及輪胎、零件的自然耗損，不予理賠。" },
+  { "id": "CR-3.3", "kind": "exclusion", "en": "No payment for theft while the vehicle was unlocked with the key or fob left in it.", "zh": "未上鎖且鑰匙或遙控器留在車上時的失竊，不予理賠。" },
+  { "id": "CR-4.1", "kind": "condition", "en": "After an accident, call the police when anyone is hurt or the other party disputes it, and tell us at once; we need the police report number. For a single-vehicle accident, give photos of the scene.", "zh": "發生事故後，有人受傷或對方有爭議時應報警，並立即通知我們；我們需要警方報告編號。單一車輛事故請提供現場照片。" },
+  { "id": "CR-4.2", "kind": "condition", "en": "Get a repair estimate and our agreement before repairs, except an urgent tow.", "zh": "修理前應先提供估價單，經我們同意後再修理；緊急拖吊不在此限。" },
+  { "id": "CR-4.3", "kind": "condition", "en": "False information, faked trip records, or an undeclared main driver lets us deny the claim and cancel the policy.", "zh": "提供不實資料、偽造行程紀錄或未申報之主要駕駛人使用者，我們得拒絕理賠並終止保單。" },
+  { "id": "CR-5.1", "kind": "addon", "en": "Roadside help: 4 times a year, a free tow up to 20 miles, fuel, a spare tire fitted, a jump start.", "zh": "道路救援：每年 4 次，拖吊 20 英里內免費、送油、換備胎、接電。" },
+  { "id": "CR-6.1", "kind": "policy", "en": "Paid monthly; with trip records, adjusted each month by the driving score. A failed payment has 14 days' grace, then lapses until paid. Cancel any time for a refund of the days left. 20% of the premium is Cover's flat fee, the rest the claims pool; what is left after the year goes to your chosen cause.", "zh": "保費月繳，啟用行程紀錄者每月依駕駛分數調整。扣款失敗有 14 日寬限期，逾期停效，補繳後復效。可隨時退保，按未經過日數退費。保費的 20% 為 Cover 的固定費用，其餘進入理賠池；年度結算後剩餘捐給你選的公益團體。" }
  ]
 }

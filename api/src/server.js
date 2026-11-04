@@ -20,6 +20,7 @@ import { advance, nowIso, skipped } from "./clock.js";
 import * as receipts from "./proof/receipts.js";
 import * as claims from "./claims.js";
 import * as carrier from "./carrier.js";
+import * as flights from "./flights.js";
 import * as mcp from "./mcp.js";
 import { limitsOf, setLimits } from "./ops.js";
 import { guide } from "./guide.js";
@@ -98,7 +99,7 @@ const signedIn = (req, res, next) => { const p = me(req); if (!p) return res.sta
 const lang = (req) => (req.query.lang === "en" || req.query.lang === "zh" ? req.query.lang : req.person?.lang || "zh");
 const send = (res, r) => res.status(r?.error ? (r.error === "policy" || r.error === "quote" ? 404 : 400) : 200).json(r);
 
-app.get("/api/info", (req, res) => res.json({ paypal: pp().mode, demoSignin: DEMO, publicUrl: PUBLIC_URL, mcpUrl: `${PUBLIC_URL}/mcp`, now: nowIso(), demoDaysSkipped: skipped() }));
+app.get("/api/info", (req, res) => res.json({ paypal: pp().mode, testCard: !!pp().testCard, demoSignin: DEMO, publicUrl: PUBLIC_URL, mcpUrl: `${PUBLIC_URL}/mcp`, now: nowIso(), demoDaysSkipped: skipped() }));
 app.post("/api/auth/demo", (req, res) => {
   if (!DEMO) return res.status(404).end();
   const p = makePerson({ name: req.body?.name, email: req.body?.email || null, lang: req.body?.lang });
@@ -124,6 +125,7 @@ const mine = (req, res, next) => { const x = policies.policy(req.params.id); if 
 app.get("/api/policies/:id", signedIn, mine, (req, res) => res.json(policies.view(req.policy, lang(req))));
 app.post("/api/policies/:id/change", signedIn, mine, async (req, res) => send(res, await policies.change(req.policy.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
 app.post("/api/policies/:id/cancel", signedIn, mine, async (req, res) => send(res, await policies.cancel(req.policy.id, { actor: { kind: "person", person: req.person.id } })));
+app.post("/api/policies/:id/pay-card", signedIn, mine, async (req, res) => send(res, await policies.payByCard(req.policy.id)));
 app.post("/api/policies/:id/confirm", signedIn, mine, async (req, res) => send(res, await policies.confirm(req.policy.id)));
 
 app.get("/api/limits", signedIn, (req, res) => res.json(limitsOf(req.person.id)));
@@ -160,6 +162,20 @@ app.get("/api/staff/rates", staff, (req, res) => res.json(carrier.filings()));
 app.post("/api/staff/rates", staff, (req, res) => send(res, carrier.fileRate(req.body || {})));
 app.post("/api/staff/rates/:id", staff, (req, res) => send(res, carrier.answerRate(req.params.id, !!req.body?.approve)));
 app.post("/api/staff/close-year", staff, async (req, res) => res.json(await carrier.closeYear()));
+// ---- BEGIN reconciliation agent (recon.js): PayPal's record against Cover's ledger, on the PayPal Agent Toolkit --------
+// GET: the latest report (and whether a run is going); POST: run now (answers at once; the page polls GET). It also runs
+// every RECON_MS (6 hours by default; 0 turns the schedule off).
+const recon = await import("./recon.js");
+app.get("/api/staff/recon", staff, (req, res) => res.json({ running: recon.isRunning(), report: recon.latest(), history: recon.history() }));
+app.post("/api/staff/recon", staff, (req, res) => { const was = recon.isRunning(); recon.run({ by: "on demand", useModel: req.body?.model !== false }).catch((e) => console.error("recon", e.message)); res.status(202).json({ running: true, started: !was }); });
+if (process.env.RECON_MS !== "0") recon.schedule();
+// ---- END reconciliation agent ------------------------------------------------------------------------------------------
+// ---- BEGIN anomaly-alert agent (alerts.js): what it watches, and plans for the back office's grids ----------------------
+const alerts = await import("./alerts.js");
+app.get("/api/staff/alerts", staff, (req, res) => { const a = alerts.scan(); res.json({ alerts: a, facts: alerts.facts(a), payouts: alerts.payoutsBy(), limits: alerts.LIMITS, agent: alerts.agentMode(), at: nowIso() }); });
+app.post("/api/staff/alerts/:id/ack", staff, (req, res) => res.json(alerts.ack(req.params.id)));
+app.post("/api/staff/ask", staff, async (req, res) => send(res, await alerts.ask(req.body || {})));
+// ---- END anomaly-alert agent ---------------------------------------------------------------------------------------------
 app.get("/api/staff/report", staff, (req, res) => {
   const d = carrier.dashboard(), rows = [["product", "in_force", "premiums_usd", "refunds_usd", "earned_usd", "claims_paid_usd", "recoveries_usd", "loss_ratio", "claims", "instant", "referred", "denied"]];
   for (const r of d.products) rows.push([r.product, r.inForce, r.premiums / 100, r.refunds / 100, r.earned / 100, r.claimsPaid / 100, r.recoveries / 100, r.lossRatio ?? "", r.claims, r.instant, r.referred, r.denied]);
@@ -174,12 +190,22 @@ app.get("/api/stats", (req, res) => {
     // the latest claim paid without a person, as the front page shows it: what kind, its checks, the amount, the seconds (no one's name)
     last: (() => { const c = all.filter((x) => x.status === "paid" && x.decision?.by === "rules").at(-1); if (!c) return null; const ct = product(c.product).claims.find((x) => x.type === c.type);
       return { what: { zh: ct.zh, en: ct.en }, product: c.product, amount: c.paid, seconds: c.secondsToPay, checks: c.decision.checks.map((x) => ({ id: x.id, clause: x.clause })), payout: c.payout?.batchId, at: c.paidAt }; })(),
+    // the latest flight that paid by itself: the flight, what happened, how many travelers, and the seconds from the
+    // flight's departure being reported to the PayPal payout
+    lastFlight: (() => { const c = all.filter((x) => x.status === "paid" && x.auto).at(-1); if (!c) return null; const r = JSON.parse(c.evidence[0]?.typed || "{}");
+      return { flight: r.flight, date: r.date, from: r.from, to: r.to, status: r.status, delayMin: r.delayMin, amount: c.paid, travelers: Math.round(c.claimed / (r.status === "cancelled" || r.delayMin >= 360 ? 30000 : 10000)), seconds: Math.max(0, Math.round((Date.parse(c.paidAt) - Date.parse(c.flightReportedAt || c.reportedAt)) / 1000)), checks: c.decision.checks.map((x) => ({ id: x.id, clause: x.clause })), payout: c.payout?.batchId }; })(),
+    autoPaid: all.filter((c) => c.status === "paid" && c.auto).length,
     premiums: pools().reduce((t, p) => t + p.premiums, 0), claimsPaidAmount: pools().reduce((t, p) => t + p.claims, 0) });
 });
 // ---- transparency: anyone can see where the money is ---------------------------------------------------------------
 app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: { zh: p.name.zh, en: p.name.en }, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })),
   givebacks: carrier.givebacks().map((g) => ({ year: g.year, cause: g.cause, name: { zh: CAUSES[g.cause].zh, en: CAUSES[g.cause].en }, amount: usd(g.amount), payout: g.payout, receipt: g.receipt })) }));
 
+// the JS SDK v6's browser-safe client token, for PayPal's own buttons on the policy page
+app.get("/api/paypal/sdk", signedIn, async (req, res) => {
+  if (!pp().clientToken) return res.json({ mode: pp().mode, token: null });
+  try { res.json({ mode: pp().mode, ...(await pp().clientToken()) }); } catch (e) { res.status(502).json({ error: "paypal", message: e.message }); }
+});
 // ---- PayPal: return URLs, and the stand-in's approval page ---------------------------------------------------------
 app.get("/paypal/return", async (req, res) => {
   const id = String(req.query.policy || "");
@@ -205,7 +231,10 @@ if (pp().mode === "mock") {
 }
 
 // ---- the demo's controls: move Cover's clock, make a premium fail ---------------------------------------------------
-app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); await claims.tick(); res.json(r); });
+app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); await claims.tick(); r.flights = (await claims.flightTick()).length; res.json(r); });
+// the simulated flight feed: report an insured flight late, departed late or cancelled; insured travelers are paid at once
+app.post("/api/demo/flight", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = flights.report(req.body || {}); if (r.error) return res.status(400).json(r); r.paid = (await claims.flightTick()).filter(Boolean).map((c) => ({ claim: c.claim, status: c.status, amount: c.payout?.amount || null })); res.json(r); });
+app.get("/api/flights/:flight/:date", async (req, res) => res.json(await flights.statusOf({ flight: String(req.params.flight).toUpperCase(), date: req.params.date }, req.query.region)));
 app.post("/api/demo/fail-next-premium", signedIn, (req, res) => { if (pp().mode !== "mock") return res.status(404).json({ error: "only with the PayPal stand-in" }); res.json({ ok: pp().failNextCharge(req.person.vault) }); });
 
 // ---- receipts ---------------------------------------------------------------------------------------------------------
@@ -213,12 +242,42 @@ app.get("/.well-known/cover-receipts.json", (req, res) => res.json({ keys: [rece
 app.get("/api/receipts/:id", (req, res) => { const r = receipts.show(req.params.id, me(req)?.id); if (!r) return res.status(404).json({ error: "receipt" }); res.json(r); });
 app.get("/api/receipts/log/checkpoint", (req, res) => res.type("text/plain").send(receipts.logInfo().checkpoint || ""));
 
+// ==== BEGIN models block (Cover's own models: Cover-Risk in quotes, GET /api/models) =================================
+// Cover-Risk prices a quote when its exported trees exist and still fit the product (api/src/risk.js says why not
+// when they don't). /api/models: each model's round-1 numbers (ml/results.json) and what is live in this server now.
+{
+  const { installRisk, riskState } = await import("./risk.js");
+  const { readerMode } = await import("./reader.js");
+  const rs = await installRisk();
+  console.log(`Cover-Risk: ${rs.live ? `live for ${Object.entries(rs.products).filter(([, s]) => s.live).map(([id]) => id).join(", ")}` : `not live (${rs.reason})`}`);
+  const RESULTS = path.join(HERE, "../../ml/results.json");
+  app.get("/api/models", async (req, res) => {
+    let results = null;
+    try { results = JSON.parse(fs.readFileSync(RESULTS, "utf8")); } catch { /* not generated */ }
+    const mode = readerMode(), risk = riskState();
+    let ocr = { live: false, why: `the reader is ${mode === "none" ? "off" : mode}` };
+    if (mode === "cover-ocr") {
+      const url = (process.env.READER_URL || "http://127.0.0.1:11449").replace(/\/$/, "");
+      try { const h = await (await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })).json(); ocr = { live: !!h.ok, version: h.version }; }
+      catch { ocr = { live: false, why: "reader mode is cover-ocr but its worker is not answering" }; }
+    }
+    const live = {
+      "cover-risk": { live: risk.live, products: risk.products, ...(risk.reason ? { why: risk.reason } : {}) },
+      "cover-ocr": ocr,
+      "cover-1b": { live: mode === "cover", why: mode === "cover" ? undefined : "not served in this server" },
+      "cover-audit": { live: false, why: "not served in this server" },
+    };
+    res.json({ reader: mode, live, results });
+  });
+}
+// ==== END models block ==============================================================================================
+
 // ---- the website ----------------------------------------------------------------------------------------------------------
 const WEB = path.join(HERE, "../../web/dist");
 app.all(/^\/(\.well-known|api)\//, (req, res) => res.status(404).json({ error: "not_found", message: `Nothing at ${req.path}. Agents: start at /llms.txt.` }));
 if (fs.existsSync(WEB)) { app.use(express.static(WEB)); app.get(/^\/(?!api|mcp|paypal|a2a|mock-paypal|\.well-known).*/, (req, res) => res.sendFile(path.join(WEB, "index.html"))); }
 
-setInterval(() => Promise.all([policies.tick(), claims.tick()]).catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
+setInterval(() => Promise.all([policies.tick(), claims.tick(), claims.flightTick()]).catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
 setInterval(() => receipts.batch().catch((e) => console.error("batch", e.message)), +(process.env.RECEIPT_BATCH_MS || 120e3)).unref();
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);

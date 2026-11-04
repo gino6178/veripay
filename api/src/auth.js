@@ -29,7 +29,7 @@ export function sessionOf(req) { const s = sessions.get(cookie(req, COOKIE) || "
 
 // What each scope allows: reading, buying and changing policies (within the person's limits), and claiming
 export const SCOPES = ["read", "buy", "claim"];
-const NEEDS = { whoami: "read", list_products: "read", get_quote: "read", my_policies: "read", policy_status: "read", claim_status: "read", wait_for_news: "read", explain_clause: "read", giveback_status: "read",
+const NEEDS = { flight_status: "read", insure_trip: "buy", whoami: "read", list_products: "read", get_quote: "read", my_policies: "read", policy_status: "read", claim_status: "read", wait_for_news: "read", explain_clause: "read", giveback_status: "read",
   buy_policy: "buy", change_policy: "buy", cancel_policy: "buy", choose_cause: "buy",
   file_claim: "claim", add_claim_evidence: "claim", withdraw_claim: "claim" };
 export const can = (a, tool) => !a?.scopes || a.scopes.includes(NEEDS[tool] || "buy");

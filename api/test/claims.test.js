@@ -17,7 +17,7 @@ setPay(mockPaypal({ file: null }), "http://test");
 // the documents in these tests say what they are: "amount=12000;date=2026-11-20"
 setReader((e, buf) => { const t = buf.toString(); const m = Object.fromEntries(t.split(";").map((x) => x.split("="))); return { amount: m.amount ? +m.amount / 100 : null, date: m.date || null, merchant: m.merchant || "Shop", items: [], text: t, confidence: m.conf ? +m.conf : 0.95 }; });
 const doc = (s) => Buffer.from(s).toString("base64");
-const renters = { place: "台北市大安區", size: 10, floor: "low", building: "managed", contents: 8000, valuables: 0, claims3y: 0, deductible: "250" };
+const renters = { place: "Austin, TX 78704", size: 650, floor: "low", building: "managed", contents: 8000, valuables: 0, claims3y: 0, deductible: "250" };
 const day = (n) => new Date(now() + n * 864e5).toISOString();
 
 async function insured(name, addons = [], cause = "kids") {

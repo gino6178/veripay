@@ -12,3 +12,7 @@ ml/models/
 *.gguf
 *.safetensors
 .claude/
+ml/ocr/runs/
+ml/ocr/out/
+ml/**/out/
+api/data/

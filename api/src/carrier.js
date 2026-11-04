@@ -2,11 +2,11 @@
 // when they can be counted), plus the two things that sank Lemonade's California book: catastrophe exposure and a rate
 // increase the regulator refused.
 //   reinsurance   a per-claim excess of loss (Cover keeps the first $5,000 of any claim, the reinsurer pays the rest)
-//                 and a catastrophe layer (one typhoon or earthquake: Cover keeps $20,000 of the event, the reinsurer
+//                 and a catastrophe layer (one hurricane, wildfire or earthquake: Cover keeps $20,000 of the event, the reinsurer
 //                 pays the rest up to $500,000), paid for with the reinsurance part of every premium
 //   giveback      at the year's close, each cause pool pays its reinsurance, and what is left goes to the cause with
 //                 PayPal Payouts, with a receipt in the transparency log
-//   exposure      in-force policies and sums insured by district and hazard level; a typhoon or quake scenario
+//   exposure      in-force policies and sums insured by state and hazard level; a hurricane, wildfire or quake scenario
 //   rates         a filed rate change waits for the regulator's answer; until approved, prices don't move
 import { store, stateFile } from "./store.js";
 import { nowIso, DAY } from "./clock.js";
@@ -21,7 +21,7 @@ import { pp, usd, why } from "./pay/index.js";
 export const TREATY = { perClaimRetention: 500000, catRetention: 2000000, catLimit: 50000000 };
 const db = store(stateFile("carrier"), { recoveries: [], events: {}, filings: [], givebacks: [] });
 export const carrierStore = db;
-const CAT_TYPES = ["typhoon_window", "quake", "pipe", "water"];
+const CAT_TYPES = ["windstorm", "quake", "flood", "fire"];
 
 // After a claim is paid: what the reinsurer owes on it
 export function afterClaim(c) {
@@ -59,24 +59,26 @@ export function dashboard() {
   return { year: y, products: rows, total: { ...t, fees, lossRatio: t.earned ? +((t.claimsPaid - t.recoveries) / t.earned).toFixed(3) : null, instantShare: t.claims ? +(t.instant / t.claims).toFixed(2) : null }, treaty: TREATY, pools: pools().map((p) => ({ cause: p.cause, balance: p.balance, claims: p.claims, premiums: p.premiums })) };
 }
 
-// In-force exposure by district: how many policies, how much insured, and each hazard's level
+// In-force exposure by state (and metro, where the zone table has one): how many policies, how much insured, and each
+// hazard's level
 export function exposure() {
   const out = {};
   for (const p of allPolicies().filter((x) => ["active", "grace"].includes(x.status) && x.zone)) {
-    const key = `${p.zone.city || "?"}${p.zone.district || ""}`, e = (out[key] ||= { district: key, policies: 0, insured: 0, flood: p.zone.flood, quake: p.zone.quake, typhoon: p.zone.typhoon, theft: p.zone.theft, products: {} });
+    const key = p.zone.area || p.zone.state || "?", e = (out[key] ||= { area: key, state: p.zone.state, policies: 0, insured: 0, flood: p.zone.flood, wildfire: p.zone.wildfire, hurricane: p.zone.hurricane, quake: p.zone.quake, theft: p.zone.theft, products: {} });
     e.policies++; e.insured += p.coverages.filter((c) => ["building", "contents", "own_damage", "theft"].includes(c.id)).reduce((t, c) => t + (c.limit || 0), 0);
     e.products[p.product] = (e.products[p.product] || 0) + 1;
   }
   return Object.values(out).sort((a, b) => b.insured - a.insured);
 }
-// A scenario: a typhoon or earthquake of a given strength over the districts at a hazard level. The damage share of
+// A scenario: a hurricane, wildfire or earthquake of a given strength over the areas at a hazard level. The damage share of
 // the sum insured by level is a simple, stated assumption (not a catastrophe model), so the point is the shape: how
 // much Cover keeps after the treaty, and what it does to the year's loss ratio and the giveback.
-const DAMAGE = { typhoon: [0, 0.002, 0.008, 0.03], quake: [0, 0.003, 0.012, 0.05] };
-export function scenario({ peril = "typhoon", strength = 1 } = {}) {
-  const k = peril === "quake" ? "quake" : "typhoon", s = Math.max(0.5, Math.min(3, +strength || 1));
+export const PERIL_DAMAGE = { hurricane: [0, 0.002, 0.01, 0.04], wildfire: [0, 0.001, 0.006, 0.035], quake: [0, 0.003, 0.012, 0.05] };
+const DAMAGE = PERIL_DAMAGE;
+export function scenario({ peril = "hurricane", strength = 1 } = {}) {
+  const k = peril in DAMAGE ? peril : "hurricane", s = Math.max(0.5, Math.min(3, +strength || 1));
   let gross = 0; const hit = [];
-  for (const e of exposure()) { const loss = Math.round(e.insured * DAMAGE[k][e[k]] * s); if (loss) { gross += loss; hit.push({ district: e.district, level: e[k], policies: e.policies, loss }); } }
+  for (const e of exposure()) { const loss = Math.round(e.insured * DAMAGE[k][e[k]] * s); if (loss) { gross += loss; hit.push({ area: e.area, state: e.state, level: e[k], policies: e.policies, loss }); } }
   const ceded = Math.min(TREATY.catLimit, Math.max(0, gross - TREATY.catRetention)), net = gross - ceded, d = dashboard();
   const poolTotal = pools().reduce((t, p) => t + Math.max(0, p.balance), 0);
   return { peril: k, strength: s, gross, ceded, net, hit, lossRatioNow: d.total.lossRatio, lossRatioAfter: d.total.earned ? +((d.total.claimsPaid - d.total.recoveries + net) / d.total.earned).toFixed(3) : null, givebackNow: poolTotal, givebackAfter: Math.max(0, poolTotal - net),

@@ -1,15 +1,17 @@
 """Cover-Risk (PLAN-cover.md 12.2): each policy's expected yearly claims, for pricing, with the reasons. Not an LLM.
 
-1. A synthetic portfolio from a stated actuarial generator (below, GENERATOR): for each product, policies with the
-   product's own answers (api/src/products/*.json) and their district's hazard levels (api/src/zones.js, via
-   zones.json). Claim counts are Poisson(frequency x exposure), each claim's cost Gamma(shape k, mean severity).
-   The true pure premium is the product's own factor table times hidden effects the tables don't have (curved ages,
-   interactions such as ground floor x flood level), so a model can beat the tables, and its truth is known.
+1. A synthetic US portfolio from a stated actuarial generator (below, GENERATOR): for each product, policies with
+   the product's own answers (api/src/products/*.json) and a ZIP prefix's five hazard levels (flood, wildfire,
+   hurricane, earthquake, theft) exactly as api/src/zones.js zoneOf() gives them (zones.json; metro prefixes are
+   drawn five times as often, for their population). Claim counts are Poisson(frequency x exposure), each claim's cost Gamma(shape k, mean severity).
+   The true pure premium is the product's own factor table times hidden effects the tables don't have (curved ages
+   and mileage, interactions such as a frame house x wildfire level 3), so a model can beat the tables, and its truth
+   is known.
 2. A GLM baseline, the actuaries' standard: Poisson frequency (log link, exposure offset) x Gamma severity (log link),
    on the same features (choices one-hot, numbers linear).
 3. LightGBM, Tweedie loss on the yearly loss (weighted by exposure), with monotone constraints where the direction is
-   known (an older home, more past claims, a higher hazard level never lower the price; a higher deductible never
-   raises it).
+   known (an older home, more past claims, more miles, a higher hazard level never lower the price; a higher deductible
+   or copay, or more years of driving, never raise it).
 4. Scores on a held-out portfolio: normalised Gini (exposure-weighted Lorenz on the actual losses), calibration by
    decile (predicted against actual losses), the share of the true premium's Gini each model reaches, and SHAP
    (LightGBM's exact TreeSHAP, pred_contrib) mean |contribution| per feature.
@@ -24,14 +26,15 @@ import numpy as np, pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 PDIR = os.path.join(HERE, "..", "..", "api", "src", "products")
 Z = json.load(open(os.path.join(HERE, "zones.json"), encoding="utf8"))
-DISTRICTS = [(c, d, lv) for c, ds in Z["districts"].items() for d, lv in ds.items()]
+PERILS = Z["perils"]
+PREFIXES = [x for x in Z["prefixes"] for _ in range(5 if x["metro"] else 1)]
 
 # ---- the generator, stated: frequency per policy-year, mean severity in cents, Gamma shape, and the hidden effects
 GENERATOR = {
-    "renters": {"freq": 0.07, "shape": 1.2, "hidden": "contents scale as (contents/8000)^0.8 not linearly; theft level 3 x walk-up apartment on the ground floor x1.6; first-time claimants (claims3y 0) x0.85"},
-    "home": {"freq": 0.05, "shape": 0.9, "hidden": "age curve exp(0.012 x age); brick x age over 40 x1.3; flood level 3 x ground floor x1.8; typhoon level 3 x1.15 more"},
+    "renters": {"freq": 0.07, "shape": 1.2, "hidden": "contents scale as (contents/8000)^0.8 not linearly; theft level 3 x walk-up apartment on the ground floor x1.6; hurricane level 3 x ground floor x1.2; first-time claimants (claims3y 0) x0.85"},
+    "home": {"freq": 0.06, "shape": 0.9, "hidden": "age curve exp(0.008 x age) in place of the age bands; frame house x wildfire level 3 x1.5; hurricane level 3 x age over 40 x1.3; flood level 3 x house x1.15 (sewer backup)"},
     "pet": {"freq": 0.45, "shape": 1.5, "hidden": "age curve exp(0.09 x ageYears) in place of the age bands; flat-faced breeds x1.2 more over age 6; chipped x0.95"},
-    "car": {"freq": 0.12, "shape": 1.1, "hidden": "experience curve 1 + 0.6 x exp(-years/3); kmMonth^0.5 scale; telematics x0.85; street parking x theft level 3 x1.4"},
+    "car": {"freq": 0.12, "shape": 1.1, "hidden": "experience curve 1 + 0.6 x exp(-years/3) in place of the bands; (milesMonth/800)^0.5 in place of the linear mileage; telematics x0.85; street parking x theft level 3 x1.4; hurricane level 3 x1.1"},
 }
 PRODUCTS = {p: json.load(open(os.path.join(PDIR, f"{p}.json"), encoding="utf8")) for p in GENERATOR}
 
@@ -68,34 +71,38 @@ def draw(p, r, n):
                 if q["id"] in ("claims3y", "accidents3y"): a[q["id"]] = int(r.choice([0, 0, 0, 0, 0, 1, 1, 2, 3]))
                 else: a[q["id"]] = int(round(lo + (hi - lo) * r.beta(1.6, 3.0)))
             elif q["type"] == "bool": a[q["id"]] = bool(r.random() < 0.5)
-        c, d, lv = DISTRICTS[r.integers(len(DISTRICTS))]
-        if p == "car": a["level"] = a.get("level") or "full"
-        rows.append({**a, **{f"z_{k}": v for k, v in lv.items()}, "district": f"{c}{d}", "exposure": float(r.uniform(0.25, 1.0))})
+        z = PREFIXES[r.integers(len(PREFIXES))]
+        rows.append({**a, **{f"z_{k}": z["levels"][k] for k in PERILS}, "zip3": z["prefix"], "state": z["state"], "exposure": float(r.uniform(0.25, 1.0))})
     return pd.DataFrame(rows)
 
 def true_premium(p, df):
     out = np.zeros(len(df))
     for i, a in enumerate(df.to_dict("records")):
-        z = {k: a[f"z_{k}"] for k in ("flood", "quake", "typhoon", "theft")}
+        z = {k: a[f"z_{k}"] for k in PERILS}
         t = table_premium(p, a, z)
         if p == "renters":
             t /= 1 + a["contents"] / 1000 * 0.06; t *= (1 + 8 * 0.06) * (a["contents"] / 8000) ** 0.8
             if z["theft"] == 3 and a["building"] == "apartment" and a["floor"] == "ground": t *= 1.6
+            if z["hurricane"] == 3 and a["floor"] == "ground": t *= 1.2
             if a["claims3y"] == 0: t *= 0.85
         elif p == "home":
-            t *= math.exp(0.012 * a["age"]) / {"0-10": 0.9, "11-30": 1.0, "31-50": 1.2, "51+": 1.45}[bucket(PRODUCTS["home"]["price"]["factors"]["age"], a["age"])] * 0.9
-            if a["structure"] == "brick" and a["age"] > 40: t *= 1.3
-            if z["flood"] == 3 and a["floor"] == "ground": t *= 1.8
-            if z["typhoon"] == 3: t *= 1.15
+            ages = PRODUCTS["home"]["price"]["factors"]["age"]
+            t *= math.exp(0.008 * a["age"]) / ages[bucket(ages, a["age"])] * 0.95
+            if a["structure"] == "frame" and z["wildfire"] == 3: t *= 1.5
+            if z["hurricane"] == 3 and a["age"] > 40: t *= 1.3
+            if z["flood"] == 3 and a["kind"] == "house": t *= 1.15
         elif p == "pet":
             band = PRODUCTS["pet"]["price"]["factors"]["ageYears"][bucket(PRODUCTS["pet"]["price"]["factors"]["ageYears"], a["ageYears"])]
             t *= math.exp(0.09 * a["ageYears"]) / band * 0.8
             if a["breedSize"] == "flat" and a["ageYears"] > 6: t *= 1.2
             if a["chipped"]: t *= 0.95
         elif p == "car":
-            t *= (1 + 0.6 * math.exp(-a["years"] / 3)) * (max(a["kmMonth"], 50) / 600) ** 0.5
+            yrs = PRODUCTS["car"]["price"]["factors"]["years"]
+            t /= yrs[bucket(yrs, a["years"])] * (1 + max(0, a["milesMonth"]) / 100 * 0.025)
+            t *= (1 + 0.6 * math.exp(-a["years"] / 3)) * (max(a["milesMonth"], 50) / 800) ** 0.5 * 1.6
             if a["telematics"]: t *= 0.85
             if a["parking"] == "street" and z["theft"] == 3: t *= 1.4
+            if z["hurricane"] == 3: t *= 1.1
         out[i] = t
     return out
 
@@ -108,11 +115,12 @@ def simulate(p, df, r):
     return pp, n, loss
 
 # ---- features
+HAZ = {"z_flood": 1, "z_wildfire": 1, "z_hurricane": 1, "z_quake": 1, "z_theft": 1}  # a higher hazard level never lowers it
 MONO = {  # +1: never lowers the premium as it grows, -1: never raises it
-    "renters": {"contents": 1, "valuables": 1, "claims3y": 1, "deductible": -1, "z_flood": 1, "z_quake": 1, "z_theft": 1},
-    "home": {"age": 1, "rebuild": 1, "contents": 1, "claims3y": 1, "deductible": -1, "z_flood": 1, "z_quake": 1, "z_typhoon": 1},
+    "renters": {"contents": 1, "valuables": 1, "claims3y": 1, "deductible": -1, **HAZ},
+    "home": {"age": 1, "rebuild": 1, "contents": 1, "claims3y": 1, "deductible": -1, **HAZ},
     "pet": {"ageYears": 1, "limit": 1, "copay": -1},
-    "car": {"value": 1, "accidents3y": 1, "kmMonth": 1, "years": -1, "z_flood": 1, "z_theft": 1},
+    "car": {"value": 1, "accidents3y": 1, "milesMonth": 1, "years": -1, **HAZ},
 }
 def features(p, df):
     """Numbers stay numbers; choices whose values are numbers (deductible, limit, copay) become numbers; other choices
@@ -127,8 +135,8 @@ def features(p, df):
             vals = [o["v"] for o in q["options"]]
             if all(x.replace(".", "").isdigit() for x in vals): X[q["id"]] = v.astype(float)
             else: X[q["id"]] = v.map({x: i for i, x in enumerate(vals)}).astype(int); cats[q["id"]] = vals
-    for k in ("flood", "quake", "typhoon", "theft"):
-        if PRODUCTS[p]["price"].get("zone", {}).get(k): X[f"z_{k}"] = df[f"z_{k}"].astype(float)
+    if p != "pet":  # every peril's level (the tables price only some; the hidden effects use others)
+        for k in PERILS: X[f"z_{k}"] = df[f"z_{k}"].astype(float)
     return X, cats
 
 def gini(actual, pred, w):
@@ -163,7 +171,7 @@ def export(p, booster, X, cats, out):
         dt = t["decision_type"]; th = t["threshold"]
         return {"f": t["split_feature"], **({"cat": [int(x) for x in str(th).split("||")]} if dt == "==" else {"t": th}), "dl": t["default_left"], "v": t.get("internal_value", 0),
                 "l": node(t["left_child"]), "r": node(t["right_child"])}
-    spec = {"product": p, "version": f"cover-risk-{p}-r1", "link": "log", "unit": "cents a year", "init": 0.0, "features": list(X.columns),
+    spec = {"product": p, "version": f"cover-risk-{p}-us1", "link": "log", "unit": "cents a year", "init": 0.0, "features": list(X.columns),
             "encode": {c: ({"choice": cats[c]} if c in cats else {"number": True}) for c in X.columns},
             "monotone": MONO[p], "trees": [node(t["tree_structure"]) for t in d["tree_info"]], "generator": GENERATOR[p]}
     json.dump(spec, open(os.path.join(out, f"risk_{p}.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
@@ -189,7 +197,7 @@ def main():
         best = b.best_iteration
         b = lgb.train(params, dtr, best)
         pred_l = b.predict(Xte); pred_g = np.asarray(glm(Xtr, cats, tr, n_tr, l_tr, Xte))
-        table = np.array([table_premium(p, x, {kk: x[f"z_{kk}"] for kk in ("flood", "quake", "typhoon", "theft")}) for x in te.to_dict("records")])
+        table = np.array([table_premium(p, x, {kk: x[f"z_{kk}"] for kk in PERILS}) for x in te.to_dict("records")])
         # the GLM and the tables are put on the portfolio's level before comparing calibration (Gini doesn't need it)
         lvl = lambda pr: pr * (l_tr.sum() / w_tr.sum()) / np.average(pr, weights=w_te)
         contrib = b.predict(Xte, pred_contrib=True)
@@ -214,7 +222,7 @@ def main():
         d = np.array(bs["lightgbm"]) - np.array(bs["glm"]); res["gini_lightgbm_minus_glm_ci95"] = [round(float(np.percentile(d, 2.5)), 4), round(float(np.percentile(d, 97.5)), 4)]
         export(p, b, Xtr, cats, a.out)
         # a few test policies with their predictions, for the Node module's check
-        json.dump([{"answers": {k: (v.item() if hasattr(v, "item") else v) for k, v in rec.items() if k in Xtr.columns or k in [q["id"] for q in PRODUCTS[p]["questions"]]}, "zone": {kk: int(rec[f"z_{kk}"]) for kk in ("flood", "quake", "typhoon", "theft")}, "predicted": float(pl)}
+        json.dump([{"answers": {k: (v.item() if hasattr(v, "item") else v) for k, v in rec.items() if k in Xtr.columns or k in [q["id"] for q in PRODUCTS[p]["questions"]]}, "zone": {kk: int(rec[f"z_{kk}"]) for kk in PERILS}, "predicted": float(pl)}
                    for rec, pl in zip(te.iloc[:50].to_dict("records"), pred_l[:50])], open(os.path.join(a.out, f"check_{p}.json"), "w", encoding="utf8"), ensure_ascii=False)
         report[p] = res
         print(p, json.dumps({k: res[k] for k in ("gini", "gini_ci95", "predicted_over_actual_total", "monotone_violations", "trees")}), flush=True)

@@ -11,7 +11,10 @@ import Connect from "./pages/Connect.jsx";
 import Transparency from "./pages/Transparency.jsx";
 import Desk from "./pages/Desk.jsx";
 import Carrier from "./pages/Carrier.jsx";
+import Reconcile from "./pages/Reconcile.jsx";
+import Models from "./pages/Models.jsx";
 import SignIn from "./pages/SignIn.jsx";
+import Tour, { startTour } from "./components/Tour.jsx";
 
 export const Me = createContext({ me: null, reload: () => {}, info: null, toast: () => {} });
 export const useMe = () => useContext(Me);
@@ -30,25 +33,34 @@ function routes(path) {
   if (p === "/transparency") return <Transparency />;
   if (p === "/desk") return <Desk />;
   if (p === "/carrier") return <Carrier />;
+  if (p === "/reconcile") return <Reconcile />;
+  if (p === "/models") return <Models />;
   if (p === "/signin") return <SignIn />;
-  return <div className="empty">Not found. <Link to="/">Cover</Link></div>;
+  return <NotFound />;
 }
+function NotFound() { const t = useT(); return <div className="empty">{t("找不到這一頁。", "Not found.")} <Link to="/">Cover</Link></div>; }
+
+// Cover is a US product: English for everyone, unless the person picked 中文 (that choice is kept)
+const firstLang = () => { try { if (localStorage.getItem("cover.lang") === "zh") return "zh"; } catch {} return "en"; };
 
 export default function App() {
   const path = usePath();
-  const [lang, setLang] = useState(() => { try { return localStorage.getItem("cover.lang") || "zh"; } catch { return "zh"; } });
+  const [lang, setLang] = useState(firstLang);
   const [me, setMe] = useState(undefined), [info, setInfo] = useState(null), [msg, setMsg] = useState(null);
   const reload = () => api("/api/me").then(setMe).catch(() => setMe(null));
   useEffect(() => { reload(); api("/api/info").then(setInfo).catch(() => {}); const f = () => api("/api/info").then(setInfo).catch(() => {}); addEventListener("cover:refresh", f); return () => removeEventListener("cover:refresh", f); }, []);
-  useEffect(() => { document.documentElement.lang = lang === "en" ? "en" : "zh-Hant"; try { localStorage.setItem("cover.lang", lang); } catch {} }, [lang]);
+  useEffect(() => { document.documentElement.lang = lang === "en" ? "en" : "zh-Hant"; }, [lang]);
+  // only a choice the person made is saved
+  const pickLang = (l) => { setLang(l); try { localStorage.setItem("cover.lang", l); } catch {} };
   const toast = (m) => { setMsg(m); setTimeout(() => setMsg(null), 3800); };
   return (
-    <Lang.Provider value={{ lang, set: setLang }}>
+    <Lang.Provider value={{ lang, set: pickLang }}>
       <Me.Provider value={{ me, reload, info, toast, setInfo }}>
         <Header path={path} />
         <main className={path.split("?")[0] === "/" ? "main bleed" : "main"}>{routes(path)}</main>
         <Footer />
         <Demo />
+        <Tour />
         {msg && <div className="toast" role="status">{msg}</div>}
       </Me.Provider>
     </Lang.Provider>
@@ -71,6 +83,8 @@ function Header({ path }) {
           <span className="sep" aria-hidden="true" />
           <Link to="/desk" className={`staff ${on("/desk") || ""}`}>{t("理賠審核", "Claims desk")}</Link>
           <Link to="/carrier" className={`staff ${on("/carrier") || ""}`}>{t("後台", "Back office")}</Link>
+          <Link to="/reconcile" className={`staff ${on("/reconcile") || ""}`}>{t("對帳", "Reconcile")}</Link>
+          <Link to="/models" className={on("/models")}>{t("模型", "Models")}</Link>
         </nav>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn sm" onClick={() => set(lang === "en" ? "zh" : "en")} aria-label="Language">{lang === "en" ? "中文" : "EN"}</button>
@@ -91,19 +105,36 @@ function Footer() {
   );
 }
 
-// The demo panel: move Cover's clock forward (premiums fall due, waiting periods end, the year closes), make the
-// next premium fail, and sign in as Cover's staff to see the claims desk and the back office.
+// The demo panel: move Cover's clock forward (premiums fall due, waiting periods end, the year closes), delay or
+// cancel the person's next insured flight, make the next premium fail, start the judge tour, and sign in as Cover's
+// staff to see the claims desk and the back office.
 function Demo() {
   const t = useT(), { info, setInfo, toast, me } = useMe(), [open, setOpen] = useState(false), [busy, setBusy] = useState(false);
   if (!info?.demoSignin) return null;
   const run = async (fn) => { setBusy(true); try { await fn(); } catch (e) { toast(e.message); } setBusy(false); };
   const skip = (days) => run(async () => { const r = await api("/api/demo/advance", { method: "POST", body: { days } }); setInfo((i) => ({ ...i, now: r.now, demoDaysSkipped: r.skipped })); toast(t(`時間快轉 ${days} 天：現在是 ${r.now.slice(0, 10)}`, `Skipped ${days} days: it is now ${r.now.slice(0, 10)}`)); dispatchEvent(new Event("cover:refresh")); });
+  // the demo flight feed: the signed-in person's next insured flight departs late or is cancelled, and Cover pays
+  // whoever it insures on that flight at once (parametric)
+  const flightNews = (status, delayMin) => run(async () => {
+    const now = Date.parse(info.now), next = (await api("/api/policies")).filter((p) => p.trip && ["active", "grace"].includes(p.status)).flatMap((p) => p.trip.flights || []).filter((f) => Date.parse(`${f.date}T23:59:59Z`) >= now - 864e5).sort((a, b) => a.date.localeCompare(b.date))[0];
+    if (!next) throw new Error(t("沒有投保中的航班。", "No insured flight to change."));
+    const r = await api("/api/demo/flight", { method: "POST", body: { flight: next.flight, date: next.date, status, delayMin } });
+    dispatchEvent(new Event("cover:refresh"));
+    const c = r.paid?.[0];
+    toast(c ? t(`${next.flight} ${status === "cancelled" ? "取消" : "延誤"}：已自動付款 ${c.amount}`, `${next.flight} ${status === "cancelled" ? "cancelled" : "delayed"}: ${c.amount} paid automatically`) : t(`${next.flight} 的新狀態已送出，沒有觸發給付。`, `${next.flight}'s new status is in; it didn't trigger a payout.`));
+    if (c) navigate(`/claims/${c.claim}`);
+  });
   return (
     <div className="demo">
       {open && <div className="demo-pop stack">
         <div><b>{t("示範控制台", "Demo panel")}</b><p className="tiny muted">{t("Cover 的時鐘", "Cover's clock")}: {info.now?.slice(0, 10)}{info.demoDaysSkipped ? ` (+${Math.round(info.demoDaysSkipped)} ${t("天", "days")})` : ""}</p></div>
         <div className="row">{[1, 15, 31].map((d) => <button key={d} className="btn ghost sm" disabled={busy} onClick={() => skip(d)}>+{d} {t("天", "days")}</button>)}</div>
+        {me && <div className="stack-s"><p className="tiny muted">{t("示範航班資料：你下一班投保的班機", "Demo flight feed: your next insured flight")}</p><div className="row">
+          <button className="btn ghost sm" disabled={busy} onClick={() => flightNews("departed", 380)}>{t("延誤 6 小時", "Delay 6 h")}</button>
+          <button className="btn ghost sm" disabled={busy} onClick={() => flightNews("departed", 150)}>{t("延誤 2.5 小時", "Delay 2.5 h")}</button>
+          <button className="btn ghost sm" disabled={busy} onClick={() => flightNews("cancelled", 0)}>{t("取消", "Cancel")}</button></div></div>}
         {me && info.paypal === "mock" && <button className="btn ghost sm" disabled={busy} onClick={() => run(async () => { await api("/api/demo/fail-next-premium", { method: "POST" }); toast(t("下一期保費會扣款失敗", "The next premium will be declined")); })}>{t("讓下一期保費扣款失敗", "Make the next premium fail")}</button>}
+        <button className="btn sm accent" onClick={() => { setOpen(false); startTour(); }}>{t("評審導覽（約 3 分鐘）", "Judge tour (about 3 minutes)")}</button>
         <button className="btn ghost sm" disabled={busy} onClick={() => run(async () => { await api("/api/auth/staff", { method: "POST", body: {} }); toast(t("已用 Cover 員工身分登入", "Signed in as Cover staff")); navigate("/desk"); })}>{t("以員工身分登入（審核台、後台）", "Sign in as staff (desk, back office)")}</button>
       </div>}
       <button className="demo-btn" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={t("示範控制台", "Demo panel")}>{open ? t("關閉", "Close") : t("示範控制", "Demo")}</button>

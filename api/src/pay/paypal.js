@@ -40,7 +40,7 @@ export function paypal({ clientId, secret, brand = "Cover", testCard = false }) 
   const captured = (j) => {
     const c = j.purchase_units?.[0]?.payments?.captures?.[0], b = c?.seller_receivable_breakdown, src = j.payment_source?.paypal || j.payment_source?.card;
     return { capture: c ? { id: c.id, status: c.status, amount: Math.round(+c.amount.value * 100), fee: b?.paypal_fee ? Math.round(+b.paypal_fee.value * 100) : null } : null,
-      vaultId: src?.attributes?.vault?.id || null, customerId: src?.attributes?.vault?.customer?.id || null, payerEmail: j.payment_source?.paypal?.email_address || null };
+      vaultId: src?.attributes?.vault?.id ? `${j.payment_source?.card ? "card" : "paypal"}:${src.attributes.vault.id}` : null, customerId: src?.attributes?.vault?.customer?.id || null, payerEmail: j.payment_source?.paypal?.email_address || null };
   };
 
   return {
@@ -61,8 +61,11 @@ export function paypal({ clientId, secret, brand = "Cover", testCard = false }) 
     // A premium: intent CAPTURE. With vaultId it is charged to saved PayPal at once (COMPLETED); otherwise the person
     // approves it, and save: true also keeps their PayPal in the Vault for the next premiums (one approval for both).
     async createPayment({ amount, currency = "USD", reference, description, returnUrl, cancelUrl, vaultId = null, save = false, requestId, card = false }) {
+      // a saved payment method is "paypal:<id>" or "card:<id>" (the sandbox test card is vaulted as a card); a card
+      // charged by Cover on its own schedule is a merchant-initiated recurring payment on stored credentials
+      const [vKind, vId] = vaultId ? (String(vaultId).includes(":") ? String(vaultId).split(":") : ["paypal", vaultId]) : [];
       const payment_source = vaultId
-        ? { paypal: { vault_id: vaultId } }
+        ? vKind === "card" ? { card: { vault_id: vId, stored_credential: { payment_initiator: "MERCHANT", payment_type: "RECURRING", usage: "SUBSEQUENT" } } } : { paypal: { vault_id: vId } }
         : card && testCard ? { card: { ...TEST_CARD, ...(save ? { attributes: { vault: { store_in_vault: "ON_SUCCESS" } } } : {}) } }
         : { paypal: { experience_context: { brand_name: brand, shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW", return_url: returnUrl, cancel_url: cancelUrl },
             ...(save ? { attributes: { vault: { store_in_vault: "ON_SUCCESS", usage_type: "MERCHANT", customer_type: "CONSUMER", permit_multiple_payment_tokens: false } } } : {}) } };

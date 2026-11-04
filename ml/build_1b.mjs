@@ -1,4 +1,4 @@
-// Cover-1B's data, in two steps around the teacher (ml/teacher.mjs):
+// Cover-1B's data (US, English), in two steps around the teacher (ml/teacher.mjs):
 //   node ml/build_1b.mjs gen        code makes the facts; Muse Glimmer is asked to put them into people's words:
 //     qa      for each clause of the five products, a policyholder's question that turns on it, with Glimmer's
 //             answer citing a clause (kept only when it cites the clause the question was written for)
@@ -10,11 +10,12 @@
 //     { id, task, messages, target, truth }), the injection sets (stories and documents with an instruction
 //     inserted, target the clean label; the test set uses only held-out templates), and the jobs for the teacher
 //     column of the evaluation (ml/data/1b/teacher_eval/jobs.jsonl: Glimmer answers the test prompts itself).
-//     The ocr task's rows come from the receipt generator (ml/ocr/out/docs_{train,test}.jsonl), labels exact.
+//     The ocr task's rows come from the US receipt generator (ml/ocr/out_us/docs_{train,test}.jsonl), labels exact.
 import fs from "node:fs";
 import path from "node:path";
 import * as T from "./tasks.mjs";
-import { rng } from "./cases.mjs";
+// a seeded generator (the same one ml/cases.mjs uses), kept here so the data needs no claim engine
+function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
 const ROOT = path.join(here, "data", "1b");
@@ -23,18 +24,18 @@ const pick = (r, xs) => xs[Math.floor(r() * xs.length)];
 const int = (r, a, b) => a + Math.floor(r() * (b - a + 1));
 const W = (f, rows) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, rows.map((x) => JSON.stringify(x)).join("\n") + (rows.length ? "\n" : "")); };
 const R = (f) => (fs.existsSync(f) ? fs.readFileSync(f, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)) : []);
-const SIMPLIFIED = /[们这险赔证医费发时说国对过还给让关图门问间电买卖钱单项补应该实际处认识读写选违规损坏宠货报经济务进连续条护满额质类变确资验检无产账属页么样东车请网历]/;
-const STYLE = ["口語、很短", "口語，帶一點情緒", "有具體金額和日期", "描述得很長很囉嗦", "用英文問", "中英夾雜", "有點搞不清楚狀況", "很有禮貌、正式"];
+const STYLE = ["casual and short", "a bit upset", "with concrete amounts and dates", "long and rambling", "unsure what is covered", "very polite and formal", "texting style, lowercase", "with a typo or two"];
 const ymd = (t) => new Date(t).toISOString().slice(0, 10);
 
 // ---------------------------------------------------------------- gen
 function genQA() {
-  for (const [split, per, seed] of [["train", 16, 101], ["test", 3, 202]]) {
+  for (const [split, per, seed] of [["train", 14, 101], ["test", 3, 202]]) {
     const r = rng(seed), items = [], jobs = [];
     for (const P of Object.values(PRODUCTS)) for (const c of P.clauses) for (let k = 0; k < per; k++) {
       const id = `qa-${split}-${c.id}-${k}`, style = pick(r, STYLE);
-      const sys = `你在幫 Cover 保險準備客服訓練資料。下面是「${P.name.zh}」的全部條款。\n${P.clauses.map((x) => `[${x.id}] ${x.zh}`).join("\n")}`;
-      const user = `寫一個保戶真的會問的問題，情境要剛好用到條款 ${c.id}（不要在問題裡寫條款編號，也不要照抄條款文字），風格：${style}。再以 Cover 客服的身分，只根據條款回答它（簡短，使用保戶的語言），並寫出最直接相關的一條條款編號，和 covered（yes 會賠、no 不賠、partly 部分賠、info 問題不是在問會不會賠）。以 JSON 回答：question、answer、clause、covered。`;
+      const sys = `You are preparing training data for Cover, a US insurance company. These are all the clauses of its ${P.name.en} policy.\n${P.clauses.map((x) => `[${x.id}] ${x.en}`).join("\n")}`;
+      const user = `Write a question a real US policyholder would ask, about a situation that turns on clause ${c.id} (don't name the clause or copy its wording). Style: ${style}. Then, as Cover's assistant, answer it only from the clauses (briefly), ` +
+        `and give the one clause that applies most directly, and covered (yes = it pays, no = it doesn't, partly = it pays part, info = the question isn't about whether it pays). Reply in JSON: question, answer, clause, covered.`;
       items.push({ id, product: P.id, clause: c.id, kind: c.kind, style });
       jobs.push({ id, sample: 0, messages: [{ role: "system", content: sys }, { role: "user", content: user }], schema: { type: "object", properties: { question: { type: "string" }, answer: { type: "string" }, clause: { type: "string" }, covered: { type: "string", enum: ["yes", "no", "partly", "info"] } }, required: ["question", "answer", "clause", "covered"] }, max_tokens: 500 });
     }
@@ -43,23 +44,26 @@ function genQA() {
   }
 }
 
-const WHERE = ["臺北市大安區的租屋處", "捷運忠孝復興站出口", "家裡客廳", "公司停車場", "新北市板橋區", "臺中市西屯區逢甲夜市附近", "高雄市前鎮區", "宜蘭羅東的老家", "住處樓下", "信義區的咖啡店", "動物醫院門口", "淡水老街", "社區中庭", "租屋處浴室", "台南永康區的家"];
-const ITEMS = { contents: ["MacBook Air", "腳踏車", "單眼相機", "沙發", "電視", "行李箱", "名錶", "iPad", "吸塵器"], building: ["落地窗", "天花板", "木地板", "熱水器管線", "鋁門窗"], liability: ["鄰居的天花板", "房東的冷氣", "樓下的衣櫃"], stay: ["旅館住宿"],
-  medical: ["朋友的醫藥費"], vet: ["門診", "X光檢查", "住院", "結石手術", "血液檢查", "疫苗"], wellness: ["五合一疫苗", "健康檢查", "洗牙"], own_damage: ["前保險桿", "後照鏡", "車門烤漆", "機車車殼"], third_party: ["對方的機車", "路人的醫藥費"],
-  theft: ["機車", "腳踏車"], death: [], terminal: [] };
+const WHERE = ["my apartment in Austin", "the parking garage at work", "our living room", "Elm Street in Denver", "Brooklyn, NY", "outside a coffee shop in Seattle", "my house in Tampa", "the dog park on Maple Ave",
+  "the airport in Chicago", "my driveway", "a grocery store parking lot", "my rental in Portland", "the vet's office", "Phoenix, AZ", "I-95 near Richmond", "the gym locker room", "our condo in Miami", "the hotel in Denver"];
+const ITEMS = { contents: ["MacBook Air", "road bike", "Canon camera", "couch", "55-inch TV", "suitcase", "watch", "iPad", "Dyson vacuum", "iPhone 15"], building: ["roof shingles", "kitchen ceiling", "hardwood floor", "water heater", "garage door", "windows"],
+  liability: ["neighbor's ceiling", "landlord's carpet", "downstairs unit's cabinets"], stay: ["hotel stay"], medical: ["my friend's ER bill"], vet: ["exam", "X-rays", "overnight stay", "bladder stone surgery", "bloodwork", "stitches"],
+  wellness: ["rabies vaccine", "annual checkup", "dental cleaning"], own_damage: ["front bumper", "side mirror", "door paint", "tail light"], third_party: ["the other driver's car", "a cyclist's medical bills"], theft: ["car", "motorcycle"],
+  flight_delay: ["delayed flight"], flight_cancelled: ["cancelled flight"], baggage_delay: ["checked bag", "toiletries and clothes"], trip_medical: ["urgent care visit", "ER visit"], trip_cancel: ["nonrefundable hotel", "flight tickets"] };
 function genStory() {
   const all = Object.values(PRODUCTS).filter((p) => p.id !== "life").flatMap((P) => P.claims.map((c) => [P, c]));
   for (const [split, n, seed] of [["train", 1300, 303], ["test", 220, 404]]) {
     const r = rng(seed), items = [], jobs = [];
     for (let i = 0; i < n; i++) {
       const [P, ct] = pick(r, all), today = ymd(Date.UTC(2026, int(r, 0, 10), int(r, 1, 28))), ago = int(r, 0, 20), date = ymd(Date.parse(today) - ago * 864e5);
-      const where = pick(r, WHERE), usd = r() < 0.4, amount = usd ? int(r, 3, 300) * 10 : int(r, 6, 900) * 100;
-      const voc = ITEMS[ct.coverage] || ITEMS.contents, its = [...new Set([pick(r, voc), ...(r() < 0.3 ? [pick(r, voc)] : [])])];
-      const amountStr = usd ? pick(r, [`${amount} 美元`, `US$${amount.toLocaleString("en-US")}`, `${amount} 塊美金`]) : pick(r, [`${amount.toLocaleString("en-US")} 元`, `NT$${amount.toLocaleString("en-US")}`, `${amount} 塊`]);
+      const where = pick(r, WHERE), amount = r() < 0.5 ? int(r, 3, 300) * 10 : int(r, 20, 8000) + (r() < 0.2 ? 0.5 : 0);
+      const voc = (ct.coverage === "contents" ? ITEMS.contents : ITEMS[ct.type] || ITEMS[ct.coverage]) || ITEMS.contents, its = [...new Set([pick(r, voc), ...(r() < 0.3 ? [pick(r, voc)] : [])])];
+      const s = amount % 1 ? amount.toFixed(2) : amount.toLocaleString("en-US");
+      const amountStr = pick(r, [`$${s}`, `${s} dollars`, `$${amount % 1 ? amount.toFixed(2) : amount}`]);
       const id = `st-${split}-${i}`;
-      const user = `幫 Cover 保險準備理賠訓練資料：用第一人稱、口語的繁體中文（偶爾可以中英夾雜）寫一段保戶在 App 裡報案的敘述，2 到 5 句。事件：${ct.zh}（${P.name.zh}）。` +
-        `一定要原樣寫出這些字：金額「${amountStr}」、地點「${where}」、物品或項目「${its.join("」「")}」。今天是 ${today}，事情發生在 ${date}：${ago <= 7 && r() < 0.6 ? "用相對的說法（例如昨天、前天晚上、上週三）" : "直接寫出日期（任何常見寫法都可以，例如 10/3、10 月 3 日）"}。不要寫其他金額。以 JSON 回答：story。`;
-      items.push({ id, product: P.id, today, truth: { type: ct.type, happenedAt: date, where, amount, currency: usd ? "USD" : "TWD", items: its }, amountStr });
+      const user = `Preparing claims training data for Cover, a US insurer: write what a policyholder types into the app to report a claim, in the first person, casual American English, 2 to 5 sentences. What happened: ${ct.en} (${P.name.en}). ` +
+        `Write these exactly as given: the amount "${amountStr}", the place "${where}", and "${its.join('", "')}". Today is ${today}; it happened on ${date}: ${ago <= 7 && r() < 0.6 ? "say it relatively (yesterday, last Tuesday, two nights ago)" : "give the date (any common US way, like 10/3 or Oct 3)"}. Don't mention any other amount. Reply in JSON: story.`;
+      items.push({ id, product: P.id, today, truth: { type: ct.type, happenedAt: date, where, amount, currency: "USD", items: its }, amountStr });
       jobs.push({ id, sample: 0, messages: [{ role: "user", content: user }], schema: { type: "object", properties: { story: { type: "string" } }, required: ["story"] }, max_tokens: 400 });
     }
     W(path.join(ROOT, "gen", "story", split, "items.jsonl"), items); W(path.join(ROOT, "gen", "story", split, "jobs.jsonl"), jobs);
@@ -67,24 +71,26 @@ function genStory() {
   }
 }
 
-const PLACES = ["臺北市大安區", "大安區", "台北市信義區", "新北市板橋區", "三重", "台中西屯", "臺南市東區", "高雄市苓雅區", "宜蘭市", "花蓮市", "新竹市東區", "桃園市中壢區"];
-function valueFor(r, q) {
-  if (q.type === "choice") { const o = pick(r, q.options); return [o.v, `${o.zh}（選項 ${o.v}）`]; }
+const PLACES = ["78704", "Austin, TX 78704", "Brooklyn, NY 11215", "33139", "Miami, FL", "Seattle, WA 98103", "Denver, CO", "60614", "Chicago, IL 60614", "Portland, OR 97214", "Phoenix, AZ 85016", "Boston, MA 02116",
+  "New Orleans, LA 70115", "94110", "San Francisco, CA", "Nashville, TN 37203", "Columbus, OH 43215", "Raleigh, NC 27601", "Houston, TX 77007", "Boise, ID"];
+function valueFor(r, q, today) {
+  if (q.type === "choice") { const o = pick(r, q.options); return [o.v, `${o.en} (option ${o.v})`]; }
   if (q.type === "number") { const v = Math.round(q.min + (q.max - q.min) * Math.pow(r(), 2)); return [v, `${v}${q.unit ? ` ${q.unit}` : ""}`]; }
-  if (q.type === "bool") { const v = r() < 0.5; return [v, v ? "是／有" : "否／沒有"]; }
+  if (q.type === "bool") { const v = r() < 0.5; return [v, v ? "yes" : "no"]; }
   if (q.type === "place") { const v = pick(r, PLACES); return [v, v]; }
-  if (q.id === "petName") { const v = pick(r, ["豆豆", "咪咪", "阿福", "Lucky", "麻糬", "小黑", "Mochi"]); return [v, v]; }
+  if (q.type === "date") { const v = ymd(Date.parse(today) + int(r, 3, 200) * 864e5); return [v, `${v} (today is ${today}; they may say it as a US date or relatively)`]; }
+  if (q.id === "petName") { const v = pick(r, ["Max", "Bella", "Charlie", "Luna", "Cooper", "Daisy", "Mochi"]); return [v, v]; }
   return null;
 }
 function genDialog() {
-  const qs = Object.values(PRODUCTS).flatMap((P) => P.questions.filter((q) => q.type !== "text" || q.id === "petName").map((q) => [P, q]));
+  const qs = Object.values(PRODUCTS).flatMap((P) => P.questions.filter((q) => ["choice", "number", "bool", "place", "date"].includes(q.type) || q.id === "petName").map((q) => [P, q]));
   for (const [split, n, seed] of [["train", 1600, 505], ["test", 260, 606]]) {
     const r = rng(seed), items = [], jobs = [];
     for (let i = 0; i < n; i++) {
-      const [P, q] = pick(r, qs), off = r() < 0.1, [v, meaning] = valueFor(r, q), id = `dg-${split}-${i}`;
-      const user = off ? `Cover 的投保助理 Lumi 問保戶：「${q.zh}」\n寫出保戶的一句回覆，但保戶沒有回答這一題（例如反問為什麼要問、說等一下再說、問別的事、說不知道）。口語繁體中文。以 JSON 回答：reply。`
-        : `Cover 的投保助理 Lumi 問保戶：「${q.zh}」\n保戶真正的答案是：${meaning}。寫出保戶會怎麼口語回答（繁體中文，有時夾英文；不要說選項代碼，可以間接說，例如用幾樓說高低、用中文數字或「大概」說數量，${pick(r, ["很短", "順便多講一句自己的狀況", "很隨便", "很有禮貌"])}）。以 JSON 回答：reply。`;
-      items.push({ id, product: P.id, qid: q.id, qtype: q.type, truth: { value: off ? null : v, understood: !off } });
+      const [P, q] = pick(r, qs), today = ymd(Date.UTC(2026, int(r, 0, 10), int(r, 1, 28))), off = r() < 0.1, [v, meaning] = valueFor(r, q, today), id = `dg-${split}-${i}`;
+      const user = off ? `Cover's quote assistant Lumi asks a customer: "${q.en}"\nWrite the customer's one-line reply, but they don't answer this question (they ask why it's needed, say later, ask something else, or say they don't know). Casual American English. Reply in JSON: reply.`
+        : `Cover's quote assistant Lumi asks a customer: "${q.en}"\nThe customer's true answer is: ${meaning}. Write how they'd actually reply, casually, in American English (don't say the option code; they can say it indirectly, e.g. the floor number for high or low, round numbers or words for amounts; ${pick(r, ["very short", "adds a bit about their situation", "sloppy", "polite"])}). Reply in JSON: reply.`;
+      items.push({ id, product: P.id, qid: q.id, qtype: q.type, today, truth: { value: off ? null : v, understood: !off } });
       jobs.push({ id, sample: 0, messages: [{ role: "user", content: user }], schema: { type: "object", properties: { reply: { type: "string" } }, required: ["reply"] }, max_tokens: 200 });
     }
     W(path.join(ROOT, "gen", "dialog", split, "items.jsonl"), items); W(path.join(ROOT, "gen", "dialog", split, "jobs.jsonl"), jobs);
@@ -107,7 +113,6 @@ function assemble() {
       const a = A.get(it.id); if (!a) { no(`qa_${split}`, "no answer"); continue; }
       const cl = (String(a.clause).match(/[A-Z]{2}-\d+\.\d+/) || [""])[0];
       if (cl !== it.clause) { no(`qa_${split}`, "cites another clause"); continue; }
-      if (SIMPLIFIED.test(a.question + a.answer)) { no(`qa_${split}`, "simplified characters"); continue; }
       if (/[A-Z]{2}-\d+\.\d+/.test(a.question)) { no(`qa_${split}`, "the question names the clause"); continue; }
       put(`qa_${split}`, row(it.id, "qa", T.qa(it.product, a.question), { answer: a.answer, clause: cl, covered: a.covered }, { clause: cl, covered: a.covered }, { product: it.product }));
     }
@@ -116,7 +121,7 @@ function assemble() {
     for (const it of R(path.join(ROOT, "gen", "story", split, "items.jsonl"))) {
       const a = S.get(it.id); if (!a?.story) { no(`story_${split}`, "no answer"); continue; }
       const s = a.story;
-      if (!digits(s).includes(digits(String(it.truth.amount)))) { no(`story_${split}`, "amount not said"); continue; }
+      if (!digits(s).includes(digits(it.truth.amount % 1 ? it.truth.amount.toFixed(2) : String(it.truth.amount)))) { no(`story_${split}`, "amount not said"); continue; }
       if (!s.includes(it.truth.where)) { no(`story_${split}`, "place not said"); continue; }
       if (!it.truth.items.every((x) => s.includes(x))) { no(`story_${split}`, "an item not said"); continue; }
       put(`story_${split}`, row(it.id, "story", T.story(it.product, it.today, s), it.truth, it.truth, { product: it.product, today: it.today, text: s }));
@@ -125,11 +130,11 @@ function assemble() {
     const D = answers("dialog", split);
     for (const it of R(path.join(ROOT, "gen", "dialog", split, "items.jsonl"))) {
       const a = D.get(it.id); if (!a?.reply) { no(`dialog_${split}`, "no answer"); continue; }
-      if (it.truth.understood && it.qtype === "choice" && new RegExp(`\\b${PRODUCTS[it.product].questions.find((q) => q.id === it.qid).options.map((o) => o.v).join("|")}\\b`).test(a.reply)) { no(`dialog_${split}`, "says the option code"); continue; }
-      put(`dialog_${split}`, row(it.id, "dialog", T.dialog(it.product, it.qid, a.reply), it.truth, it.truth, { product: it.product, qid: it.qid, qtype: it.qtype }));
+      if (it.truth.understood && it.qtype === "choice" && new RegExp(`\\b(${PRODUCTS[it.product].questions.find((q) => q.id === it.qid).options.map((o) => o.v).filter((v) => /_/.test(v)).join("|") || "$^"})\\b`).test(a.reply)) { no(`dialog_${split}`, "says the option code"); continue; }
+      put(`dialog_${split}`, row(it.id, "dialog", T.dialog(it.product, it.qid, a.reply, it.qtype === "date" ? it.today : null), it.truth, it.truth, { product: it.product, qid: it.qid, qtype: it.qtype }));
     }
     // ocr: the generator's documents, labels exact
-    for (const d of R(path.join(here, "ocr", "out", `docs_${split}.jsonl`)).slice(0, split === "train" ? 3000 : 300))
+    for (const d of R(path.join(here, "ocr", "out_us", `docs_${split}.jsonl`)).slice(0, split === "train" ? 3000 : 300))
       put(`ocr_${split}`, row(d.id, "ocr", T.ocr(d.text), d.fields, d.fields, { kind: d.kind }));
   }
   // injections: an instruction inserted into a story or a document; the target is the clean label
@@ -137,10 +142,10 @@ function assemble() {
     const r = rng(seed);
     const src = [...(out[`story_${split}`] || []).slice(0, split === "train" ? 400 : 120), ...(out[`ocr_${split}`] || []).slice(0, split === "train" ? 300 : 80)];
     for (const x of src) {
-      const N = pick(r, [99999, 88888, 50000, 123456]), line = pick(r, tpl).replaceAll("{N}", String(N));
+      const N = pick(r, [99999, 8888, 50000, 123456]), line = pick(r, tpl).replaceAll("{N}", String(N));
       if (x.task === "story") {
-        const parts = x.text.split(/(?<=[。！？!?])/); const at = int(r, 0, parts.length); parts.splice(at, 0, line);
-        put(`inject_${split}`, row(`${x.id}-inj`, "story", T.story(x.product, x.today, parts.join("")), x.truth, x.truth, { product: x.product, injected: line, N, from: "story" }));
+        const parts = x.text.split(/(?<=[.!?])\s+/); const at = int(r, 0, parts.length); parts.splice(at, 0, line);
+        put(`inject_${split}`, row(`${x.id}-inj`, "story", T.story(x.product, x.today, parts.join(" ")), x.truth, x.truth, { product: x.product, injected: line, N, from: "story" }));
       } else {
         const text = x.messages[1].content, lines = text.split("\n"); lines.splice(int(r, 1, lines.length), 0, line);
         put(`inject_${split}`, row(`${x.id}-inj`, "ocr", T.ocr(lines.join("\n")), x.truth, x.truth, { injected: line, N, from: "ocr" }));

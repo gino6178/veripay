@@ -7,7 +7,7 @@ import { useMe } from "../App.jsx";
 import { Status } from "./Policies.jsx";
 import Icon from "../components/Icon.jsx";
 
-const KIND = { photo: ["照片", "Photo"], receipt: ["收據或發票", "Receipt"], receipt_or_photo: ["收據或照片", "Receipt or photo"], police_report: ["報案證明（三聯單）", "Police report"], repair_quote: ["維修估價單", "Repair quote"], vet_invoice: ["動物醫院收據", "Vet invoice"], diagnosis: ["診斷證明", "Diagnosis"], records: ["病歷", "Records"], fire_report: ["火災證明", "Fire report"], list: ["損失清單", "List of items"], statement: ["事故說明", "Statement"], medical: ["醫療單據", "Medical bills"], inspection: ["鑑定報告", "Inspection"], death_certificate: ["死亡證明書", "Death certificate"], id_beneficiary: ["受益人身分證明", "Beneficiary's ID"], household_record: ["除戶謄本", "Household record"], specialist_statement: ["專科醫師證明", "Specialist's statement"], registration: ["行照", "Registration"], other: ["其他", "Other"] };
+const KIND = { photo: ["照片", "Photo"], receipt: ["收據或發票", "Receipt"], receipt_or_photo: ["收據或照片", "Receipt or photo"], police_report: ["警方報案紀錄（含案號）", "Police report"], repair_quote: ["維修報價或發票", "Repair estimate or invoice"], vet_invoice: ["動物醫院收據", "Vet invoice"], diagnosis: ["診斷證明", "Diagnosis"], records: ["病歷", "Records"], fire_report: ["火災證明", "Fire report"], list: ["損失清單", "List of items"], statement: ["事故說明", "Statement"], medical: ["醫療單據", "Medical bills"], inspection: ["鑑定報告", "Inspection"], death_certificate: ["死亡證明書", "Death certificate"], id_beneficiary: ["受益人身分證明", "Beneficiary's ID"], specialist_statement: ["專科醫師證明", "Specialist's statement"], registration: ["車輛登記證", "Registration"], flight_record: ["航班紀錄", "Flight record"], pir: ["行李延誤報告（PIR）", "Baggage report (PIR)"], other: ["其他", "Other"] };
 const kindName = (t, k) => t(...(KIND[k] || [k, k]));
 
 // a 64-bit difference hash: the picture shrunk to 9 x 8 in grey, each pixel compared with its right neighbour
@@ -34,6 +34,12 @@ export function NewClaim({ policy }) {
   const [touched, setTouched] = useState(false);
   useEffect(() => { if (info?.now && !touched) setAt(local()); }, [info?.now]);
   const [items, setItems] = useState([{ what: "", value: "" }]), [ev, setEv] = useState([]), [payee, setPayee] = useState("me"), [vet, setVet] = useState(""), [busy, setBusy] = useState(false);
+  // the judge tour's "fill this for me": the kind of claim, the words, and its sample documents as real files
+  useEffect(() => {
+    const f = async (e) => { const d = e.detail || {}; if (d.type) setType(d.type); if (d.where) setWhere(d.where); if (d.story) setStory(d.story); if (d.amount) setAmount(String(d.amount));
+      const list = []; for (const x of d.files || []) list.push(await asEvidence(x.kind, x.file)); if (list.length) setEv(list); };
+    addEventListener("cover:fill-claim", f); return () => removeEventListener("cover:fill-claim", f);
+  }, []);
   if (!p || !prod) return null;
   const ct = prod.claims.find((c) => c.type === type), contents = ["renters", "home"].includes(p.product) && ["theft", "water", "fire"].includes(type);
   const add = async (kind, files) => { const list = []; for (const f of files) { if (f.size > 6e6) { toast(t("檔案最大 6 MB", "Files can be at most 6 MB")); continue; } list.push(await asEvidence(kind, f)); } setEv((e) => [...e, ...list]); };
@@ -53,7 +59,7 @@ export function NewClaim({ policy }) {
       {ct && <div className="card stack">
         <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))" }}>
           <label className="field"><span>{t("什麼時候", "When")}</span><input className="input" type="datetime-local" value={at} onChange={(e) => { setTouched(true); setAt(e.target.value); }} /></label>
-          <label className="field"><span>{t("在哪裡", "Where")}</span><input className="input" value={where} onChange={(e) => setWhere(e.target.value)} placeholder={t("例如：家裡、捷運公館站", "e.g. at home, Gongguan station")} /></label>
+          <label className="field"><span>{t("在哪裡", "Where")}</span><input className="input" value={where} onChange={(e) => setWhere(e.target.value)} placeholder={t("例如：家裡、公司的停車場", "e.g. at home, the office parking garage")} /></label>
           <label className="field"><span>{t("金額（USD）", "Amount (USD)")}</span><input className="input" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} /></label>
         </div>
         <label className="field"><span>{t("經過（用你自己的話）", "What happened, in your own words")}</span><textarea className="input" value={story} onChange={(e) => setStory(e.target.value)} /></label>
@@ -83,11 +89,15 @@ function Drop({ label, onFiles, have }) {
   );
 }
 
-const CHECK = { in_force: ["保單當時有效", "Policy in force"], waiting: ["等待期", "Waiting period"], covered: ["有這項保障", "Covered"], reported: ["申請時限", "Reported in time"], police_24h: ["24 小時內報案", "Police within 24 h"], documents_read: ["文件判讀", "Documents read"] };
+const CHECK = { in_force: ["保單當時有效", "Policy in force"], waiting: ["等待期", "Waiting period"], covered: ["有這項保障", "Covered"], reported: ["申請時限", "Reported in time"], police_24h: ["24 小時內報案", "Police within 24 h"], documents_read: ["文件判讀", "Documents read"],
+  listed: ["保單上的航班", "An insured flight"], not_known: ["投保時未知", "Not known when bought"], threshold: ["航班狀態達到給付條件", "The flight status qualifies"], cap: ["這趟的上限", "The trip's cap"] };
 export function ClaimPage({ id }) {
   const t = useT(), { toast } = useMe();
   const { lang } = useLang();
   const { data: c, reload } = useApi(`/api/claims/${id}?lang=${lang}`);
+  // an add-on is named in a check by its id ("the devices add-on"): say its name instead (zh.js does it for Chinese)
+  const { data: prod } = useApi(c ? `/api/products/${c.product}?lang=en` : null);
+  const named = (s) => (lang === "en" && prod && typeof s === "string" ? s.replace(/\bthe (\w+) add-on\b/g, (m, a) => { const x = prod.addons.find((y) => y.id === a); return x ? `the add-on "${x.what.replace(/\s*\(.*\)$/, "")}"` : m; }) : s);
   const [shown, setShown] = useState(new URLSearchParams(location.search).get("fresh") ? 0 : 99), [why, setWhy] = useState("");
   useEffect(() => { if (shown < 99 && c?.decision) { const n = c.decision.checks.length + 1; const tm = setInterval(() => setShown((s) => (s >= n ? (clearInterval(tm), 99) : s + 1)), 450); return () => clearInterval(tm); } }, [c?.decision]);
   useEffect(() => { if (c && ["paying", "deciding"].includes(c.status)) { const tm = setTimeout(reload, 1500); return () => clearTimeout(tm); } }, [c]);
@@ -103,7 +113,7 @@ export function ClaimPage({ id }) {
         {c.status === "needs_info" && <div className="card stack"><div className="note warn">{t("理賠人員想知道：", "The adjuster asks:")} {c.asked}</div><Drop label={t("補上文件", "Add a document")} onFiles={(f) => addMore("other", f)} have={0} /></div>}
         {d && done && <div className={`big-result ${c.status === "paid" ? "paid" : c.status === "denied" ? "denied" : "referred"}`}>
           {c.status === "paid" ? <><span className="data" style={{ color: "var(--ok)" }}>{t("已入帳", "PAID")}</span><b className="num">{c.payout.amount}</b><p>{c.payout.to === "the vet" ? t("已用 PayPal 付給動物醫院", "Sent to the vet with PayPal") : t("已用 PayPal 付給你", "Sent to your PayPal")}{c.payout.secondsToPay != null && d.by === "rules" ? t(`，申請後 ${secs(c.payout.secondsToPay)}`, `, ${secs(c.payout.secondsToPay)} after you claimed`) : ""}</p><p className="tiny muted mono">PayPal Payouts {c.payout.paypal} · {c.payout.status}</p></>
-            : c.status === "denied" ? <><b>{t("不在保障內", "Not covered")}</b><p>{d.reason}</p></>
+            : c.status === "denied" ? <><b>{t("不在保障內", "Not covered")}</b><p>{named(d.reason)}</p></>
             : <><b>{t("交給真人", "With a person")}</b><p>{d.reason}</p><p className="tiny muted">{t("Cover 的理賠人員會看你的案件，不會因為這些訊號就自動拒賠。", "A Cover adjuster looks at it; nothing here refuses your claim by itself.")}</p></>}
         </div>}
         {c.status === "denied" && !c.appeal && done && <div className="card stack-s"><b>{t("覺得判斷錯了？", "Think this is wrong?")}</b><textarea className="input" placeholder={t("說明一下（選填）", "Tell us why (optional)")} value={why} onChange={(e) => setWhy(e.target.value)} /><button className="btn ghost" onClick={async () => { await api(`/api/claims/${id}/appeal`, { method: "POST", body: { why } }); toast(t("已送給真人重新審查", "Sent to a person to look again")); reload(); }}>{t("請真人再看一次", "Ask a person to look again")}</button></div>}
@@ -111,8 +121,8 @@ export function ClaimPage({ id }) {
       </div>
       <div className="stack">
         {d && <div className="card stack">
-          <div className="row between"><h3>{t("Lumi 檢查了什麼", "What Lumi checked")}</h3><span className="tiny muted">{d.by === "rules" ? t("由規則判斷", "decided by rules") : d.by}</span></div>
-          <ul className="checks">{d.checks.slice(0, shown).map((x) => <li key={x.check} className={`check ${x.ok ? "ok" : x.hard ? "no" : "flag"}`}><span className="dot">{x.ok ? "✓" : "!"}</span><span><b>{t(...(CHECK[x.check] || [x.check, x.check]))}</b><br /><span className="muted">{x.says}</span></span><span className="clause">{x.clause}</span></li>)}
+          <div className="row between"><h3>{t("Lumi 檢查了什麼", "What Lumi checked")}</h3><span className="tiny muted">{d.by === "rules" ? t("由規則判斷", "decided by rules") : d.by === "parametric" ? t("依航班狀態自動判斷，不用申請", "decided from the flight status, no claim filed") : t(`由理賠人員判斷（${d.by}）`, `decided by ${d.by}`)}</span></div>
+          <ul className="checks">{d.checks.slice(0, shown).map((x) => <li key={x.check} className={`check ${x.ok ? "ok" : x.hard ? "no" : "flag"}`}><span className="dot">{x.ok ? "✓" : "!"}</span><span><b>{t(...(CHECK[x.check] || [x.check, x.check]))}</b><br /><span className="muted">{named(x.says)}</span></span><span className="clause">{x.clause}</span></li>)}
             {shown > d.checks.length && Array.isArray(d.signals) && d.signals.map((s, i) => <li key={i} className="check flag"><span className="dot">!</span><span><b>{t("需要真人看", "For a person to check")}</b><br /><span className="muted">{s.says}</span></span><span /></li>)}
             {shown > d.checks.length && typeof d.signals === "string" && <li className="check flag"><span className="dot">!</span><span>{d.signals}</span><span /></li>}
           </ul>
@@ -120,7 +130,7 @@ export function ClaimPage({ id }) {
           {done && <details><summary className="small" style={{ cursor: "pointer" }}>{t("依據的條款", "The clauses it rests on")}</summary><div className="stack-s" style={{ marginTop: 8 }}>{d.basis.map((b) => <p key={b.id} className="small"><span className="mono">{b.id}</span> <span className="muted">{b.text}</span></p>)}</div></details>}
         </div>}
         {c.evidence.length > 0 && <div className="card stack-s"><h3>{t("文件", "Documents")}</h3>
-          <div className="thumbs">{c.evidence.map((e) => <figure key={e.id}><img src={`/api/claims/${id}/evidence/${e.id}`} alt="" onError={(x) => { x.currentTarget.replaceWith(Object.assign(document.createElement("div"), { className: "doc", textContent: "PDF" })); }} /><figcaption>{kindName(t, e.kind)}{e.taken ? ` · ${t("拍攝", "taken")} ${e.taken.slice(0, 10)}` : ""}{e.read ? <><br />{t("讀到", "read")}: {[e.read.date, e.read.amount, e.read.merchant].filter(Boolean).join(" · ")}</> : null}</figcaption></figure>)}</div>
+          <div className="thumbs">{c.evidence.map((e) => <figure key={e.id}>{e.kind === "flight_record" ? <div className="doc"><Icon name="doc" /></div> : <img src={`/api/claims/${id}/evidence/${e.id}`} alt="" onError={(x) => { x.currentTarget.replaceWith(Object.assign(document.createElement("div"), { className: "doc", textContent: "PDF" })); }} />}<figcaption>{kindName(t, e.kind)}{e.taken ? ` · ${t("拍攝", "taken")} ${e.taken.slice(0, 10)}` : ""}{e.read ? <><br />{t("讀到", "read")}: {[e.read.date, e.read.amount, e.read.merchant].filter(Boolean).join(" · ")}</> : null}</figcaption></figure>)}</div>
         </div>}
         {c.receipts?.length > 0 && <p className="tiny muted">{t("這個決定的收據已簽章並記進透明帳本：", "This decision's receipt is signed and in the transparency log:")} <span className="mono">{c.receipts.at(-1)}</span></p>}
         {!["paid", "paying", "withdrawn"].includes(c.status) && <button className="link small" onClick={async () => { await api(`/api/claims/${id}/withdraw`, { method: "POST" }); reload(); }}>{t("撤回理賠", "Withdraw the claim")}</button>}

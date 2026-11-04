@@ -1,10 +1,42 @@
-# Cover ml: round 1 results
+# Cover ml: results
+
+**Cover is now a US product** (the judges are American). The models are being rebuilt for it:
+- English US documents for Cover-OCR;
+- English teacher data with US framing for Cover-1B;
+- a US-shaped portfolio for Cover-Risk;
+- Cover-Audit cases from the US products.
+
+US results go in the sections below as they are measured.
+
+**Round 1 (Traditional Chinese / Taiwan) is superseded.** Its numbers are kept at the end of this file as history,
+under "History: round 1 (Taiwan, superseded)". They describe models that will not ship.
+- Cover-1B and Cover-Audit never reached training in that round. They were stopped when the direction changed.
 
 All numbers come from held-out sets that were never trained on. Intervals are 95% intervals: Wilson for rates, and
 bootstrap (200 resamples) for Gini. Muse Glimmer (`muse-glimmer:30b-q4_K_M`, digest `de878ce33ad8`) is the only
 teacher model. No Claude or GPT outputs are used, and every person, number and document is synthetic.
 
-## Cover-Risk (ml/risk/)
+## Cover-OCR (US)
+
+(in progress)
+
+## Cover-1B (US)
+
+(waiting for the US products' English clauses)
+
+## Cover-Risk (US)
+
+(waiting for the US zones.js)
+
+## Cover-Audit (US)
+
+(waiting for the US products)
+
+---
+
+# History: round 1 (Taiwan, superseded)
+
+## Round 1 Cover-Risk (Taiwan districts, superseded)
 
 **What it is.** Each policy's expected yearly claims, for pricing, with the reasons. It is not an LLM.
 
@@ -62,7 +94,7 @@ The generator is stated in full in the script:
 - **The reasons are path (Saabas) attributions,** expressed as multiplying factors. They are close to SHAP but not
   equal to it.
 
-## Cover-OCR (ml/ocr/)
+## Round 1 Cover-OCR (Traditional Chinese documents, superseded)
 
 **Data** (`gen.py`). Synthetic documents: 統一發票 proof copies, vet invoices, repair quotes and police report slips
 (受理案件證明單). Every field and every line's text is known exactly.
@@ -76,7 +108,8 @@ The generator is stated in full in the script:
   - noise;
   - JPEG at quality 25–80.
 - **Line crops.** Each line is cut along its corners after the warp, so the crops are what a detector would hand over.
-  Training crops are jittered by ±3 px.
+  (Correction: the round-1 training crops were not jittered as intended. The shards were named `train0`–`train4` and
+the jitter applied only to a split named `train`. The US generator jitters every `train*` split.)
 
 | Split | Documents | Lines |
 |---|---|---|
@@ -123,10 +156,10 @@ All fields in one document, by kind on test: vet 69/77, repair 56/72, invoice 12
   writes every line's quad, which is a detector's training label.
 - **Speed.** About 13 ms per line, batched on the GPU. CPU speed is not measured yet.
 
-## Cover-1B
+## Round 1 Cover-1B and Cover-Audit (Taiwan)
 
-(in progress)
-
-## Cover-Audit
-
-(in progress)
+These were not trained. The Chinese teacher data had been generated (clause Q&A 1,425, stories 1,520, the dialogue's
+training set of 1,600 with its test set unfinished, and 0 to 3 failed calls per set; the Cover-Audit jobs had not
+started) when the direction changed to a US product. Both models were stopped before training.
+- The pipeline's smoke tests did pass on that data: the SFT trainer, generation, scoring, and the audit cases from the
+  real claim engine.

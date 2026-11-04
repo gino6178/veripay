@@ -1,42 +1,108 @@
 // Cover's claims desk: the claims code sent to a person, with what the rules found, the fraud signals and why they
 // fired, the documents and what the reader made of them. The adjuster approves (an amount), denies (with the clause),
-// or asks for more. Also the underwriting queue: policies a person must look at before they can start.
-import { useState } from "react";
-import { api, useApi, useT, useLang, when } from "../api.jsx";
+// or asks for more. The queue is an AG Grid with Cover's own cells (status, clause tags, fraud signals, the agent's
+// alerts); the anomaly-alert agent watches it and answers questions about it. Also the underwriting queue: policies a
+// person must look at before they can start.
+import { lazy, Suspense, useMemo, useState } from "react";
+import { api, useApi, useT, useLang, when, cents } from "../api.jsx";
 import { useMe } from "../App.jsx";
 import { Status } from "./Policies.jsx";
+const Grid = lazy(() => import("../components/backoffice/Grid.jsx"));
+import AgentPanel, { useWatcher } from "../components/backoffice/AgentPanel.jsx";
+import { TOOLS } from "../components/backoffice/agent.js";
+import { DeciderCell, FlightCell, StatusCell, ProductCell, ClauseCell, SignalCell, AlertCell, MoneyCell, DateCell, IdCell } from "../components/backoffice/cells.jsx";
+
+const AGENT_COLUMNS = [
+  { field: "claim", kind: "id", header: "Claim id" },
+  { field: "number", kind: "text", header: "Number", zh: "編號" },
+  { field: "status", kind: "enum", header: "Status", zh: "狀態" },
+  { field: "product", kind: "enum", header: "Product", zh: "險種" },
+  { field: "signals", kind: "number", header: "Signals", zh: "可疑訊號" },
+  { field: "claimedCents", kind: "money", header: "Claimed", zh: "金額", main: true },
+  { field: "reportedAt", kind: "date", header: "Reported", zh: "申請時間" },
+  { field: "by", kind: "enum", header: "Decided by", zh: "決定者" },
+  { field: "type", kind: "enum", header: "Type", zh: "類型" },
+  { field: "flight", kind: "text", header: "Flight", zh: "航班" },
+  { field: "airport", kind: "text", header: "Airport", zh: "機場" },
+  { field: "day", kind: "text", header: "Flight day", zh: "航班日期" },
+  { field: "state", kind: "text", header: "State", zh: "州" },
+  { field: "zip", kind: "text", header: "ZIP", zh: "郵遞區號" },
+  { field: "alerts", kind: "enum", header: "Alerts", zh: "警示" },
+  { field: "basis", kind: "enum", header: "Clauses", zh: "條款" },
+  { field: "appeal", kind: "enum", header: "Appeal", zh: "重審" },
+  { field: "waiting", kind: "enum", header: "Waiting", zh: "待處理" },
+];
 
 export default function Desk() {
   const t = useT(), { toast } = useMe();
   const { lang } = useLang();
   const desk = useApi(`/api/staff/claims?lang=${lang}`), uw = useApi("/api/staff/underwriting");
+  const watcher = useWatcher();
   const [open, setOpen] = useState(null);
-  if (desk.error?.status === 401) return <StaffGate onIn={() => { desk.reload(); uw.reload(); }} />;
-  const sel = open && [...(desk.data?.queue || []), ...(desk.data?.recent || [])].find((c) => c.claim === open);
+  const facts = watcher.data?.facts || {};
+
+  const all = useMemo(() => {
+    if (!desk.data) return null;
+    const q = new Set(desk.data.queue.map((c) => c.claim)), seen = new Set();
+    return [...desk.data.queue, ...desk.data.recent].filter((c) => !seen.has(c.claim) && seen.add(c.claim)).map((c) => {
+      const sig = Array.isArray(c.decision?.signals) ? c.decision.signals : [];
+      return { id: c.claim, claim: c.claim, number: c.number, what: c.what, product: c.product, status: c.status, appeal: c.appeal, waiting: q.has(c.claim) ? "true" : "false",
+        claimedCents: cents(c.claimed), reportedAt: c.reportedAt, signals: sig.length, signalList: sig, basis: (c.decision?.basis || []).map((b) => b.id),
+        type: c.type, by: facts[c.claim]?.by || (c.decision?.by ? (["rules", "parametric"].includes(c.decision.by) ? c.decision.by : "adjuster") : null),
+        flight: facts[c.claim]?.flight || null, airport: facts[c.claim]?.airport || null, day: facts[c.claim]?.day || null,
+        state: facts[c.claim]?.state || null, zip: facts[c.claim]?.zip || null, alerts: facts[c.claim]?.alerts || [], raw: c };
+    });
+  }, [desk.data, facts]);
+
+  const columnDefs = useMemo(() => [
+    { field: "number", headerName: t("編號", "Number"), pinned: "left", width: 130, cellRenderer: IdCell },
+    { field: "what", headerName: t("事故", "What happened"), flex: 1, minWidth: 170, tooltipField: "what" },
+    { field: "status", headerName: t("狀態", "Status"), width: 200, cellRenderer: StatusCell },
+    { field: "signals", headerName: t("可疑訊號", "Signals"), width: 120, cellRenderer: SignalCell, filter: "agNumberColumnFilter", comparator: (a, b, na, nb) => a - b || (na.data.signalList.length - nb.data.signalList.length) },
+    { field: "claimedCents", headerName: t("金額", "Claimed"), width: 120, type: "rightAligned", cellRenderer: MoneyCell, filter: "agNumberColumnFilter" },
+    { field: "basis", headerName: t("依據條款", "Clauses"), width: 200, cellRenderer: ClauseCell, cellDataType: false, sortable: false, filterValueGetter: (p) => p.data.basis.join(" ") },
+    { field: "alerts", headerName: t("代理人警示", "Agent alerts"), width: 170, cellRenderer: AlertCell, cellDataType: false, sortable: false, filterValueGetter: (p) => p.data.alerts.join(" ") },
+    { field: "by", headerName: t("決定者", "Decided by"), width: 140, cellRenderer: DeciderCell },
+    { field: "product", headerName: t("險種", "Product"), width: 130, cellRenderer: ProductCell },
+    { field: "flight", headerName: t("航班", "Flight"), width: 150, cellRenderer: FlightCell, valueGetter: (p) => [p.data.flight, p.data.airport].filter(Boolean).join(" ") || null },
+    { field: "state", headerName: t("州", "State"), width: 100 },
+    { field: "zip", headerName: "ZIP", width: 100, cellRenderer: IdCell },
+    { field: "reportedAt", headerName: t("申請", "Reported"), width: 150, cellRenderer: DateCell, filter: "agDateColumnFilter", filterValueGetter: (p) => new Date(p.data.reportedAt) },
+  ], [t]);
+
+  if (desk.error?.status === 401) return <StaffGate onIn={() => { desk.reload(); uw.reload(); watcher.refresh(); }} />;
+  const sel = open && all?.find((r) => r.id === open)?.raw;
+  const nWait = desk.data?.queue.length ?? 0;
+  const preset = (filters, sort) => { TOOLS.filter_grid.run({ grid: "claims", filters }); if (sort) TOOLS.sort_grid.run({ grid: "claims", sort }); };
+
   return (
     <div className="stack-l">
-      <div className="page-head" style={{ marginBottom: 0 }}><h1>{t("理賠審核台", "Claims desk")}</h1><button className="btn ghost sm" onClick={() => { desk.reload(); uw.reload(); }}>{t("重新整理", "Refresh")}</button></div>
-      <div className="grid-2">
-        <div className="stack">
-          <h3>{t(`待處理（${desk.data?.queue.length ?? 0}）`, `Waiting (${desk.data?.queue.length ?? 0})`)}</h3>
-          {(desk.data?.queue || []).map((c) => <Row key={c.claim} c={c} on={open === c.claim} pick={() => setOpen(c.claim)} />)}
-          {desk.data?.queue.length === 0 && <p className="muted small">{t("沒有待處理的理賠。", "Nothing waiting.")}</p>}
-          <h3 style={{ marginTop: 24 }}>{t("最近的理賠", "Recent claims")}</h3>
-          {(desk.data?.recent || []).filter((c) => !desk.data.queue.some((q) => q.claim === c.claim)).slice(0, 15).map((c) => <Row key={c.claim} c={c} on={open === c.claim} pick={() => setOpen(c.claim)} />)}
-        </div>
-        <div>{sel ? <Case c={sel} done={() => { desk.reload(); toast(t("已處理", "Done")); }} /> : <div className="card empty">{t("選一件理賠來看。", "Pick a claim.")}</div>}</div>
+      <div className="page-head" style={{ marginBottom: 0 }}>
+        <div><h1>{t("理賠審核台", "Claims desk")}</h1><p className="muted small">{t(`待處理 ${nWait} 件 · 最近 ${all?.length ?? 0} 件`, `${nWait} waiting · ${all?.length ?? 0} recent`)}</p></div>
+        <button className="btn ghost sm" onClick={() => { desk.reload(); uw.reload(); watcher.refresh(); }}>{t("重新整理", "Refresh")}</button>
       </div>
+
+      <AgentPanel watcher={watcher} grids={[{ name: "claims", label: t("理賠", "Claims") }]} suggestions={[
+        { q: t("有可疑訊號的理賠，金額由大到小", "flagged claims, biggest first"), label: t("可疑，由大到小", "Flagged, biggest first") },
+        { q: t("待處理，最久的先", "waiting, oldest first"), label: t("待處理，最久的先", "Waiting, oldest first") },
+        { q: t("被警示的理賠", "claims named by an alert"), label: t("被警示的", "Named by an alert") },
+        { q: t("租屋險 超過 $300", "renters over $300"), label: t("租屋險 > $300", "Renters > $300") },
+      ]} />
+
+      <div className="bo-desk">
+        <Suspense fallback={<div className="card empty small muted">Loading AG Grid…</div>}><Grid name="claims" rows={all} columnDefs={columnDefs} agentColumns={AGENT_COLUMNS} height={560} getRowId={(p) => p.data.id} selected={open} onPick={(r) => setOpen(r.id)} csv="cover-claims"
+          extra={<span className="bo-presets">
+            <button className="bo-chip" onClick={() => preset([{ field: "waiting", op: "eq", value: "true" }], [{ colId: "reportedAt", sort: "asc" }])}>{t(`待處理 ${nWait}`, `Waiting ${nWait}`)}</button>
+            <button className="bo-chip" onClick={() => preset([{ field: "signals", op: "gt", value: 0 }], [{ colId: "signals", sort: "desc" }])}>⚑ {t("有訊號", "Flagged")}</button>
+            <button className="bo-chip" onClick={() => preset([{ field: "by", op: "eq", value: "parametric" }], [{ colId: "reportedAt", sort: "desc" }])}>{t("參數自動", "Parametric")}</button>
+            <button className="bo-chip" onClick={() => preset([])}>{t("全部", "All")}</button>
+          </span>} /></Suspense>
+        <div className="bo-detail">{sel ? <Case key={sel.claim} c={sel} done={() => { desk.reload(); watcher.refresh(); toast(t("已處理", "Done")); }} /> : <div className="card empty">{t("在表中選一件理賠（點一下或按 Enter）。", "Pick a claim in the grid (click it, or press Enter).")}</div>}</div>
+      </div>
+
       {uw.data?.length > 0 && <section className="stack"><h2>{t("核保", "Underwriting")}</h2>{uw.data.map((p) => <div key={p.policy} className="card row between"><div><b>{p.name}</b> <span className="mono tiny muted">{p.number}</span><p className="small muted">{Object.entries(p.answers).map(([k, v]) => `${k}: ${v}`).join(" · ")}</p></div><div className="row"><button className="btn sm accent" onClick={async () => { await api(`/api/staff/underwriting/${p.policy}`, { method: "POST", body: { approve: true } }); uw.reload(); }}>{t("核准", "Approve")}</button><button className="btn sm ghost" onClick={async () => { await api(`/api/staff/underwriting/${p.policy}`, { method: "POST", body: { approve: false, note: "outside what Cover can offer" } }); uw.reload(); }}>{t("婉拒", "Decline")}</button></div></div>)}</section>}
     </div>
   );
-}
-
-function Row({ c, on, pick }) {
-  const n = Array.isArray(c.decision?.signals) ? c.decision.signals.length : 0;
-  return <button className={`deskrow ${on ? "on" : ""}`} aria-pressed={on} onClick={pick}>
-    <span><b>{c.what}</b> <span className="mono tiny muted">{c.number}</span><br /><span className="tiny muted">{when(c.reportedAt)} · {c.claimed}</span></span>
-    <span className="row" style={{ gap: 6 }}>{n > 0 && <span className="badge warn">⚑ {n}</span>}{c.appeal === "open" && <span className="badge agent">appeal</span>}<Status s={c.status} /></span>
-  </button>;
 }
 
 export function StaffGate({ onIn }) {
@@ -61,8 +127,8 @@ function Case({ c, done }) {
         {d.steps?.length > 0 && <ul className="why">{d.steps.map((s, i) => <li key={i}><span>{s.says} <span className="mono muted">{s.clause}</span></span><span className="num">{s.amount}</span></li>)}</ul>}</>}
       {c.evidence.length > 0 && <div className="thumbs">{c.evidence.map((e) => <figure key={e.id}><a href={`/api/staff/claims/${c.claim}/evidence/${e.id}`} target="_blank" rel="noreferrer"><img src={`/api/staff/claims/${c.claim}/evidence/${e.id}`} alt={e.kind} /></a><figcaption>{e.kind}{e.taken ? ` · ${e.taken.slice(0, 10)}` : ""}{e.read ? <><br />{[e.read.date, e.read.amount, e.read.merchant].filter(Boolean).join(" · ")} ({e.read.confidence})</> : null}</figcaption></figure>)}</div>}
       {live && <div className="stack-s" style={{ borderTop: "1px solid var(--rule)", paddingTop: 16 }}>
-        <div className="row"><input className="input" style={{ width: 140 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="USD" /><button className="btn accent" onClick={() => act("approve")}>{t("核准並用 PayPal 付款", "Approve and pay with PayPal")}</button></div>
-        <div className="row"><input className="input" style={{ width: 140 }} value={clause} onChange={(e) => setClause(e.target.value)} placeholder="RT-3.3" /><button className="btn ghost" onClick={() => act("deny")}>{t("依此條款拒賠", "Deny under this clause")}</button><button className="btn ghost" onClick={() => act("ask")}>{t("請申請人補件", "Ask for more")}</button></div>
+        <div className="row"><input className="input" style={{ width: 140 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="USD" aria-label={t("核准金額（美元）", "Amount to approve (USD)")} /><button className="btn accent" onClick={() => act("approve")}>{t("核准並用 PayPal 付款", "Approve and pay with PayPal")}</button></div>
+        <div className="row"><input className="input" style={{ width: 140 }} value={clause} onChange={(e) => setClause(e.target.value)} placeholder="RT-3.3" aria-label={t("拒賠條款", "Clause to deny under")} /><button className="btn ghost" onClick={() => act("deny")}>{t("依此條款拒賠", "Deny under this clause")}</button><button className="btn ghost" onClick={() => act("ask")}>{t("請申請人補件", "Ask for more")}</button></div>
         <textarea className="input" placeholder={t("備註（會給申請人看）", "Note (the claimant sees it)")} value={note} onChange={(e) => setNote(e.target.value)} />
       </div>}
       {c.payout && <p className="small">PayPal Payouts <span className="mono">{c.payout.paypal}</span> · {c.payout.amount} · {c.payout.status}</p>}
