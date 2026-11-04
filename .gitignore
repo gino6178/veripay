@@ -11,3 +11,4 @@ ml/runs/
 ml/models/
 *.gguf
 *.safetensors
+.claude/

@@ -4,6 +4,10 @@
 import { hamming } from "./exif.js";
 import { DAY } from "./clock.js";
 
+// a hash with almost every bit the same is a plain picture (a blank page, a flat colour): it says nothing about
+// whether two photos are the same
+const varied = (h) => { if (!h) return false; const n = hamming(h, "0000000000000000"); return n >= 8 && n <= 56; };
+
 // words that try to give instructions instead of describing what happened (a claim's story is untrusted text that
 // models later read: it is never obeyed, and this flags it so a person looks)
 const INSTRUCTION = /(ignore|disregard)\s+(all|any|the|previous|prior)|system\s*prompt|you are (now|an?)|approve (this|the|my) claim|pay (out )?immediately|override|jailbreak|忽略(以上|先前|之前|所有|規則)|直接(核准|核賠|理賠|付款)|你現在是|系統提示|不要(檢查|審核)|立刻(賠|付)/i;
@@ -24,7 +28,7 @@ export function signals(claim, { policy, allClaims, people, instantMax }) {
       if (c.id === claim.id) continue;
       for (const f of c.evidence || []) {
         if (e.sha && f.sha === e.sha) { add("same_file", `the same file was sent with claim ${c.number}${c.person === claim.person ? "" : " by someone else"}`, 3); continue; }
-        if (e.dhash && f.dhash && hamming(e.dhash, f.dhash) <= 6) add("same_picture", `a photo looks like one sent with claim ${c.number}${c.person === claim.person ? "" : " by someone else"}`, 2);
+        if (e.kind === "photo" && f.kind === "photo" && varied(e.dhash) && varied(f.dhash) && hamming(e.dhash, f.dhash) <= 6) add("same_picture", `a photo looks like one sent with claim ${c.number}${c.person === claim.person ? "" : " by someone else"}`, 2);
       }
     }
     if (e.read?.amount != null && claim.claimed && Math.abs(e.read.amount - claim.claimed) > Math.max(500, claim.claimed * 0.1) && ["receipt", "repair_quote", "vet_invoice", "receipt_or_photo"].includes(e.kind)) add("amount_mismatch", `the ${e.kind.replace("_", " ")} reads ${(e.read.amount / 100).toFixed(2)}, the claim asks ${(claim.claimed / 100).toFixed(2)}`, 2);

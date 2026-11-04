@@ -52,7 +52,7 @@ def timing(rs):
 def score_qa():
     cases = {c["id"]: c for c in map(json.loads, open(os.path.join(HERE, "qa_cases.jsonl"), encoding="utf8"))}
     snap = json.load(open(os.path.join(HERE, "clauses.json"), encoding="utf8"))
-    rs = rows("qa"); n = len(rs); valid = exists = right = cov = trad = 0; fails = []; by = collections.defaultdict(dict)
+    rs = rows("qa"); n = len(rs); valid = exists = right = cov = cov2 = trad = 0; fails = []; by = collections.defaultdict(dict)
     for r in rs:
         c = cases[r["id"]]; j = parse(r)
         ids = {x["id"] for x in snap[c["product"]]["clauses"]}
@@ -62,18 +62,19 @@ def score_qa():
         m = re.search(r"[A-Z]{2}-\d+\.\d+", cl); cl_id = m.group(0) if m else cl
         e = cl_id in ids; ok = cl_id in c["clause"]; cv = j.get("covered") == c["covered"]
         t = not (set(j.get("answer", "")) & SIMPLIFIED)
-        exists += e; right += ok; cov += cv; trad += t
+        loose = lambda x: "yes" if x == "info" else x  # "how much / how long" questions: "info" and "yes" both fit
+        exists += e; right += ok; cov += cv; cov2 += loose(j.get("covered")) == loose(c["covered"]); trad += t
         by[r["id"]][r["sample"]] = (cl_id, j.get("covered"))
         if not (e and ok and cv and t):
             fails.append({"id": r["id"], "sample": r["sample"], "q": c["q"], "want": [c["clause"], c["covered"]], "got": [cl, j.get("covered")], "answer": j.get("answer", "")[:200],
                           "why": ", ".join(w for w, b in [("clause does not exist", not e), ("wrong clause", e and not ok), ("covered wrong", not cv), ("simplified characters", not t)] if b)})
     pairs = [(v[0] == v[1]) for v in by.values() if 0 in v and 1 in v]
-    return {"answers": n, "json_valid": rate(valid, n), "clause_exists": rate(exists, n), "clause_right": rate(right, n), "covered_right": rate(cov, n), "traditional_only": rate(trad, n),
+    return {"answers": n, "json_valid": rate(valid, n), "clause_exists": rate(exists, n), "clause_right": rate(right, n), "covered_right": rate(cov, n), "covered_right_info_as_yes": rate(cov2, n), "traditional_only": rate(trad, n),
             "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
 
 def score_extract(name, case_file):
     cases = {c["id"]: c for c in map(json.loads, open(os.path.join(HERE, case_file), encoding="utf8"))}
-    rs = rows(name); n = len(rs); valid = allright = 0; field = collections.Counter(); kind = collections.defaultdict(lambda: [0, 0]); fails = []; by = collections.defaultdict(dict); cur = [0, 0]
+    rs = rows(name); n = len(rs); valid = allright = 0; field = collections.Counter(); kind = collections.defaultdict(lambda: [0, 0]); fails = []; by = collections.defaultdict(dict); cur = [0, 0]; loose_item = [0, 0]; loose_all = [0, 0]
     for r in rs:
         c = cases[r["id"]]; j = parse(r)
         if j is None: fails.append({"id": r["id"], "sample": r["sample"], "why": "invalid JSON", "got": (r.get("content") or "")[:200]}); by[r["id"]][r["sample"]] = None; kind[c["kind"]][1] += 1; continue
@@ -81,17 +82,20 @@ def score_extract(name, case_file):
         got = {k: norm_field(k, j.get(k)) for k in FIELDS if k != "item"}
         items = [str(x).strip() for x in (j.get("items") or [])]
         got["item"] = c["truth"]["item"] if c["truth"]["item"] in items else items
+        # loose: the item line copied whole ("落地電風扇    1 x 6060    6060TX") counts, a different item does not
+        loose_item[0] += any(x == c["truth"]["item"] or x.startswith(c["truth"]["item"] + " ") for x in items); loose_item[1] += 1
         if isinstance(got.get("taxId"), str): got["taxId"] = got["taxId"].strip() or None
         if isinstance(got.get("reportNo"), str): got["reportNo"] = got["reportNo"].strip() or None
         wrong = [k for k in FIELDS if got[k] != c["truth"][k]]
         if c["truth"]["amount"] is not None: cur[0] += str(j.get("currency") or "").strip().upper() in {x.upper() for x in TWD}; cur[1] += 1
         for k in FIELDS: field[k] += k not in wrong
+        loose_all[0] += not [k for k in wrong if k != "item"] and any(x == c["truth"]["item"] or x.startswith(c["truth"]["item"] + " ") for x in items); loose_all[1] += 1
         allright += not wrong; kind[c["kind"]][0] += not wrong; kind[c["kind"]][1] += 1
         by[r["id"]][r["sample"]] = json.dumps(got, sort_keys=True, ensure_ascii=False)
         if wrong: fails.append({"id": r["id"], "sample": r["sample"], "kind": c["kind"], "wrong": {k: {"want": c["truth"][k], "got": got[k]} for k in wrong}})
     pairs = [(v[0] == v[1]) for v in by.values() if 0 in v and 1 in v]
     return {"answers": n, "json_valid": rate(valid, n), "all_fields_right": rate(allright, n), "fields": {k: rate(field[k], n) for k in FIELDS},
-            "by_kind": {k: rate(*v) for k, v in kind.items()}, "currency_twd": rate(*cur), "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
+            "by_kind": {k: rate(*v) for k, v in kind.items()}, "currency_twd": rate(*cur), "item_loose": rate(*loose_item), "all_fields_right_item_loose": rate(*loose_all), "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
 
 def main():
     out = {"qa": score_qa(), "extract": score_extract("extract", "extract_cases.jsonl"), "vision": score_extract("vision", "vision_cases.jsonl"),

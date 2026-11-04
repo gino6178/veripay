@@ -22,6 +22,7 @@ export function updatePerson(id, patch) {
   for (const k of ["name", "email", "lang", "cause"]) if (patch[k] !== undefined) p[k] = patch[k];
   if (patch.vault !== undefined) p.vault = patch.vault;
   if (patch.limits !== undefined) p.limits = patch.limits;
+  if (patch.devices !== undefined) p.devices = patch.devices;
   db.save();
   return p;
 }

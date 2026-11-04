@@ -270,7 +270,7 @@ export async function review(id, { approve, note = "" }) {
 export function view(pol, lang = "en") {
   const p = product(pol.product);
   return { policy: pol.id, number: pol.number, product: pol.product, name: p.name[lang], status: pol.status, plan: pol.plan, billing: pol.billing,
-    price: pol.plan === "monthly" ? `${usd(pol.monthly)} a month` : `${usd(pol.annual)} a year`, annual: usd(pol.annual), monthly: usd(pol.monthly),
+    price: pol.plan === "monthly" ? (lang === "zh" ? `每月 ${usd(pol.monthly)}` : `${usd(pol.monthly)} a month`) : (lang === "zh" ? `每年 ${usd(pol.annual)}` : `${usd(pol.annual)} a year`), annual: usd(pol.annual), monthly: usd(pol.monthly),
     start: pol.start, end: pol.end, nextPremium: pol.nextDue, waitingUntil: pol.waitingUntil, cause: pol.cause,
     covers: pol.coverages.map((c) => ({ id: c.id, clause: c.clause, limit: c.limit != null ? usd(c.limit) : null })), deductible: pol.deductible != null ? usd(pol.deductible) : null, addons: pol.addons,
     ...(pol.items?.length ? { items: pol.items.map((x) => ({ what: x.what, value: usd(x.value) })) } : {}),

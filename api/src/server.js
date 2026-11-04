@@ -95,6 +95,7 @@ app.post("/api/agent/:tool", async (req, res) => {
 // ---- people on the website ----------------------------------------------------------------------------------------
 const me = (req) => { const s = sessionOf(req); return s ? person(s.person) : null; };
 const signedIn = (req, res, next) => { const p = me(req); if (!p) return res.status(401).json({ error: "signin", message: "Sign in first." }); req.person = p; next(); };
+const lang = (req) => (req.query.lang === "en" || req.query.lang === "zh" ? req.query.lang : req.person?.lang || "zh");
 const send = (res, r) => res.status(r?.error ? (r.error === "policy" || r.error === "quote" ? 404 : 400) : 200).json(r);
 
 app.get("/api/info", (req, res) => res.json({ paypal: pp().mode, demoSignin: DEMO, publicUrl: PUBLIC_URL, mcpUrl: `${PUBLIC_URL}/mcp`, now: nowIso(), demoDaysSkipped: skipped() }));
@@ -118,9 +119,9 @@ app.get("/api/causes", (req, res) => res.json(Object.entries(CAUSES).map(([id, c
 
 app.post("/api/quote", (req, res) => { const p = me(req); send(res, quote(req.body?.product, req.body?.answers, { addons: req.body?.addons || [], person: p?.id || null, lang: req.body?.lang === "zh" ? "zh" : "en" })); });
 app.post("/api/policies", signedIn, async (req, res) => send(res, await policies.buy(req.person.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
-app.get("/api/policies", signedIn, (req, res) => res.json(policies.policiesOf(req.person.id).map((x) => policies.view(x))));
+app.get("/api/policies", signedIn, (req, res) => res.json(policies.policiesOf(req.person.id).map((x) => policies.view(x, lang(req)))));
 const mine = (req, res, next) => { const x = policies.policy(req.params.id); if (!x || x.person !== req.person.id) return res.status(404).json({ error: "policy" }); req.policy = x; next(); };
-app.get("/api/policies/:id", signedIn, mine, (req, res) => res.json(policies.view(req.policy)));
+app.get("/api/policies/:id", signedIn, mine, (req, res) => res.json(policies.view(req.policy, lang(req))));
 app.post("/api/policies/:id/change", signedIn, mine, async (req, res) => send(res, await policies.change(req.policy.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
 app.post("/api/policies/:id/cancel", signedIn, mine, async (req, res) => send(res, await policies.cancel(req.policy.id, { actor: { kind: "person", person: req.person.id } })));
 app.post("/api/policies/:id/confirm", signedIn, mine, async (req, res) => send(res, await policies.confirm(req.policy.id)));
@@ -134,9 +135,9 @@ app.delete("/api/tokens/:id", signedIn, (req, res) => res.json({ ok: revoke(req.
 
 // ---- claims ----------------------------------------------------------------------------------------------------------
 app.post("/api/claims", signedIn, limitBody, async (req, res) => send(res, await claims.file(req.person.id, { ...req.body, device: req.headers["x-cover-device"], actor: { kind: "person", person: req.person.id } })));
-app.get("/api/claims", signedIn, (req, res) => res.json(claims.claimsOf(req.person.id).map((c) => claims.view(c))));
+app.get("/api/claims", signedIn, (req, res) => res.json(claims.claimsOf(req.person.id).map((c) => claims.view(c, { lang: lang(req) }))));
 const myClaim = (req, res, next) => { const c = claims.claim(req.params.id); if (!c || c.person !== req.person.id) return res.status(404).json({ error: "claim" }); req.claim = c; next(); };
-app.get("/api/claims/:id", signedIn, myClaim, (req, res) => res.json(claims.view(req.claim)));
+app.get("/api/claims/:id", signedIn, myClaim, (req, res) => res.json(claims.view(req.claim, { lang: lang(req) })));
 app.post("/api/claims/:id/evidence", signedIn, myClaim, limitBody, async (req, res) => send(res, await claims.addEvidence(req.claim.id, req.body || {}, { actor: { kind: "person", person: req.person.id } })));
 app.post("/api/claims/:id/appeal", signedIn, myClaim, (req, res) => send(res, claims.appeal(req.claim.id, req.person.id, req.body?.why)));
 app.post("/api/claims/:id/withdraw", signedIn, myClaim, (req, res) => send(res, claims.withdraw(req.claim.id, req.person.id)));
@@ -146,7 +147,7 @@ app.get("/api/claims/:id/evidence/:eid", signedIn, myClaim, (req, res) => { cons
 const staffSessions = new Set();
 app.post("/api/auth/staff", (req, res) => { if (!DEMO && req.body?.key !== process.env.ADMIN_TOKEN) return res.status(403).end(); const sid = crypto.randomBytes(24).toString("base64url"); staffSessions.add(sid); res.set("Set-Cookie", `cover_staff=${sid}; HttpOnly; SameSite=Lax; Path=/`).json({ ok: true }); });
 const staff = (req, res, next) => { const sid = (req.headers.cookie || "").match(/(?:^|;\s*)cover_staff=([^;]+)/)?.[1]; if (!sid || !staffSessions.has(sid)) return res.status(401).json({ error: "staff", message: "Sign in as Cover staff." }); next(); };
-app.get("/api/staff/claims", staff, (req, res) => res.json({ queue: claims.queue().map((c) => claims.view(c, { staff: true })), recent: claims.allClaims().slice(-50).reverse().map((c) => claims.view(c, { staff: true })) }));
+app.get("/api/staff/claims", staff, (req, res) => res.json({ queue: claims.queue().map((c) => claims.view(c, { staff: true, lang: req.query.lang })), recent: claims.allClaims().slice(-50).reverse().map((c) => claims.view(c, { staff: true, lang: req.query.lang })) }));
 app.get("/api/staff/claims/:id", staff, (req, res) => { const c = claims.claim(req.params.id); if (!c) return res.status(404).end(); res.json(claims.view(c, { staff: true })); });
 app.get("/api/staff/claims/:id/evidence/:eid", staff, (req, res) => { const c = claims.claim(req.params.id), b = c && claims.evidenceFile(c, req.params.eid); if (!b) return res.status(404).end(); res.type(b[0] === 0x89 ? "png" : "jpeg").send(b); });
 app.post("/api/staff/claims/:id", staff, async (req, res) => send(res, await claims.adjust(req.params.id, { ...req.body, adjuster: "Cover adjuster" })));
@@ -165,8 +166,15 @@ app.get("/api/staff/report", staff, (req, res) => {
   res.type("text/csv").set("Content-Disposition", `attachment; filename=cover-year-${d.year}.csv`).send(rows.map((r) => r.join(",")).join("\n"));
 });
 
+// ---- the front page's numbers, counted ---------------------------------------------------------------------------
+app.get("/api/stats", (req, res) => {
+  const all = claims.allClaims(), instant = all.filter((c) => c.status === "paid" && c.decision?.by === "rules").map((c) => c.secondsToPay).sort((a, b) => a - b);
+  res.json({ policies: policies.allPolicies().filter((p) => p.start).length, claimsPaid: all.filter((c) => c.status === "paid").length, instantPaid: instant.length, medianSecondsToPay: instant.length ? instant[Math.floor(instant.length / 2)] : null,
+    givenBack: carrier.givebacks().reduce((t, g) => t + (g.payout ? g.amount : 0), 0), poolsNow: pools().reduce((t, p) => t + Math.max(0, p.balance), 0) });
+});
 // ---- transparency: anyone can see where the money is ---------------------------------------------------------------
-app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: p.name, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })) }));
+app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: { zh: p.name.zh, en: p.name.en }, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })),
+  givebacks: carrier.givebacks().map((g) => ({ year: g.year, cause: g.cause, name: { zh: CAUSES[g.cause].zh, en: CAUSES[g.cause].en }, amount: usd(g.amount), payout: g.payout, receipt: g.receipt })) }));
 
 // ---- PayPal: return URLs, and the stand-in's approval page ---------------------------------------------------------
 app.get("/paypal/return", async (req, res) => {

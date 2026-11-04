@@ -14,13 +14,14 @@ import { store, stateFile } from "./store.js";
 import { now, nowIso, DAY } from "./clock.js";
 import { product, claimType, clause } from "./products/index.js";
 import { policy as getPolicy, inForce } from "./policy.js";
-import { person, allPeople, payoutAddress } from "./people.js";
+import { person, allPeople, payoutAddress, updatePerson } from "./people.js";
 import { post } from "./pool.js";
 import { record } from "./activity.js";
 import { exifOf } from "./exif.js";
 import { signals } from "./fraud.js";
 import { read } from "./reader.js";
 import * as receipts from "./proof/receipts.js";
+import { tr } from "./zh.js";
 import { pp, usd, why } from "./pay/index.js";
 
 const db = store(stateFile("claims"), { claims: {} });
@@ -54,7 +55,7 @@ export async function file(personId, { policy: pid, type, happenedAt, where = ""
     payee: payee === "vet" && ct.directToVet ? "vet" : "me", vetEmail: payee === "vet" ? String(vetEmail || "").slice(0, 120) : null,
     device: device ? String(device).slice(0, 64) : null, event: event ? String(event).slice(0, 40) : null, evidence: [], status: "needs_evidence", decision: null, payout: null, history: [] };
   db.data.claims[id] = c; save();
-  if (c.device) { const p = person(personId); p.devices = [...new Set([...(p.devices || []), c.device])].slice(-5); }
+  if (c.device) { const p = person(personId); updatePerson(personId, { devices: [...new Set([...(p.devices || []), c.device])].slice(-5) }); }
   say(c, "claim_filed", `Claim ${c.number} filed: ${ct.en}, ${usd(c.claimed)}, on policy ${pol.number}.`, actor);
   for (const e of evidence) await addEvidence(id, e, { decide: false });
   return decideIfReady(c, actor);
@@ -230,13 +231,13 @@ export async function tick() {
   }
 }
 
-export function view(c, { staff = false } = {}) {
-  const p = product(c.product), ct = claimType(c.product, c.type), d = c.decision;
-  return { claim: c.id, number: c.number, policy: c.policy, product: c.product, type: c.type, what: ct.en, status: c.status, happenedAt: c.happenedAt, reportedAt: c.reportedAt, claimed: usd(c.claimed),
+export function view(c, { staff = false, lang = "en" } = {}) {
+  const p = product(c.product), ct = claimType(c.product, c.type), d = c.decision, L = (x) => (lang === "zh" ? tr(x) : x);
+  return { claim: c.id, number: c.number, policy: c.policy, product: c.product, type: c.type, what: ct[lang] || ct.en, status: c.status, happenedAt: c.happenedAt, reportedAt: c.reportedAt, claimed: usd(c.claimed),
     ...(c.status === "needs_evidence" ? { missing: missingEvidence(c), next: "Add the missing evidence (add_claim_evidence)." } : {}),
     ...(c.status === "needs_info" ? { asked: c.asked } : {}),
-    decision: d && { outcome: d.outcome, amount: usd(d.amount), reason: d.reason, by: d.by, at: d.at, basis: d.basis.map((id) => ({ id, text: clause(id)?.en })),
-      checks: d.checks.map((x) => ({ check: x.id, ok: x.ok, clause: x.clause, says: x.says })), steps: d.steps.map((s) => ({ ...s, amount: usd(s.amount) })), ...(staff || d.outcome !== "refer" ? { signals: d.signals } : { signals: d.signals.length ? `${d.signals.length} thing(s) for a person to check` : [] }) },
+    decision: d && { outcome: d.outcome, amount: usd(d.amount), reason: L(d.reason), by: d.by, at: d.at, basis: d.basis.map((id) => ({ id, text: clause(id)?.[lang] || clause(id)?.en })),
+      checks: d.checks.map((x) => ({ check: x.id, ok: x.ok, hard: !!x.hard, clause: x.clause, says: L(x.says) })), steps: d.steps.map((s) => ({ ...s, says: L(s.says), amount: usd(s.amount) })), ...(staff || d.outcome !== "refer" ? { signals: d.signals.map((g) => ({ ...g, says: L(g.says) })) } : { signals: d.signals.length ? (lang === "zh" ? `有 ${d.signals.length} 件事需要真人確認` : `${d.signals.length} thing(s) for a person to check`) : [] }) },
     ...(c.payout ? { payout: { amount: usd(c.payout.amount), to: c.payout.to, paypal: c.payout.batchId, status: c.payout.item || c.payout.status, secondsToPay: c.secondsToPay } } : {}),
     evidence: c.evidence.map((e) => ({ id: e.id, kind: e.kind, name: e.name, at: e.at, ...(e.exif?.taken ? { taken: e.exif.taken } : {}), ...(e.read && !e.read.error ? { read: { date: e.read.date, amount: e.read.amount != null ? usd(e.read.amount) : null, merchant: e.read.merchant, confidence: e.read.confidence, by: e.read.by } } : {}) })),
     ...(staff ? { story: c.story, items: c.items.map((x) => ({ what: x.what, value: usd(x.value) })), person: c.person, history: c.history } : {}),

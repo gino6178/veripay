@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { api } from "../api.js";
+import { api } from "../api.jsx";
 
 // PayPal's JS SDK v6 on the page: the person approves their payment in a PayPal popup (PayPal, Pay Later, or Venmo where
 // they are eligible) without leaving Join. The order already exists (Join made it when they joined); the buttons only
