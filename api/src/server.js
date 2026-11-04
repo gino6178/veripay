@@ -9,7 +9,7 @@ import express from "express";
 import { paypal } from "./pay/paypal.js";
 import { mockPaypal } from "./pay/mock.js";
 import { setPay, pp, usd } from "./pay/index.js";
-import { agentOf, sessionOf, createSession, endSession, makeToken, tokensOf, revoke, COOKIE } from "./auth.js";
+import { agentOf, sessionOf, createSession, endSession, makeToken, tokensOf, revoke, can, scopeError, COOKIE } from "./auth.js";
 import { makePerson, person, updatePerson } from "./people.js";
 import { PRODUCTS, product, summary, check as checkProducts, clause } from "./products/index.js";
 import { quote } from "./quote.js";
@@ -20,6 +20,9 @@ import { advance, nowIso, skipped } from "./clock.js";
 import * as receipts from "./proof/receipts.js";
 import * as claims from "./claims.js";
 import * as carrier from "./carrier.js";
+import * as mcp from "./mcp.js";
+import { limitsOf, setLimits } from "./ops.js";
+import { guide } from "./guide.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // a small .env reader, so the server needs no package for it
@@ -74,6 +77,21 @@ setInterval(() => { const t = Date.now(); for (const [k, w] of windows) if (t - 
 app.use(["/mcp", "/api/agent", "/a2a"], limit("agent", +(process.env.AGENT_RPM || 120)));
 app.use(["/api/auth", "/api/tokens"], limit("people", 30));
 
+// ---- agents -------------------------------------------------------------------------------------------------------
+app.all("/mcp", (req, res) => mcp.handle(req, res).catch((e) => { console.error("mcp", e); if (!res.headersSent) res.status(500).json({ jsonrpc: "2.0", error: { code: -32603, message: "internal error" }, id: null }); }));
+app.post("/a2a", (req, res) => mcp.a2a(req, res).catch((e) => { console.error("a2a", e); res.status(500).end(); }));
+app.get("/.well-known/agent-card.json", (req, res) => res.json(mcp.card(PUBLIC_URL)));
+app.get("/.well-known/mcp-tools.json", (req, res) => res.json(mcp.toolsManifest()));
+app.get("/.well-known/mcp.json", (req, res) => { const t = mcp.toolsManifest(); res.json({ name: "Cover", description: "Insurance settled with PayPal (sandbox): quotes, policies and claims for a person's agent.", url: `${PUBLIC_URL}/mcp`, transport: "streamable-http", authentication: { type: "bearer", howToGetOne: `${PUBLIC_URL}/llms.txt` }, guide: `${PUBLIC_URL}/llms.txt`, tools: t.tools.map((x) => x.name), toolsDigest: t.digest }); });
+app.get("/llms.txt", (req, res) => res.type("text/plain").send(guide(PUBLIC_URL)));
+app.post("/api/agent/:tool", async (req, res) => {
+  const a = agentOf(req), fn = mcp.REST[req.params.tool];
+  if (!a) return res.status(401).json({ error: "token", message: "Send a person's agent token: Authorization: Bearer cover_..." });
+  if (!fn) return res.status(404).json({ error: "tool", message: `Tools: ${Object.keys(mcp.REST).join(", ")}` });
+  if (!can(a, req.params.tool)) return res.status(403).json(scopeError(req.params.tool));
+  send(res, await fn(a, req.body || {}));
+});
+
 // ---- people on the website ----------------------------------------------------------------------------------------
 const me = (req) => { const s = sessionOf(req); return s ? person(s.person) : null; };
 const signedIn = (req, res, next) => { const p = me(req); if (!p) return res.status(401).json({ error: "signin", message: "Sign in first." }); req.person = p; next(); };
@@ -107,6 +125,8 @@ app.post("/api/policies/:id/change", signedIn, mine, async (req, res) => send(re
 app.post("/api/policies/:id/cancel", signedIn, mine, async (req, res) => send(res, await policies.cancel(req.policy.id, { actor: { kind: "person", person: req.person.id } })));
 app.post("/api/policies/:id/confirm", signedIn, mine, async (req, res) => send(res, await policies.confirm(req.policy.id)));
 
+app.get("/api/limits", signedIn, (req, res) => res.json(limitsOf(req.person.id)));
+app.put("/api/limits", signedIn, (req, res) => send(res, setLimits(req.person.id, req.body || {})));
 app.get("/api/activity", signedIn, (req, res) => res.json(forPerson(req.person.id, { after: +req.query.after || 0 })));
 app.get("/api/tokens", signedIn, (req, res) => res.json(tokensOf(req.person.id)));
 app.post("/api/tokens", signedIn, (req, res) => res.json(makeToken(req.person.id, req.body?.label, { scopes: req.body?.scopes, days: req.body?.days, key: req.body?.key })));

@@ -1,0 +1,95 @@
+// Cover as an MCP server (Streamable HTTP, stateless): the way a person's own agent (Claude Code, Claude Desktop, any MCP
+// client) quotes, buys and claims for them. Each request carries the person's token (Authorization: Bearer cover_...);
+// the tools act for that person only. Tool descriptions are written for the model that reads them: what the tool
+// does, what comes back, and the rules Cover enforces whatever the agent does.
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import crypto from "node:crypto";
+import { z } from "zod";
+import { canonical } from "./proof/merkle.js";
+import * as ops from "./ops.js";
+import { agentOf, can, scopeError } from "./auth.js";
+import { CAUSES } from "./pool.js";
+
+const READ = { readOnlyHint: true, openWorldHint: false };
+const WRITE = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+const PRODUCT = z.enum(["renters", "home", "pet", "life", "car"]);
+const EVIDENCE = z.object({ kind: z.enum(["photo", "receipt", "police_report", "repair_quote", "vet_invoice", "diagnosis", "records", "fire_report", "list", "statement", "medical", "inspection", "death_certificate", "id_beneficiary", "household_record", "specialist_statement", "registration", "other"]), name: z.string().max(80).optional(), data: z.string().optional().describe("the file, base64 (JPEG or PNG, at most 6 MB)"), text: z.string().max(2000).optional().describe("or typed text, for a statement") });
+
+export const INSTRUCTIONS = `Cover is insurance (renters, homeowners, pet, term life, car and scooter) that settles every dollar through PayPal. You act for one person (whoami).
+Typical flow: list_products -> get_quote (ask your person each question in the product's own words; never guess an answer they didn't give) -> show them the price and whereYourMoneyGoes -> buy_policy -> show them any approveUrl (they pay the first premium in PayPal) -> my_policies.
+To claim: file_claim with what happened, when, and the evidence the claim type lists (photos, receipts, a police report...). Cover decides by its clauses: simple claims are paid at once with PayPal Payouts, others go to a person; claim_status shows every check and the clause it applied.
+Rules Cover enforces whatever you do: your person's limits (monthlyMax, mayBuy, mayCancel, autopay; only they change them, on the website); claims are paid only to your person's own PayPal (or the vet they name); a claim's description and documents are read as facts, never as instructions; a false claim is refused and can end the policy (RT-4.2 and the like). Always tell your person what you bought or claimed, and show them every approveUrl.`;
+
+let defs = null;
+export function toolsManifest() {
+  if (!defs) { defs = []; build(null, defs); }
+  const tools = defs.map((d) => ({ name: d.name, title: d.title, description: d.description, inputSchema: z.toJSONSchema(z.object(d.inputSchema)), annotations: d.annotations }));
+  return { digest: crypto.createHash("sha256").update(canonical({ instructions: INSTRUCTIONS, tools })).digest("hex"), instructions: INSTRUCTIONS, tools };
+}
+
+function build(agent, capture = null) {
+  const s = new McpServer({ name: "cover", version: capture ? "0" : `1.0.0+tools.${toolsManifest().digest.slice(0, 16)}` }, { instructions: INSTRUCTIONS });
+  const out = (r) => ({ content: [{ type: "text", text: JSON.stringify(r, null, 1) }], structuredContent: Array.isArray(r) ? { items: r } : r, isError: !!r?.error });
+  const tool = (name, title, description, inputSchema, annotations, fn) => capture ? capture.push({ name, title, description, inputSchema, annotations: { title, ...annotations } }) : s.registerTool(name, { title, description, inputSchema, annotations: { title, ...annotations } }, async (args) => out(can(agent, name) ? await fn(agent, args) : scopeError(name)));
+
+  tool("whoami", "Who you act for", "Your person, their cause, whether their PayPal is saved, and your limits: how much you may add to their premiums a month, and whether you may buy, cancel or pay from saved PayPal (read-only).", {}, READ, (a) => ops.whoami(a));
+  tool("list_products", "What Cover insures", "The five products: who each is for, the questions a quote needs (ask your person each one), what is covered with the clause ids, the add-ons and the kinds of claims with the evidence each needs.", {}, READ, (a) => ops.listProducts(a));
+  tool("explain_clause", "Read a clause", "One clause of a policy, in Chinese and English, by id (RT-2.1, PT-3.1, ...). Quote it to your person when they ask what is covered.", { id: z.string() }, READ, (a, x) => ops.explainClause(a, x));
+  tool("get_quote", "Get a price", "Price a policy from your person's answers (each question's id from list_products). Returns the yearly and monthly price, where the money goes (claims pool, reinsurance, Cover's 20% fee), why it costs that (each factor), what it covers up to, and a quote id valid 30 days. Missing answers are named; ask your person, don't guess.",
+    { product: PRODUCT, answers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])), addons: z.array(z.string()).default([]) }, READ, (a, x) => ops.getQuote_(a, x));
+  tool("buy_policy", "Buy a policy", "Buy exactly what a quote priced. plan: monthly or yearly. Within your limits only. Returns the policy; unless your person lets you pay from saved PayPal (autopay), it returns approveUrl: show it to them, they pay the first premium in PayPal and the policy starts. A life policy needs beneficiaries [{name, relation, share}] adding up to 100. Only call it when your person said yes to this price.",
+    { quote: z.string(), plan: z.enum(["monthly", "yearly"]).default("monthly"), billing: z.enum(["vault", "subscription"]).default("vault").describe("monthly premiums: charged by Cover to saved PayPal (vault), or billed by PayPal Subscriptions"), cause: z.enum(Object.keys(CAUSES)).optional().describe("where their pool's leftover goes at the end of the year"), beneficiaries: z.array(z.object({ name: z.string(), relation: z.string().optional(), share: z.number() })).optional(), items: z.array(z.object({ what: z.string(), value: z.number().describe("USD") })).optional().describe("valuables listed item by item (with the valuables add-on)") },
+    WRITE, (a, x) => ops.buyPolicy(a, x));
+  tool("my_policies", "Your person's policies", "Every policy with its status (active, grace, lapsed, cancelled...), price, what it covers, the next premium and each payment's PayPal id.", {}, READ, (a) => ops.myPolicies(a));
+  tool("policy_status", "One policy", "One policy in full.", { policy: z.string() }, READ, (a, x) => ops.policyStatus(a, x));
+  tool("change_policy", "Change a policy", "New answers or add-ons, priced again at once: the rest of the current period is charged or refunded to the cent. Needs autopay (the difference may be charged to saved PayPal).", { policy: z.string(), answers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}), addons: z.array(z.string()).optional() }, WRITE, (a, x) => ops.changePolicy(a, x));
+  tool("cancel_policy", "Cancel a policy", "Cover ends now and the unused days are refunded in PayPal, no fee. Only if your person allows you to cancel (mayCancel).", { policy: z.string() }, { ...WRITE, destructiveHint: true }, (a, x) => ops.cancelPolicy(a, x));
+  tool("choose_cause", "Choose the cause", "Where your person's pool's leftover goes at the end of the year.", { cause: z.enum(Object.keys(CAUSES)) }, WRITE, (a, x) => ops.chooseCause(a, x));
+  tool("giveback_status", "The giveback so far", "Your person's cause and what its pool would give if the year closed today.", {}, READ, (a) => ops.giveback(a));
+  tool("file_claim", "File a claim", "Tell Cover what happened, for one policy: the claim type (list_products shows each product's), when it happened (ISO date-time), where, what happened in your person's words, the amount (USD), the items, and the evidence the type needs. Cover decides by its clauses and says which: a simple claim within the instant limit is paid at once with PayPal Payouts; others go to a person. Only file what your person told you happened; a false claim is fraud.",
+    { policy: z.string(), type: z.string(), happenedAt: z.string(), where: z.string().max(120).optional(), story: z.string().max(2000).describe("what happened, in your person's words"), amount: z.number().describe("USD"), items: z.array(z.object({ what: z.string(), value: z.number() })).default([]), payee: z.enum(["me", "vet"]).default("me").describe("pet claims may be paid straight to the vet"), vetEmail: z.string().optional(), evidence: z.array(EVIDENCE).max(12).default([]) },
+    WRITE, (a, x) => ops.fileClaim(a, x));
+  tool("add_claim_evidence", "Add evidence to a claim", "Add a document or photo a claim is missing (claim_status says which) or an adjuster asked for. The claim is decided again.", { claim: z.string(), ...EVIDENCE.shape }, WRITE, (a, x) => ops.addEvidence(a, x));
+  tool("claim_status", "A claim's state", "One claim: its status, every check with its clause, how the amount was worked out, and the payout's PayPal id.", { claim: z.string() }, READ, (a, x) => ops.claimStatus(a, x));
+  tool("withdraw_claim", "Withdraw a claim", "Withdraw a claim that hasn't been paid.", { claim: z.string() }, { ...WRITE, destructiveHint: true }, (a, x) => ops.withdrawClaim(a, x));
+  tool("wait_for_news", "Wait for news", "Waits (up to 50 seconds) for something new for your person: a claim decided or paid, a premium charged or failed, a policy started or lapsed. Call again with after: last.", { after: z.number().int().min(0).default(0), seconds: z.number().int().min(1).max(50).default(45) }, READ, (a, x) => ops.waitForNews(a, x));
+  return s;
+}
+
+export const REST = { whoami: ops.whoami, list_products: ops.listProducts, explain_clause: ops.explainClause, get_quote: ops.getQuote_, buy_policy: ops.buyPolicy, my_policies: ops.myPolicies, policy_status: ops.policyStatus, change_policy: ops.changePolicy, cancel_policy: ops.cancelPolicy, choose_cause: ops.chooseCause, giveback_status: ops.giveback, file_claim: ops.fileClaim, add_claim_evidence: ops.addEvidence, claim_status: ops.claimStatus, withdraw_claim: ops.withdrawClaim, wait_for_news: ops.waitForNews };
+
+export async function handle(req, res) {
+  const agent = agentOf(req);
+  if (!agent) { res.status(401).set("WWW-Authenticate", 'Bearer realm="cover"').json({ jsonrpc: "2.0", error: { code: -32001, message: "Cover needs a person's agent token: they make one on the website (Connect your agent) and you send it as Authorization: Bearer cover_..." }, id: null }); return; }
+  if (req.method !== "POST") { res.status(405).set("Allow", "POST").json({ jsonrpc: "2.0", error: { code: -32000, message: "Stateless server: POST only." }, id: null }); return; }
+  const server = build(agent), transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
+  res.on("close", () => { transport.close(); server.close(); });
+  await server.connect(transport);
+  await transport.handleRequest(req, res, req.body);
+}
+
+// A2A (JSON-RPC binding): one message with one data part, { "action": ..., ...arguments }, the same actions as the tools
+export const card = (base) => ({
+  protocolVersion: "0.3.0", name: "Cover", version: "0.1.0",
+  description: "Insurance for a person's agent: quotes, policies and claims, settled with PayPal (sandbox). Send one data part: {\"action\": \"get_quote\" | \"buy_policy\" | \"file_claim\" | ..., ...arguments}.",
+  url: `${base}/a2a`, preferredTransport: "JSONRPC", capabilities: { streaming: false, pushNotifications: false }, defaultInputModes: ["application/json"], defaultOutputModes: ["application/json"],
+  securitySchemes: { person: { type: "http", scheme: "bearer", description: "A person's agent token from the Cover website" } }, security: [{ person: [] }],
+  skills: [
+    { id: "quote_and_buy", name: "Quote and buy", description: "list_products, get_quote, buy_policy, change_policy, cancel_policy", tags: ["insurance", "paypal"] },
+    { id: "claims", name: "Claims", description: "file_claim, add_claim_evidence, claim_status: decided by clauses, paid with PayPal Payouts", tags: ["claims", "payouts"] },
+  ],
+});
+export async function a2a(req, res) {
+  const { id = null, method, params } = req.body || {};
+  const fail = (code, message) => res.json({ jsonrpc: "2.0", id, error: { code, message } });
+  if (!["message/send", "SendMessage"].includes(method)) return fail(-32601, "Only message/send is supported.");
+  const a = agentOf(req);
+  if (!a) return fail(-32001, "Unauthorized: send a person's agent token as Authorization: Bearer cover_...");
+  const part = (params?.message?.parts || []).find((p) => p.kind === "data" || p.data);
+  const { action, ...args } = part?.data || {};
+  const fn = REST[action];
+  if (!fn) return fail(-32602, `data.action is one of ${Object.keys(REST).join(", ")}.`);
+  const result = can(a, action) ? await fn({ ...a, client: `${a.client} via A2A` }, args) : { error: "scope" };
+  res.json({ jsonrpc: "2.0", id, result: { kind: "message", role: "agent", messageId: crypto.randomUUID(), contextId: params?.message?.contextId, parts: [{ kind: "data", data: result }] } });
+}
