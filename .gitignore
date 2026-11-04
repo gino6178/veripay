@@ -1,0 +1,13 @@
+**/node_modules/
+**/dist/
+**/*.log
+**/.env
+**/.env.*
+!**/.env.example
+api/data/state/
+web/dist/
+ml/data/
+ml/runs/
+ml/models/
+*.gguf
+*.safetensors

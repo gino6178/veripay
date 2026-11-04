@@ -1,0 +1,184 @@
+// PayPal REST, sandbox only (this is a hackathon build). Only the calls Cover makes:
+//   Orders v2, intent CAPTURE: the first premium, saving PayPal in the Vault in the same approval (store_in_vault), and
+//     each later premium charged to the saved PayPal without a redirect; a refund when a policy is cancelled or lowered
+//   Subscriptions: monthly premiums billed by PayPal itself, for people who want PayPal to run the schedule
+//   Payouts: claims paid to the policyholder (or straight to the vet), and the giveback to each cause
+//   Invoicing: a premium that failed, sent as an invoice so the policy can be reinstated
+//   Disputes: evidence for a chargeback on a premium
+//   Webhook signature verification
+// Every POST carries a PayPal-Request-Id made from the policy or claim and the step, so a call repeated after a crash
+// is the same call to PayPal, not a second charge.
+const BASE = "https://api-m.sandbox.paypal.com";
+
+// A sandbox stand-in for the payer: PayPal's published sandbox test card (developer.paypal.com/tools/sandbox/card-testing),
+// so a demo can authorize every share without anyone signing in to a sandbox buyer account. Sandbox only, and only
+// with PAYPAL_TEST_CARD=1; the sandbox merchant must have card processing enabled.
+const TEST_CARD = { number: "4012888888881881", expiry: "2030-12", security_code: "123", name: "Sandbox Test Payer" };
+
+export function paypal({ clientId, secret, brand = "Cover", testCard = false }) {
+  let token = null, until = 0, product = null;
+  async function auth() {
+    if (token && Date.now() < until - 60e3) return token;
+    const r = await fetch(`${BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${clientId}:${secret}`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" , signal: AbortSignal.timeout(20e3) });
+    if (!r.ok) throw new Error(`PayPal auth failed: ${r.status}`);
+    const j = await r.json();
+    token = j.access_token; until = Date.now() + j.expires_in * 1000;
+    return token;
+  }
+  async function call(method, path, body, requestId) {
+    const headers = { Authorization: `Bearer ${await auth()}`, "Content-Type": "application/json", Prefer: "return=representation" };
+    if (requestId) headers["PayPal-Request-Id"] = requestId;
+    const r = await fetch(`${BASE}${path}`, { method, headers, body: body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body) , signal: AbortSignal.timeout(20e3) });
+    const text = await r.text(), j = text ? JSON.parse(text) : {};
+    if (!r.ok) { const e = new Error(`PayPal ${method} ${path}: ${r.status} ${j.name || ""} ${j.details?.[0]?.issue || j.message || ""}`.trim()); e.status = r.status; e.paypal = j; throw e; }
+    return j;
+  }
+  const link = (j, rel) => j.links?.find((l) => l.rel === rel)?.href || null;
+  const money = (cents, currency = "USD") => ({ currency_code: currency, value: (cents / 100).toFixed(2) });
+  const authOf = (order) => order.purchase_units?.[0]?.payments?.authorizations?.[0] || null;
+  // a captured order: its capture, the fee, and the vault id if PayPal was saved with it
+  const captured = (j) => {
+    const c = j.purchase_units?.[0]?.payments?.captures?.[0], b = c?.seller_receivable_breakdown, src = j.payment_source?.paypal || j.payment_source?.card;
+    return { capture: c ? { id: c.id, status: c.status, amount: Math.round(+c.amount.value * 100), fee: b?.paypal_fee ? Math.round(+b.paypal_fee.value * 100) : null } : null,
+      vaultId: src?.attributes?.vault?.id || null, customerId: src?.attributes?.vault?.customer?.id || null, payerEmail: j.payment_source?.paypal?.email_address || null };
+  };
+
+  return {
+    mode: "sandbox", testCard,
+    // the OAuth access token, for the PayPal Agent Toolkit (toolkit.js) to use the same app
+    accessToken: auth,
+    async createOrder({ amount, currency = "USD", reference, description, returnUrl, cancelUrl, vaultId = null, requestId, card = false }) {
+      const payment_source = vaultId
+        ? { paypal: { vault_id: vaultId } }
+        : card && testCard ? { card: TEST_CARD }
+        : { paypal: { experience_context: { brand_name: brand, shipping_preference: "NO_SHIPPING", user_action: "CONTINUE", return_url: returnUrl, cancel_url: cancelUrl } } };
+      let j = await call("POST", "/v2/checkout/orders", { intent: "AUTHORIZE", purchase_units: [{ reference_id: reference, custom_id: reference, description: description.slice(0, 127), amount: money(amount, currency) }], payment_source }, requestId);
+      // (a card order may come back approved but not yet authorized)
+      if (!authOf(j) && card && testCard && j.status === "APPROVED") j = await call("POST", `/v2/checkout/orders/${j.id}/authorize`, {}, `${requestId}:auth`);
+      const a = authOf(j);
+      return { id: j.id, status: j.status, approveUrl: link(j, "payer-action") || link(j, "approve"), authorization: a ? { id: a.id, status: a.status, expiresAt: a.expiration_time } : null };
+    },
+    // A premium: intent CAPTURE. With vaultId it is charged to saved PayPal at once (COMPLETED); otherwise the person
+    // approves it, and save: true also keeps their PayPal in the Vault for the next premiums (one approval for both).
+    async createPayment({ amount, currency = "USD", reference, description, returnUrl, cancelUrl, vaultId = null, save = false, requestId, card = false }) {
+      const payment_source = vaultId
+        ? { paypal: { vault_id: vaultId } }
+        : card && testCard ? { card: { ...TEST_CARD, ...(save ? { attributes: { vault: { store_in_vault: "ON_SUCCESS" } } } : {}) } }
+        : { paypal: { experience_context: { brand_name: brand, shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW", return_url: returnUrl, cancel_url: cancelUrl },
+            ...(save ? { attributes: { vault: { store_in_vault: "ON_SUCCESS", usage_type: "MERCHANT", customer_type: "CONSUMER", permit_multiple_payment_tokens: false } } } : {}) } };
+      const j = await call("POST", "/v2/checkout/orders", { intent: "CAPTURE", purchase_units: [{ reference_id: reference, custom_id: reference, description: description.slice(0, 127), amount: money(amount, currency) }], payment_source }, requestId);
+      return { id: j.id, status: j.status, approveUrl: link(j, "payer-action") || link(j, "approve"), ...captured(j) };
+    },
+    async captureOrder(id, requestId) {
+      const j = await call("POST", `/v2/checkout/orders/${id}/capture`, {}, requestId);
+      return { id: j.id, status: j.status, ...captured(j) };
+    },
+    async getOrder(id) {
+      const j = await call("GET", `/v2/checkout/orders/${id}`);
+      const a = authOf(j);
+      return { id: j.id, status: j.status, authorization: a ? { id: a.id, status: a.status, expiresAt: a.expiration_time } : null, payerId: j.payer?.payer_id || null };
+    },
+    async authorizeOrder(id, requestId) {
+      const j = await call("POST", `/v2/checkout/orders/${id}/authorize`, {}, requestId);
+      const a = authOf(j);
+      return { id: a.id, status: a.status, expiresAt: a.expiration_time };
+    },
+    async capture(authorizationId, { amount, currency = "USD", final = true, requestId }) {
+      const j = await call("POST", `/v2/payments/authorizations/${authorizationId}/capture`, { amount: money(amount, currency), final_capture: final }, requestId);
+      const net = j.seller_receivable_breakdown?.net_amount?.value;
+      return { id: j.id, status: j.status, net: net ? Math.round(+net * 100) : null };
+    },
+    async getCapture(id) {
+      const j = await call("GET", `/v2/payments/captures/${id}`);
+      const b = j.seller_receivable_breakdown || {}, c = (x) => (x?.value ? Math.round(+x.value * 100) : null);
+      return { id, status: j.status, amount: c(j.amount), fee: c(b.paypal_fee), net: c(b.net_amount) };
+    },
+    async voidAuthorization(authorizationId, requestId) { await call("POST", `/v2/payments/authorizations/${authorizationId}/void`, undefined, requestId); return { status: "VOIDED" }; },
+    async refund(captureId, { amount, currency = "USD", requestId }) {
+      const j = await call("POST", `/v2/payments/captures/${captureId}/refund`, { amount: money(amount, currency) }, requestId);
+      return { id: j.id, status: j.status };
+    },
+    async payout({ batchId, receiver, amount, currency = "USD", note, subject = `${brand}: money for you` }) {
+      const j = await call("POST", "/v1/payments/payouts", { sender_batch_header: { sender_batch_id: batchId, email_subject: subject, email_message: note }, items: [{ recipient_type: "EMAIL", receiver, note, sender_item_id: batchId, amount: { value: (amount / 100).toFixed(2), currency } }] });
+      return { batchId: j.batch_header.payout_batch_id, status: j.batch_header.batch_status };
+    },
+    async getPayout(batchId) {
+      const j = await call("GET", `/v1/payments/payouts/${batchId}`);
+      return { batchId, status: j.batch_header.batch_status, item: j.items?.[0]?.transaction_status || null };
+    },
+    // Invoicing v2: a draft invoice to one recipient, sent (PayPal hosts the page where they pay), and its status
+    async invoice({ recipient, item, amount, currency = "USD", note, requestId }) {
+      const j = await call("POST", "/v2/invoicing/invoices", { detail: { currency_code: currency, note: note.slice(0, 4000), payment_term: { term_type: "DUE_ON_RECEIPT" } }, primary_recipients: [{ billing_info: { email_address: recipient } }], items: [{ name: item.slice(0, 200), quantity: "1", unit_amount: money(amount, currency) }] }, requestId);
+      const s = await call("POST", `/v2/invoicing/invoices/${j.id}/send`, { send_to_recipient: true, send_to_invoicer: false }, `${requestId}:send`);
+      return { id: j.id, url: s.href || null, status: "SENT" };
+    },
+    async getInvoice(id) {
+      const j = await call("GET", `/v2/invoicing/invoices/${id}`);
+      return { id, status: j.status, url: j.detail?.metadata?.recipient_view_url || null, paid: j.payments?.paid_amount ? Math.round(+j.payments.paid_amount.value * 100) : 0 };
+    },
+    // Subscriptions: one catalog product for Cover, one plan per policy (its own monthly price), one subscription
+    async subscriptionPlan({ name, monthly, currency = "USD", requestId }) {
+      if (!product) {
+        const list = await call("GET", "/v1/catalogs/products?page_size=20");
+        product = (list.products || []).find((p) => p.name === `${brand} insurance`)?.id
+          || (await call("POST", "/v1/catalogs/products", { name: `${brand} insurance`, type: "SERVICE", category: "INSURANCE_DIRECT" }, `${brand}-product`)).id;
+      }
+      const j = await call("POST", "/v1/billing/plans", { product_id: product, name: name.slice(0, 127), status: "ACTIVE",
+        billing_cycles: [{ frequency: { interval_unit: "MONTH", interval_count: 1 }, tenure_type: "REGULAR", sequence: 1, total_cycles: 12, pricing_scheme: { fixed_price: money(monthly, currency) } }],
+        payment_preferences: { auto_bill_outstanding: true, payment_failure_threshold: 2 } }, requestId);
+      return { id: j.id };
+    },
+    async subscribe({ planId, reference, returnUrl, cancelUrl, requestId }) {
+      const j = await call("POST", "/v1/billing/subscriptions", { plan_id: planId, custom_id: reference, application_context: { brand_name: brand, shipping_preference: "NO_SHIPPING", user_action: "SUBSCRIBE_NOW", return_url: returnUrl, cancel_url: cancelUrl } }, requestId);
+      return { id: j.id, status: j.status, approveUrl: link(j, "approve") };
+    },
+    async getSubscription(id) {
+      const j = await call("GET", `/v1/billing/subscriptions/${id}`);
+      return { id, status: j.status, lastPayment: j.billing_info?.last_payment ? { amount: Math.round(+j.billing_info.last_payment.amount.value * 100), at: j.billing_info.last_payment.time } : null, nextBilling: j.billing_info?.next_billing_time || null, failed: j.billing_info?.failed_payments_count || 0 };
+    },
+    async repriceSubscription(planId, monthly, currency = "USD") {
+      await call("POST", `/v1/billing/plans/${planId}/update-pricing-schemes`, { pricing_schemes: [{ billing_cycle_sequence: 1, pricing_scheme: { fixed_price: money(monthly, currency) } }] });
+      return { status: "UPDATED" };
+    },
+    async cancelSubscription(id, reason) { await call("POST", `/v1/billing/subscriptions/${id}/cancel`, { reason: reason.slice(0, 127) }); return { status: "CANCELLED" }; },
+    async vaultSetup({ returnUrl, cancelUrl, requestId }) {
+      const j = await call("POST", "/v3/vault/setup-tokens", { payment_source: { paypal: { usage_type: "MERCHANT", customer_type: "CONSUMER", permit_multiple_payment_tokens: false, description: `${brand}: your premiums, and what your agent may buy within your limits`, experience_context: { brand_name: brand, shipping_preference: "NO_SHIPPING", return_url: returnUrl, cancel_url: cancelUrl } } } }, requestId);
+      return { id: j.id, approveUrl: link(j, "approve") };
+    },
+    async vaultToken(setupTokenId, requestId) {
+      const j = await call("POST", "/v3/vault/payment-tokens", { payment_source: { token: { id: setupTokenId, type: "SETUP_TOKEN" } } }, requestId);
+      return { id: j.id, customerId: j.customer?.id || null };
+    },
+    // A browser-safe client token for the JS SDK v6 (short-lived; scoped to initializing the SDK)
+    async clientToken() {
+      const r = await fetch(`${BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${clientId}:${secret}`).toString("base64")}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials&response_type=client_token&intent=sdk_init" , signal: AbortSignal.timeout(20e3) });
+      if (!r.ok) throw new Error(`PayPal client token: ${r.status}`);
+      const j = await r.json();
+      return { token: j.access_token, expiresIn: j.expires_in, sdk: "https://www.sandbox.paypal.com/web-sdk/v6/core" };
+    },
+    // Disputes: answer a chargeback with evidence (multipart: the evidence JSON and one file, here Cover's signed receipt)
+    async provideEvidence(disputeId, { notes, file, fileName = "cover-receipt.json" }) {
+      const form = new FormData();
+      form.append("input", new Blob([JSON.stringify({ evidences: [{ evidence_type: "PROOF_OF_FULFILLMENT", evidence_info: {}, notes: notes.slice(0, 2000) }] })], { type: "application/json" }), "input.json");
+      form.append("file1", new Blob([file], { type: "application/json" }), fileName);
+      const r = await fetch(`${BASE}/v1/customer/disputes/${disputeId}/provide-evidence`, { method: "POST", headers: { Authorization: `Bearer ${await auth()}` }, body: form , signal: AbortSignal.timeout(20e3) });
+      if (!r.ok) throw new Error(`PayPal provide-evidence: ${r.status} ${(await r.text()).slice(0, 200)}`);
+      return { status: "UNDER_REVIEW" };
+    },
+    // Webhooks management: Cover subscribes itself (no hand-copied webhook id)
+    async ensureWebhook(url, events) {
+      const list = await call("GET", "/v1/notifications/webhooks");
+      const have = (list.webhooks || []).find((w) => w.url === url);
+      if (have) return { id: have.id, created: false };
+      const j = await call("POST", "/v1/notifications/webhooks", { url, event_types: events.map((name) => ({ name })) });
+      return { id: j.id, created: true };
+    },
+    async verifyWebhook(headers, rawBody, webhookId) {
+      const h = (k) => headers[k] || headers[k.toLowerCase()];
+      // the event goes back exactly as it came: parsing and writing it again can change it and fail the check
+      const head = JSON.stringify({ auth_algo: h("paypal-auth-algo"), cert_url: h("paypal-cert-url"), transmission_id: h("paypal-transmission-id"), transmission_sig: h("paypal-transmission-sig"), transmission_time: h("paypal-transmission-time"), webhook_id: webhookId });
+      const j = await call("POST", "/v1/notifications/verify-webhook-signature", `${head.slice(0, -1)},"webhook_event":${rawBody}}`);
+      return j.verification_status === "SUCCESS";
+    },
+  };
+}

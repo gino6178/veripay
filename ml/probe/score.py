@@ -1,0 +1,98 @@
+"""Score the probe's answers by code (ml/probe/out/*.jsonl from run.py) and write ml/probe/out/results.json.
+  qa       JSON valid; the cited clause exists in the product; it is the right one (one of the accepted ids); covered
+           right; the answer in Traditional Chinese (no simplified-only characters).
+  extract  JSON valid; each field exactly right (date as YYYY-MM-DD, amount as an integer, merchant, item and tax_id
+           exactly as written, null where there is none); every field right in one answer.
+  vision   the same as extract, from the image.
+Self-agreement: for each case, whether its two answers are the same (qa: same clause and covered; extract: every field
+the same). Latency: seconds per answer at the concurrency it was asked with, and for one request alone (solo).
+   python3 ml/probe/score.py
+"""
+import collections, json, math, os, re, statistics as st
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SIMPLIFIED = set("们这险赔证医费发时说国对过还给让关图门问间电买卖钱单项补应该实际处认识读写选违规损坏宠货报经济务进连续条护满额质类变确资验检无产账属页么样东车请网历")
+FIELDS = ["date", "amount", "merchant", "item", "tax_id"]
+
+def wilson(k, n, z=1.96):
+    if not n: return [0, 0]
+    p = k / n; d = 1 + z * z / n; c = p + z * z / (2 * n); h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
+    return [round((c - h) / d, 3), round((c + h) / d, 3)]
+
+def rate(k, n): return {"rate": round(k / max(1, n), 3), "k": k, "n": n, "ci95": wilson(k, n)}
+
+def pct(xs, q):
+    xs = sorted(xs); return xs[min(len(xs) - 1, int(q * len(xs)))] if xs else None
+
+def rows(name):
+    f = os.path.join(HERE, "out", f"{name}.jsonl")
+    return [json.loads(l) for l in open(f, encoding="utf8")] if os.path.exists(f) else []
+
+def parse(r):
+    try: j = json.loads(r.get("content") or ""); return j if isinstance(j, dict) else None
+    except Exception: return None
+
+def norm_field(k, v):
+    if v is None: return None
+    if k == "amount":
+        if isinstance(v, (int, float)) and float(v).is_integer(): return int(v)
+        return v
+    return v if isinstance(v, str) else v
+
+def timing(rs):
+    s = [r["seconds"] for r in rs if "seconds" in r]
+    return {"answers": len(s), "seconds_p50": pct(s, .5), "seconds_p95": pct(s, .95), "seconds_mean": round(st.mean(s), 2) if s else None,
+            "output_tokens_mean": round(st.mean(r.get("output_tokens", 0) for r in rs), 1) if rs else None, "prompt_tokens_mean": round(st.mean(r.get("prompt_tokens", 0) for r in rs), 1) if rs else None,
+            "thinking_chars_mean": round(st.mean(r.get("thinking_chars", 0) for r in rs), 1) if rs else None, "hit_token_limit": sum(r.get("done_reason") == "length" for r in rs),
+            "decode_tok_per_s_mean": round(st.mean(r["output_tokens"] / r["eval_s"] for r in rs if r.get("eval_s")), 1) if any(r.get("eval_s") for r in rs) else None}
+
+def score_qa():
+    cases = {c["id"]: c for c in map(json.loads, open(os.path.join(HERE, "qa_cases.jsonl"), encoding="utf8"))}
+    snap = json.load(open(os.path.join(HERE, "clauses.json"), encoding="utf8"))
+    rs = rows("qa"); n = len(rs); valid = exists = right = cov = trad = 0; fails = []; by = collections.defaultdict(dict)
+    for r in rs:
+        c = cases[r["id"]]; j = parse(r)
+        ids = {x["id"] for x in snap[c["product"]]["clauses"]}
+        if j is None: fails.append({"id": r["id"], "sample": r["sample"], "why": "invalid JSON", "got": (r.get("content") or "")[:200]}); by[r["id"]][r["sample"]] = None; continue
+        valid += 1
+        cl = str(j.get("clause", "")).strip()
+        m = re.search(r"[A-Z]{2}-\d+\.\d+", cl); cl_id = m.group(0) if m else cl
+        e = cl_id in ids; ok = cl_id in c["clause"]; cv = j.get("covered") == c["covered"]
+        t = not (set(j.get("answer", "")) & SIMPLIFIED)
+        exists += e; right += ok; cov += cv; trad += t
+        by[r["id"]][r["sample"]] = (cl_id, j.get("covered"))
+        if not (e and ok and cv and t):
+            fails.append({"id": r["id"], "sample": r["sample"], "q": c["q"], "want": [c["clause"], c["covered"]], "got": [cl, j.get("covered")], "answer": j.get("answer", "")[:200],
+                          "why": ", ".join(w for w, b in [("clause does not exist", not e), ("wrong clause", e and not ok), ("covered wrong", not cv), ("simplified characters", not t)] if b)})
+    pairs = [(v[0] == v[1]) for v in by.values() if 0 in v and 1 in v]
+    return {"answers": n, "json_valid": rate(valid, n), "clause_exists": rate(exists, n), "clause_right": rate(right, n), "covered_right": rate(cov, n), "traditional_only": rate(trad, n),
+            "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
+
+def score_extract(name, case_file):
+    cases = {c["id"]: c for c in map(json.loads, open(os.path.join(HERE, case_file), encoding="utf8"))}
+    rs = rows(name); n = len(rs); valid = allright = 0; field = collections.Counter(); kind = collections.defaultdict(lambda: [0, 0]); fails = []; by = collections.defaultdict(dict)
+    for r in rs:
+        c = cases[r["id"]]; j = parse(r)
+        if j is None: fails.append({"id": r["id"], "sample": r["sample"], "why": "invalid JSON", "got": (r.get("content") or "")[:200]}); by[r["id"]][r["sample"]] = None; kind[c["kind"]][1] += 1; continue
+        valid += 1
+        got = {k: norm_field(k, j.get(k)) for k in FIELDS}
+        wrong = [k for k in FIELDS if got[k] != c["truth"][k]]
+        for k in FIELDS: field[k] += k not in wrong
+        allright += not wrong; kind[c["kind"]][0] += not wrong; kind[c["kind"]][1] += 1
+        by[r["id"]][r["sample"]] = json.dumps(got, sort_keys=True, ensure_ascii=False)
+        if wrong: fails.append({"id": r["id"], "sample": r["sample"], "kind": c["kind"], "wrong": {k: {"want": c["truth"][k], "got": got[k]} for k in wrong}})
+    pairs = [(v[0] == v[1]) for v in by.values() if 0 in v and 1 in v]
+    return {"answers": n, "json_valid": rate(valid, n), "all_fields_right": rate(allright, n), "fields": {k: rate(field[k], n) for k in FIELDS},
+            "by_kind": {k: rate(*v) for k, v in kind.items()}, "self_agreement": rate(sum(pairs), len(pairs)), "timing": timing(rs), "failures": fails}
+
+def main():
+    out = {"qa": score_qa(), "extract": score_extract("extract", "extract_cases.jsonl"), "vision": score_extract("vision", "vision_cases.jsonl"), "solo": timing(rows("solo"))}
+    json.dump(out, open(os.path.join(HERE, "out", "results.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
+    brief = lambda d: {k: (v["rate"] if isinstance(v, dict) and "rate" in v else v) for k, v in d.items() if k not in ("failures", "fields", "by_kind", "timing")}
+    print(json.dumps({k: brief(v) if k != "solo" else v for k, v in out.items()}, ensure_ascii=False, indent=1))
+    print("extract fields", {k: v["rate"] for k, v in out["extract"]["fields"].items()}, "by kind", {k: v["rate"] for k, v in out["extract"]["by_kind"].items()})
+    print("vision fields", {k: v["rate"] for k, v in out["vision"]["fields"].items()})
+    for k in ("qa", "extract", "vision"): print(k, "timing", out[k]["timing"])
+
+if __name__ == "__main__":
+    main()

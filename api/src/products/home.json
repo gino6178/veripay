@@ -1,0 +1,68 @@
+{
+ "id": "home",
+ "name": { "zh": "房屋險", "en": "Homeowners" },
+ "for": { "zh": "自有房屋的人：保房子本身、屋內財物、你的責任，和修繕期間的暫住", "en": "People who own their home: the building, what is in it, your liability, and somewhere to stay during repairs" },
+ "questions": [
+  { "id": "place", "type": "place", "zh": "房子在哪裡？（區、路名）", "en": "Where is the home? (district, street)" },
+  { "id": "size", "type": "number", "min": 10, "max": 200, "unit": "坪", "zh": "室內大約幾坪？", "en": "Indoor size, in ping?" },
+  { "id": "age", "type": "number", "min": 0, "max": 80, "unit": "年", "zh": "屋齡幾年？", "en": "How old is the building, in years?" },
+  { "id": "structure", "type": "choice", "zh": "建築結構？", "en": "Construction?", "options": [ { "v": "rc", "zh": "鋼筋混凝土", "en": "Reinforced concrete" }, { "v": "steel", "zh": "鋼骨", "en": "Steel frame" }, { "v": "brick", "zh": "加強磚造或木造", "en": "Brick or timber" } ] },
+  { "id": "floor", "type": "choice", "zh": "住幾樓？", "en": "Which floor?", "options": [ { "v": "ground", "zh": "1 樓、透天或地下室", "en": "Ground floor, a house, or basement" }, { "v": "low", "zh": "2–5 樓", "en": "2nd to 5th" }, { "v": "high", "zh": "6 樓以上", "en": "6th or higher" } ] },
+  { "id": "rebuild", "type": "number", "min": 20000, "max": 1000000, "unit": "USD", "zh": "房子本身重建要多少錢？（不含土地；不確定可用每坪 1,800 美元估）", "en": "What would rebuilding the home cost? (not the land; about $1,800 a ping if unsure)" },
+  { "id": "contents", "type": "number", "min": 2000, "max": 100000, "unit": "USD", "zh": "屋內財物重買要多少錢？", "en": "What would replacing what is inside cost?" },
+  { "id": "claims3y", "type": "number", "min": 0, "max": 10, "zh": "過去三年申請過幾次房屋類理賠？", "en": "Home claims in the last three years?" },
+  { "id": "deductible", "type": "choice", "zh": "自負額？", "en": "Deductible?", "options": [ { "v": "250", "zh": "250 美元", "en": "$250" }, { "v": "500", "zh": "500 美元", "en": "$500" }, { "v": "1000", "zh": "1,000 美元", "en": "$1,000" } ] }
+ ],
+ "price": {
+  "base": 9000,
+  "per": { "rebuild": { "every": 10000, "add": 0.035 }, "contents": { "every": 1000, "add": 0.04 } },
+  "factors": {
+   "structure": { "rc": 1.0, "steel": 0.95, "brick": 1.35 },
+   "floor": { "ground": 1.3, "low": 1.0, "high": 0.92 },
+   "age": { "0-10": 0.9, "11-30": 1.0, "31-50": 1.2, "51+": 1.45 },
+   "deductible": { "250": 1.1, "500": 1.0, "1000": 0.85 },
+   "claims3y": { "0": 1.0, "1": 1.2, "2": 1.5, "3+": 2.0 }
+  },
+  "zone": { "flood": true, "quake": true, "typhoon": true },
+  "min": 12000
+ },
+ "coverages": [
+  { "id": "building", "zh": "建築物本身（火災、颱風、地震、水管破裂）", "en": "The building (fire, typhoon, earthquake, burst pipes)", "limitFrom": "rebuild", "clause": "HO-2.1" },
+  { "id": "contents", "zh": "屋內財物", "en": "What is inside", "limitFrom": "contents", "clause": "HO-2.2" },
+  { "id": "liability", "zh": "對他人的責任", "en": "Liability to others", "limit": 20000000, "clause": "HO-2.3" },
+  { "id": "stay", "zh": "修繕期間暫住", "en": "Somewhere to stay during repairs", "limit": 600000, "perDay": 15000, "clause": "HO-2.4" }
+ ],
+ "addons": [
+  { "id": "quake_plus", "zh": "地震加強（建築保額 100%，含地震後火災）", "en": "Earthquake plus (the full building limit, fire after a quake too)", "rate": 0.0012, "of": "rebuild", "clause": "HO-5.1" },
+  { "id": "valuables", "zh": "貴重物品逐項保", "en": "Valuables item by item", "rate": 0.018, "of": "valuables", "clause": "HO-5.2" }
+ ],
+ "claims": [
+  { "type": "typhoon_window", "coverage": "building", "zh": "颱風打破門窗或外牆受損", "en": "A typhoon broke windows or damaged the outside", "evidence": ["photo", "repair_quote"], "instantMax": 120000, "clause": "HO-2.1" },
+  { "type": "pipe", "coverage": "building", "zh": "水管破裂造成屋內損壞", "en": "A burst pipe damaged the home", "evidence": ["photo", "repair_quote"], "instantMax": 100000, "clause": "HO-2.1" },
+  { "type": "quake", "coverage": "building", "zh": "地震造成房屋損壞", "en": "An earthquake damaged the home", "evidence": ["photo", "inspection"], "instantMax": 0, "clause": "HO-2.1" },
+  { "type": "fire", "coverage": "building", "zh": "火災", "en": "Fire", "evidence": ["photo", "fire_report"], "instantMax": 0, "clause": "HO-2.1" },
+  { "type": "theft", "coverage": "contents", "zh": "遭竊", "en": "Burglary", "evidence": ["police_report", "list"], "instantMax": 150000, "clause": "HO-2.2" },
+  { "type": "liability", "coverage": "liability", "zh": "漏水弄壞樓下鄰居的房子", "en": "Water from my home damaged the flat below", "evidence": ["photo", "repair_quote", "statement"], "instantMax": 0, "clause": "HO-2.3" },
+  { "type": "stay", "coverage": "stay", "zh": "修繕期間無法居住", "en": "Can't live there during repairs", "evidence": ["receipt"], "instantMax": 60000, "clause": "HO-2.4" }
+ ],
+ "waitingDays": 14,
+ "clauses": [
+  { "id": "HO-1.1", "kind": "definition", "zh": "「建築物」指承保地址的房屋主體結構、固定裝修和固定設備（如門窗、廚具、衛浴、固定式冷氣），不含土地和公共設施。公寓大廈只保你專有的部分。", "en": "\"The building\" is the home's structure, fixed fittings and fixtures (doors, windows, kitchen, bathroom, fixed air conditioning) at the insured address, not the land or common areas. In a block of flats, only your own unit." },
+  { "id": "HO-1.2", "kind": "definition", "zh": "「重建成本」指以同等材質和規格重建或修復建築物所需的費用。建築物以重建成本理賠，以保單所載建築保額為上限。", "en": "\"Rebuild cost\" is what rebuilding or repairing the building in similar materials costs. The building is paid at rebuild cost, up to the building limit." },
+  { "id": "HO-2.1", "kind": "coverage", "zh": "建築物因火災、雷擊、爆炸、颱風、洪水、地震、水管破裂或第三人車輛撞擊而毀損時，我們支付修復或重建費用，扣除自負額。地震損失以建築保額的 30% 為上限，加保 HO-5.1 者為 100%。", "en": "When the building is damaged by fire, lightning, explosion, typhoon, flood, earthquake, a burst pipe or someone else's vehicle, we pay to repair or rebuild it, less the deductible. Earthquake loss is paid up to 30% of the building limit, or 100% with HO-5.1." },
+  { "id": "HO-2.2", "kind": "coverage", "zh": "屋內財物因 HO-2.1 所列事故或竊盜而毀損或滅失，我們依重置成本扣除自負額理賠。竊盜須於 24 小時內報案。單件超過 1,500 美元而未加保 HO-5.2 者，以 1,500 美元為上限。", "en": "Contents damaged or lost through an HO-2.1 event or theft are paid at replacement cost less the deductible. Report a theft to the police within 24 hours. A single item over $1,500 not listed under HO-5.2 is paid up to $1,500." },
+  { "id": "HO-2.3", "kind": "coverage", "zh": "你因所有、使用或管理承保房屋之過失，對第三人負損害賠償責任時，我們代為賠償，每一事故最高 20 萬美元。未經同意不得承認責任或和解。", "en": "When you are liable to someone else through negligence in owning, using or looking after the home, we pay, up to $200,000 per event. Don't admit liability or settle without our agreement." },
+  { "id": "HO-2.4", "kind": "coverage", "zh": "承保事故使房屋無法居住時，我們支付暫住費用，每日最高 150 美元，合計最高 6,000 美元，最長 60 日。", "en": "When an insured event makes the home unliveable, we pay to stay elsewhere, up to $150 a day and $6,000 in all, for 60 days at most." },
+  { "id": "HO-3.1", "kind": "exclusion", "zh": "故意行為、詐欺，或你本人、同住家人或其指使之人所造成的損失，不予理賠。", "en": "No payment for loss caused on purpose or by fraud, or by you, family living with you, or anyone acting for them." },
+  { "id": "HO-3.2", "kind": "exclusion", "zh": "自然耗損、年久失修、白蟻、黴菌、逐漸滲漏、施工瑕疵、地層下陷，不予理賠。", "en": "No payment for wear and tear, neglect, termites, mould, slow leaks, faulty workmanship or subsidence." },
+  { "id": "HO-3.3", "kind": "exclusion", "zh": "保單生效後 14 日內發生的事故，除火災和竊盜外，不予理賠；保單生效時已發布颱風陸上警報者，該次颱風不予理賠。", "en": "No payment for events in the first 14 days, except fire and theft; and none for a typhoon whose land warning was already out when the policy started." },
+  { "id": "HO-3.4", "kind": "exclusion", "zh": "戰爭、核子事故、政府徵收，以及房屋連續空置超過 60 日期間的竊盜與水損，不予理賠。", "en": "No payment for war, nuclear events, expropriation, or theft and water damage while the home has been empty more than 60 days in a row." },
+  { "id": "HO-4.1", "kind": "condition", "zh": "申請理賠時須提供事故經過、時間地點、照片及修繕估價。損失超過 5,000 美元時，我們可以派員或委託公證人查勘；查勘前請勿拆除受損部分，但為防止損失擴大的必要處置除外。", "en": "To claim, tell us what happened, when and where, with photos and a repair quote. For losses over $5,000 we may send an adjuster; don't remove damaged parts before that, except what is needed to stop further damage." },
+  { "id": "HO-4.2", "kind": "condition", "zh": "提供不實資料或隱匿重要事實者，我們得拒絕理賠並終止保單。", "en": "False information or a hidden important fact lets us refuse the claim and end the policy." },
+  { "id": "HO-4.3", "kind": "condition", "zh": "每一事故扣除一次自負額；同一颱風或地震（含 72 小時內的餘震）視為一次事故。", "en": "One deductible per event; one typhoon, or one earthquake with its aftershocks within 72 hours, is one event." },
+  { "id": "HO-5.1", "kind": "addon", "zh": "地震加強：地震及地震引起之火災，以建築保額 100% 為上限理賠。", "en": "Earthquake plus: earthquake and fire caused by it are paid up to 100% of the building limit." },
+  { "id": "HO-5.2", "kind": "addon", "zh": "貴重物品逐項列載，以列載金額為上限，含遺失與意外損壞，不扣自負額。", "en": "Listed valuables are covered up to their listed amounts, loss and accidental damage too, no deductible." },
+  { "id": "HO-6.1", "kind": "policy", "zh": "保費月繳或年繳；月繳扣款失敗有 14 日寬限期，逾期停效，補繳後復效，停效期間的事故不予理賠。可隨時退保，按未經過日數退費；可隨時變更，立即重新計價。", "en": "Pay monthly or yearly; a failed monthly payment has 14 days' grace, then the policy lapses until paid, and events while lapsed are not covered. Cancel any time for a refund of the days left; change any time, priced again at once." },
+  { "id": "HO-6.2", "kind": "policy", "zh": "保費的 20% 為 Cover 的固定費用，其餘進入理賠池，用於理賠與再保險；年度結算後剩餘部分捐給你所選的公益團體。", "en": "20% of the premium is Cover's flat fee; the rest goes to the claims pool for claims and reinsurance, and what is left after the year closes goes to the cause you chose." }
+ ]
+}

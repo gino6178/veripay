@@ -1,0 +1,159 @@
+// Cover's server: the website's API for people, the same actions for their agents (MCP, REST, A2A), PayPal's return
+// URLs and webhooks, the claims desk and the carrier's back office, and the built website. Configure with environment
+// variables (api/.env.example). Without PayPal keys it runs against the PayPal stand-in (pay/mock.js) and says so.
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import express from "express";
+import { paypal } from "./pay/paypal.js";
+import { mockPaypal } from "./pay/mock.js";
+import { setPay, pp, usd } from "./pay/index.js";
+import { agentOf, sessionOf, createSession, endSession, makeToken, tokensOf, revoke, COOKIE } from "./auth.js";
+import { makePerson, person, updatePerson } from "./people.js";
+import { PRODUCTS, product, summary, check as checkProducts, clause } from "./products/index.js";
+import { quote } from "./quote.js";
+import * as policies from "./policy.js";
+import { pools, CAUSES, lines as ledgerLines } from "./pool.js";
+import { forPerson, onActivity } from "./activity.js";
+import { advance, nowIso, skipped } from "./clock.js";
+import * as receipts from "./proof/receipts.js";
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+// a small .env reader, so the server needs no package for it
+for (const f of [path.join(HERE, "../.env")]) if (fs.existsSync(f)) for (const line of fs.readFileSync(f, "utf8").split(/\r?\n/)) { const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*)\s*$/); if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, ""); }
+
+const PORT = +(process.env.PORT || 8800);
+const PUBLIC_URL = (process.env.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, "");
+const DEMO = process.env.DEMO_SIGNIN !== "0";
+const real = !!(process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET) && process.env.PAYPAL_MODE !== "mock";
+setPay(real ? paypal({ clientId: process.env.PAYPAL_CLIENT_ID, secret: process.env.PAYPAL_CLIENT_SECRET, testCard: process.env.PAYPAL_TEST_CARD === "1" }) : mockPaypal({ publicUrl: PUBLIC_URL }), PUBLIC_URL);
+receipts.setOrigin(process.env.LOG_ORIGIN || `${new URL(PUBLIC_URL).host}/cover-receipts`);
+const bad = checkProducts();
+if (bad.length) { console.error("products cite missing clauses:", bad); process.exit(1); }
+
+const app = express();
+app.set("trust proxy", "loopback");
+app.disable("x-powered-by");
+
+// PayPal's webhook needs the body exactly as sent, for its signature check
+const EVENTS = ["PAYMENT.CAPTURE.COMPLETED", "PAYMENT.CAPTURE.DENIED", "PAYMENT.CAPTURE.REFUNDED", "BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.PAYMENT.FAILED", "BILLING.SUBSCRIPTION.CANCELLED", "PAYMENT.SALE.COMPLETED", "PAYMENT.PAYOUTSBATCH.SUCCESS", "PAYMENT.PAYOUTS-ITEM.UNCLAIMED", "PAYMENT.PAYOUTS-ITEM.RETURNED", "INVOICING.INVOICE.PAID", "CUSTOMER.DISPUTE.CREATED", "VAULT.PAYMENT-TOKEN.DELETED"];
+if (real && PUBLIC_URL.startsWith("https://") && !process.env.PAYPAL_WEBHOOK_ID)
+  pp().ensureWebhook(`${PUBLIC_URL}/paypal/webhook`, EVENTS).then((w) => { process.env.PAYPAL_WEBHOOK_ID = w.id; console.log(`PayPal webhook ${w.created ? "created" : "found"}: ${w.id}`); }).catch((e) => console.error("webhook setup", e.message));
+app.post("/paypal/webhook", express.raw({ type: "*/*", limit: "256kb" }), async (req, res) => {
+  res.status(200).end();
+  try {
+    const raw = req.body.toString("utf8");
+    if (real && !(process.env.PAYPAL_WEBHOOK_ID && await pp().verifyWebhook(req.headers, raw, process.env.PAYPAL_WEBHOOK_ID))) return console.error("webhook: signature not verified, ignored");
+    const e = JSON.parse(raw), ref = e.resource?.custom_id || e.resource?.purchase_units?.[0]?.custom_id;
+    // Cover treats a webhook as a nudge: it asks PayPal for the state itself (the same code as the return URL and the
+    // billing run), so a missed or repeated event changes nothing
+    if (ref && policies.policy(ref)) await policies.confirm(ref);
+    await policies.tick();
+  } catch (e) { console.error("webhook", e.message); }
+});
+
+app.use(express.json({ limit: "64kb", verify: (req, res, buf) => { req.rawBody = buf; } }));
+
+// Rate limits: a fixed window per caller (the agent's token when there is one, else the address)
+const windows = new Map();
+function limit(per, max) {
+  return (req, res, next) => {
+    const who = `${per}:${(req.headers.authorization || "").slice(-16) || req.ip}`, t = Date.now(), w = windows.get(who);
+    if (!w || t - w.start > 60e3) { windows.set(who, { start: t, n: 1 }); return next(); }
+    if (++w.n > max) return res.status(429).set("Retry-After", String(Math.ceil((w.start + 60e3 - t) / 1000))).json({ error: "rate_limited", message: `More than ${max} requests a minute. Slow down.` });
+    next();
+  };
+}
+setInterval(() => { const t = Date.now(); for (const [k, w] of windows) if (t - w.start > 60e3) windows.delete(k); }, 60e3).unref();
+app.use(["/mcp", "/api/agent", "/a2a"], limit("agent", +(process.env.AGENT_RPM || 120)));
+app.use(["/api/auth", "/api/tokens"], limit("people", 30));
+
+// ---- people on the website ----------------------------------------------------------------------------------------
+const me = (req) => { const s = sessionOf(req); return s ? person(s.person) : null; };
+const signedIn = (req, res, next) => { const p = me(req); if (!p) return res.status(401).json({ error: "signin", message: "Sign in first." }); req.person = p; next(); };
+const send = (res, r) => res.status(r?.error ? (r.error === "policy" || r.error === "quote" ? 404 : 400) : 200).json(r);
+
+app.get("/api/info", (req, res) => res.json({ paypal: pp().mode, demoSignin: DEMO, publicUrl: PUBLIC_URL, mcpUrl: `${PUBLIC_URL}/mcp`, now: nowIso(), demoDaysSkipped: skipped() }));
+app.post("/api/auth/demo", (req, res) => {
+  if (!DEMO) return res.status(404).end();
+  const p = makePerson({ name: req.body?.name, email: req.body?.email || null, lang: req.body?.lang });
+  res.set("Set-Cookie", `${COOKIE}=${createSession(p.id)}; HttpOnly; SameSite=Lax; Path=/`).json(p);
+});
+app.post("/api/auth/signout", (req, res) => { const s = sessionOf(req); if (s) endSession(s.sid); res.set("Set-Cookie", `${COOKIE}=; Max-Age=0; Path=/`).json({ ok: true }); });
+app.get("/api/me", signedIn, (req, res) => res.json({ ...req.person, vault: !!req.person.vault }));
+app.patch("/api/me", signedIn, (req, res) => {
+  const { name, email, lang, cause } = req.body || {};
+  if (cause !== undefined && !(cause in CAUSES)) return res.status(400).json({ error: "cause", message: `cause is one of ${Object.keys(CAUSES).join(", ")}` });
+  res.json(updatePerson(req.person.id, { name, email, lang, cause }));
+});
+
+app.get("/api/products", (req, res) => res.json(Object.values(PRODUCTS).map((p) => summary(p, req.query.lang === "zh" ? "zh" : "en"))));
+app.get("/api/products/:id", (req, res) => { const p = product(req.params.id); if (!p) return res.status(404).json({ error: "product" }); res.json({ ...summary(p, req.query.lang === "zh" ? "zh" : "en"), clauses: p.clauses }); });
+app.get("/api/clauses/:id", (req, res) => { const c = clause(req.params.id); if (!c) return res.status(404).json({ error: "clause" }); res.json(c); });
+app.get("/api/causes", (req, res) => res.json(Object.entries(CAUSES).map(([id, c]) => ({ id, zh: c.zh, en: c.en }))));
+
+app.post("/api/quote", (req, res) => { const p = me(req); send(res, quote(req.body?.product, req.body?.answers, { addons: req.body?.addons || [], person: p?.id || null, lang: req.body?.lang === "zh" ? "zh" : "en" })); });
+app.post("/api/policies", signedIn, async (req, res) => send(res, await policies.buy(req.person.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
+app.get("/api/policies", signedIn, (req, res) => res.json(policies.policiesOf(req.person.id).map((x) => policies.view(x))));
+const mine = (req, res, next) => { const x = policies.policy(req.params.id); if (!x || x.person !== req.person.id) return res.status(404).json({ error: "policy" }); req.policy = x; next(); };
+app.get("/api/policies/:id", signedIn, mine, (req, res) => res.json(policies.view(req.policy)));
+app.post("/api/policies/:id/change", signedIn, mine, async (req, res) => send(res, await policies.change(req.policy.id, { ...req.body, actor: { kind: "person", person: req.person.id } })));
+app.post("/api/policies/:id/cancel", signedIn, mine, async (req, res) => send(res, await policies.cancel(req.policy.id, { actor: { kind: "person", person: req.person.id } })));
+app.post("/api/policies/:id/confirm", signedIn, mine, async (req, res) => send(res, await policies.confirm(req.policy.id)));
+
+app.get("/api/activity", signedIn, (req, res) => res.json(forPerson(req.person.id, { after: +req.query.after || 0 })));
+app.get("/api/tokens", signedIn, (req, res) => res.json(tokensOf(req.person.id)));
+app.post("/api/tokens", signedIn, (req, res) => res.json(makeToken(req.person.id, req.body?.label, { scopes: req.body?.scopes, days: req.body?.days, key: req.body?.key })));
+app.delete("/api/tokens/:id", signedIn, (req, res) => res.json({ ok: revoke(req.person.id, req.params.id) }));
+
+// ---- transparency: anyone can see where the money is ---------------------------------------------------------------
+app.get("/api/transparency", (req, res) => res.json({ pools: pools().map((p) => ({ cause: p.cause, name: p.name, policies: p.policies, premiums: usd(p.premiums), fees: usd(p.fees), claims: usd(p.claims), claimCount: p.claimCount, reinsurance: usd(p.reinsurance), giveback: usd(p.giveback), balance: usd(p.balance) })) }));
+
+// ---- PayPal: return URLs, and the stand-in's approval page ---------------------------------------------------------
+app.get("/paypal/return", async (req, res) => {
+  const id = String(req.query.policy || "");
+  try { await policies.confirm(id); } catch (e) { console.error("return", e.message); }
+  res.redirect(`/policies/${encodeURIComponent(id)}`);
+});
+if (pp().mode === "mock") {
+  const page = (body) => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PayPal (simulated)</title><style>body{font:16px system-ui;background:#f5f7fa;margin:0;display:grid;place-items:center;min-height:100vh}.c{background:#fff;padding:32px;border-radius:16px;box-shadow:0 8px 30px #0001;max-width:380px;width:calc(100% - 32px)}h1{font-size:20px;margin:0 0 4px}.n{color:#a15c00;background:#fff4e0;padding:8px 12px;border-radius:8px;font-size:13px;margin:12px 0 20px}button{font:inherit;width:100%;padding:12px;border-radius:999px;border:0;margin-top:8px;cursor:pointer}.y{background:#0070e0;color:#fff;font-weight:600}.x{background:#eee}</style><div class="c">${body}</div>`;
+  const q = (req) => ({ token: req.query.token, setup: req.query.setup, invoice: req.query.invoice, subscription: req.query.subscription });
+  app.get("/mock-paypal/approve", (req, res) => {
+    const d = pp().describe(q(req));
+    if (!d) return res.status(404).send(page("<h1>Unknown payment</h1>"));
+    const what = d.kind === "invoice" ? `Pay invoice: <b>${usd(d.amount)}</b> for ${d.reference}` : d.kind === "subscription" ? `Subscribe: <b>${usd(d.amount)}</b> a month` : d.kind === "order" ? `Pay <b>${usd(d.amount)}</b> to Cover, and save PayPal for the next premiums` : "Save PayPal for Cover";
+    res.send(page(`<h1>PayPal</h1><p>${what}</p><p class="n">Simulated PayPal: Cover is running without sandbox keys. No money moves.</p><form method="post"><button class="y" name="a" value="yes">Agree and continue</button><button class="x" name="a" value="no">Cancel</button></form>`));
+  });
+  app.post("/mock-paypal/approve", express.urlencoded({ extended: false }), (req, res) => {
+    const x = q(req), yes = req.body?.a === "yes";
+    if (yes) pp().approve(x);
+    if (x.invoice) return res.redirect("/policies");
+    const pol = policies.allPolicies().find((p) => p.payments[0]?.order === x.token || p.subscription?.id === x.subscription);
+    res.redirect(pol ? (yes ? `/paypal/return?policy=${pol.id}` : `/policies/${pol.id}?cancelled=1`) : "/");
+  });
+}
+
+// ---- the demo's controls: move Cover's clock, make a premium fail ---------------------------------------------------
+app.post("/api/demo/advance", async (req, res) => { if (!DEMO) return res.status(404).end(); const r = advance(req.body?.days, "demo panel"); r.billing = await policies.tick(); res.json(r); });
+app.post("/api/demo/fail-next-premium", signedIn, (req, res) => { if (pp().mode !== "mock") return res.status(404).json({ error: "only with the PayPal stand-in" }); res.json({ ok: pp().failNextCharge(req.person.vault) }); });
+
+// ---- receipts ---------------------------------------------------------------------------------------------------------
+app.get("/.well-known/cover-receipts.json", (req, res) => res.json({ keys: [receipts.publicKey()], log: receipts.logInfo() }));
+app.get("/api/receipts/:id", (req, res) => { const r = receipts.show(req.params.id, me(req)?.id); if (!r) return res.status(404).json({ error: "receipt" }); res.json(r); });
+app.get("/api/receipts/log/checkpoint", (req, res) => res.type("text/plain").send(receipts.logInfo().checkpoint || ""));
+
+// ---- the website ----------------------------------------------------------------------------------------------------------
+const WEB = path.join(HERE, "../../web/dist");
+app.all(/^\/(\.well-known|api)\//, (req, res) => res.status(404).json({ error: "not_found", message: `Nothing at ${req.path}. Agents: start at /llms.txt.` }));
+if (fs.existsSync(WEB)) { app.use(express.static(WEB)); app.get(/^\/(?!api|mcp|paypal|a2a|mock-paypal|\.well-known).*/, (req, res) => res.sendFile(path.join(WEB, "index.html"))); }
+
+setInterval(() => policies.tick().catch((e) => console.error("tick", e.message)), +(process.env.TICK_MS || 60e3)).unref();
+setInterval(() => receipts.batch().catch((e) => console.error("batch", e.message)), +(process.env.RECEIPT_BATCH_MS || 120e3)).unref();
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  const status = err.status || err.statusCode || 500;
+  if (status >= 500) console.error(err);
+  res.status(status).json({ error: status === 413 ? "too_large" : status === 400 ? "bad_json" : "internal", message: status === 413 ? "The request body is too large." : status === 400 ? "The request body isn't valid JSON." : "Something went wrong." });
+});
+app.listen(PORT, () => console.log(`Cover on ${PUBLIC_URL}  (PayPal: ${pp().mode}; products: ${Object.keys(PRODUCTS).join(", ")}; demo sign-in: ${DEMO ? "on" : "off"})`));
+export { onActivity };

@@ -1,0 +1,18 @@
+{
+  "name": "cover-api",
+  "description": "Cover's server: quotes, policies, claims and giveback, settled with PayPal. Cover holds no AI key; its models are its own, served on its own machines.",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@paypal/agent-toolkit": "^1.11.0",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  }
+}
