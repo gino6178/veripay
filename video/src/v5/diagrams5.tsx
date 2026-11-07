@@ -108,7 +108,7 @@ export const Arch: React.FC<{ t?: number }> = ({ t = 1 }) => {
           <Item dark t="Time-travel clock" s="judges skip the waiting" />
         </div>
       </Box>
-      <Box x={1314} y={250} w={510} h={290} head="Our models" sub="GCP VM · CPU · llama.cpp, GGUF" tone="model" o={o(0.26)}>
+      <Box x={1314} y={250} w={510} h={290} head="Our models" sub="GCP VM · NVIDIA L4 GPU · llama.cpp, GGUF" tone="model" o={o(0.26)}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
           <Chip t="done-chat" tone="model" /><Chip t="done-audit" tone="model" /><Chip t="done-vlm" tone="model" /><Chip t="Done-OCR" tone="model" />
         </div>
@@ -166,11 +166,11 @@ export const Models: React.FC<{ t?: number }> = ({ t = 1 }) => {
       {arrow(440, 0.1)}
       <Step x={490} w={360} head="Qwen3-0.6B + LoRA r16" sub="fine-tuned on an A100 · 13 min (audit)" tone="model" o={o(0.12)} />
       {arrow(864, 0.2)}
-      <Step x={914} w={300} head="GGUF Q4 · 397 MB" sub="answers in short codes; code writes the sentence" o={o(0.22)} />
+      <Step x={914} w={300} head="GGUF Q8 · 639 MB" sub="answers in short codes; code writes the sentence" o={o(0.22)} />
       {arrow(1228, 0.3)}
-      <Step x={1278} w={546} head="done-chat · done-audit" sub="served on a CPU · llama.cpp on our GCP VM · done-chat scope 88.4% (v1 56.9%)" tone="code" o={o(0.32)} />
+      <Step x={1278} w={546} head="done-chat · done-audit" sub="served on one L4 GPU · llama.cpp on our GCP VM · done-chat scope 88.4% (v1 56.9%)" tone="code" o={o(0.32)} />
       <Big x={96} n="99.9%" label="done-audit verdicts right" vs="its 30B teacher: 68.3%" o={o(0.45)} />
-      <Big x={540} n="0.4%" label="attacks that turned a failing check into a pass" vs="1 of 262 · ~2.9 s per audit on CPU" o={o(0.55)} />
+      <Big x={540} n="0.4%" label="attacks that turned a failing check into a pass" vs="1 of 262 · ~0.3 s per audit on the L4 GPU" o={o(0.55)} />
       <Big x={984} n="100%" label="negotiation moves within limits" vs="done-chat · incl. unseen injection attacks" o={o(0.65)} />
       <Big x={1428} n="0.51%" label="Done-OCR character error" vs="receipt amount field 99.8%" o={o(0.75)} />
       {/* the other models: not from the Glimmer → Qwen3 pipeline */}
