@@ -409,7 +409,7 @@ export const V4End: React.FC = () => {
       </div>
       <div style={{ marginTop: 30, width: 1500, ...rise(f, 46, 16) }}>
         <div style={{ font: `700 30px/1.2 ${F.text}`, color: C.ink3 }}>AI</div>
-        <div style={{ font: `500 32px/1.4 ${F.text}`, color: C.ink, marginTop: 8 }}>Our models: done-chat · done-audit (Qwen3-0.6B, fine-tuned) · Done-OCR · Done-Risk · done-vlm (SmolVLM2, off the shelf) · signed mandates · MCP · A2A</div>
+        <div style={{ font: `500 32px/1.4 ${F.text}`, color: C.ink, marginTop: 8 }}>Our models: done-chat · done-audit (0.6B, fine-tuned) · Done-OCR · Done-Risk · done-vlm (open 500M vision model) · signed mandates · MCP · A2A</div>
       </div>
       <div style={{ position: 'absolute', bottom: 64, display: 'flex', gap: 40, alignItems: 'baseline', ...rise(f, 56, 16) }}>
         <span style={{ font: `700 36px/1 ${F.mono}`, color: C.primary }}>github.com/gino6178/veripay</span>

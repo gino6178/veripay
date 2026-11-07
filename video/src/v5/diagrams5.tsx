@@ -161,10 +161,10 @@ export const Models: React.FC<{ t?: number }> = ({ t = 1 }) => {
   return (
     <AbsoluteFill style={{ background: C.ground }}>
       <Title kicker="Our models" text="Small models, fine-tuned to follow code's rules" />
-      <Step x={96} w={330} head="Muse Glimmer 30B" sub="open teacher · writes the wording only" o={o(0)} />
+      <Step x={96} w={330} head="30B open teacher" sub="open teacher · writes the wording only" o={o(0)} />
       <div style={{ position: 'absolute', left: 96, top: 380, width: 330, font: `700 20px/1.3 ${F.mono}`, color: C.primary, opacity: o(0.08) }}>+ labels from CODE</div>
       {arrow(440, 0.1)}
-      <Step x={490} w={360} head="Qwen3-0.6B + LoRA r16" sub="fine-tuned on an A100 · 13 min (audit)" tone="model" o={o(0.12)} />
+      <Step x={490} w={360} head="0.6B student + LoRA r16" sub="fine-tuned on an A100 · 13 min (audit)" tone="model" o={o(0.12)} />
       {arrow(864, 0.2)}
       <Step x={914} w={300} head="GGUF Q8 · 639 MB" sub="answers in short codes; code writes the sentence" o={o(0.22)} />
       {arrow(1228, 0.3)}
@@ -177,7 +177,7 @@ export const Models: React.FC<{ t?: number }> = ({ t = 1 }) => {
       <div style={{ position: 'absolute', left: 96, top: 672, font: `600 17px/1 ${F.mono}`, color: C.ink3, letterSpacing: '0.06em', opacity: o(0.8) }}>AND THREE MORE, BUILT ANOTHER WAY</div>
       {[
         ['Done-OCR', 'SVTR-tiny + DBNet, trained on 5,000 generated receipts & invoices'],
-        ['done-vlm', 'SmolVLM2-500M, off the shelf, describe-only'],
+        ['done-vlm', 'an open 500M vision model, off the shelf, describe-only'],
         ['Done-Risk', 'LightGBM on 200k synthetic jobs · AUC 0.78, calibrated'],
       ].map(([h, t], i) => (
         <div key={h} style={{ position: 'absolute', left: 96 + i * 584, top: 698, width: 560, boxSizing: 'border-box', padding: '14px 18px', borderRadius: 12, background: C.panel, border: `1px solid ${C.line}`, boxShadow: SHADOW, opacity: o(0.82 + i * 0.02) }}>
