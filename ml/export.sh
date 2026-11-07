@@ -9,7 +9,7 @@
 set -eu
 RUN="$1"; BASE="$2"; NAME="$3"; CAL="${4:-}"; OUT="$HOME/export/$NAME"
 mkdir -p "$OUT"
-python3 - "$RUN" "$BASE" "$OUT/hf" <<'PY'
+"${PY:-$HOME/venv/bin/python}" - "$RUN" "$BASE" "$OUT/hf" <<'PY'
 import sys, torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
@@ -20,12 +20,12 @@ m.save_pretrained(out, safe_serialization=True)
 AutoTokenizer.from_pretrained(base).save_pretrained(out)
 print("merged", out)
 PY
-python3 ~/llama.cpp/convert_hf_to_gguf.py "$OUT/hf" --outtype f16 --outfile "$OUT/$NAME-f16.gguf"
+"${PY:-$HOME/venv/bin/python}" ~/llama.cpp/convert_hf_to_gguf.py "$OUT/hf" --outtype f16 --outfile "$OUT/$NAME-f16.gguf"
 IM=()
 if [ -n "$CAL" ]; then
   ~/llama.cpp/build/bin/llama-imatrix -m "$OUT/$NAME-f16.gguf" -f "$CAL" -o "$OUT/imatrix.gguf" -ngl 99 > "$OUT/imatrix.log" 2>&1
   IM=(--imatrix "$OUT/imatrix.gguf" --exclude-weights output.weight --exclude-weights token_embd.weight)
 fi
-for Q in Q4_K_M Q4_0; do ~/llama.cpp/build/bin/llama-quantize "${IM[@]}" "$OUT/$NAME-f16.gguf" "$OUT/$NAME-$Q.gguf" "$Q" > "$OUT/quantize-$Q.log" 2>&1; done
+for Q in ${QUANTS:-Q4_K_M}; do ~/llama.cpp/build/bin/llama-quantize "${IM[@]}" "$OUT/$NAME-f16.gguf" "$OUT/$NAME-$Q.gguf" "$Q" > "$OUT/quantize-$Q.log" 2>&1; done
 ls -la "$OUT"
 echo EXPORT_DONE

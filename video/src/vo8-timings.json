@@ -1,0 +1,229 @@
+[
+ [
+  {
+   "text": "Homeowners hate paying before the leak is fixed.",
+   "start": 0,
+   "end": 2.001
+  },
+  {
+   "text": "Plumbers hate waiting 45 days to get paid.",
+   "start": 2.304,
+   "end": 4.651
+  }
+ ],
+ [
+  {
+   "text": "VeriPay:",
+   "start": 0,
+   "end": 0.642
+  },
+  {
+   "text": "PayPal holds the money without charging it, AI checks the work, and the pro is paid the moment it passes.",
+   "start": 0.856,
+   "end": 6.148
+  }
+ ],
+ [
+  {
+   "text": "Maria asks in her own words.",
+   "start": 0,
+   "end": 1.338
+  },
+  {
+   "text": "Our model writes the definition of done, with a typical price range.",
+   "start": 1.642,
+   "end": 4.832
+  }
+ ],
+ [
+  {
+   "text": "Her agent finds the pros nearby and reads their reviews.",
+   "start": 0,
+   "end": 2.945
+  },
+  {
+   "text": "The agents bargain in rounds, and VeriPay shows where each price sits in the market, and warns her when a deal isn't coming together.",
+   "start": 3.248,
+   "end": 9.367
+  }
+ ],
+ [
+  {
+   "text": "Eastside's agent comes down to $185, and hers hires inside a signed mandate capped at $200.",
+   "start": 0,
+   "end": 6.324
+  },
+  {
+   "text": "A lower cap, or a replay, is refused.",
+   "start": 6.628,
+   "end": 8.598
+  }
+ ],
+ [
+  {
+   "text": "No new app needed:",
+   "start": 0,
+   "end": 0.964
+  },
+  {
+   "text": "from a chat, she can post a job, compare offers and bargain.",
+   "start": 1.179,
+   "end": 4.142
+  },
+  {
+   "text": "Hiring still comes back to VeriPay, and her PIN.",
+   "start": 4.446,
+   "end": 6.915
+  }
+ ],
+ [
+  {
+   "text": "PayPal authorizes $200:",
+   "start": 0,
+   "end": 1.945
+  },
+  {
+   "text": "held, not charged.",
+   "start": 2.159,
+   "end": 3.189
+  },
+  {
+   "text": "On site, a $47.05 valve is over her agent's limit, so only Maria's PIN can approve it, and PayPal re-holds $247.05 on her saved card.",
+   "start": 3.493,
+   "end": 12.279
+  }
+ ],
+ [
+  {
+   "text": "The plumber sends photos and the receipt from his phone.",
+   "start": 0,
+   "end": 2.477
+  }
+ ],
+ [
+  {
+   "text": "Our models read the photos and the receipt;",
+   "start": 0,
+   "end": 1.81
+  },
+  {
+   "text": "code checks when and where each was taken.",
+   "start": 2.024,
+   "end": 3.996
+  },
+  {
+   "text": "A note hiding an instruction is flagged, and the money waits for a person.",
+   "start": 4.299,
+   "end": 7.734
+  }
+ ],
+ [
+  {
+   "text": "Every check passed:",
+   "start": 0,
+   "end": 0.933
+  },
+  {
+   "text": "code captures exactly $232.05, one Payouts batch pays the pro, and an agent reconciles both with PayPal.",
+   "start": 1.147,
+   "end": 7.966
+  }
+ ],
+ [
+  {
+   "text": "Any agent can drive it, over MCP, A2A or REST.",
+   "start": 0,
+   "end": 3.047
+  },
+  {
+   "text": "But every money move passes one guard in our code:",
+   "start": 3.351,
+   "end": 5.666
+  },
+  {
+   "text": "limits, PIN, signed mandates.",
+   "start": 5.88,
+   "end": 7.331
+  },
+  {
+   "text": "The money itself runs on PayPal.",
+   "start": 7.635,
+   "end": 9.156
+  }
+ ],
+ [
+  {
+   "text": "We fine-tuned 0.6-billion-parameter models from a 30-billion open teacher.",
+   "start": 0,
+   "end": 4.28
+  },
+  {
+   "text": "Code writes every label;",
+   "start": 4.584,
+   "end": 5.762
+  },
+  {
+   "text": "the teacher only the wording.",
+   "start": 5.977,
+   "end": 7.251
+  },
+  {
+   "text": "On held-out tests, the audit model gets 99.9% of verdicts right, and it runs on a CPU in about three seconds.",
+   "start": 7.554,
+   "end": 14.576
+  }
+ ],
+ [
+  {
+   "text": "Under the hood it's all PayPal:",
+   "start": 0,
+   "end": 1.471
+  },
+  {
+   "text": "Orders authorizes, the Vault re-holds, a partial capture takes what's due, Payouts pays the pro, and the Agent Toolkit reconciles.",
+   "start": 1.686,
+   "end": 8.358
+  }
+ ],
+ [
+  {
+   "text": "It scales to materials, Pay Later, landlords and neighbors, with an AG Grid back office.",
+   "start": 0,
+   "end": 4.562
+  },
+  {
+   "text": "AI agents tested it in forty-five runs over eleven rounds;",
+   "start": 4.865,
+   "end": 8.097
+  },
+  {
+   "text": "every blocker was fixed.",
+   "start": 8.312,
+   "end": 9.48
+  }
+ ],
+ [
+  {
+   "text": "Next, our vision:",
+   "start": 0,
+   "end": 0.813
+  },
+  {
+   "text": "Log in with PayPal, live payouts to every pro, and any job a photo can prove.",
+   "start": 1.027,
+   "end": 5.446
+  }
+ ],
+ [
+  {
+   "text": "VeriPay.",
+   "start": 0,
+   "end": 0.642
+  },
+  {
+   "text": "The money waits for the proof.",
+   "start": 0.946,
+   "end": 2.102
+  }
+ ]
+]

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head><meta charset="utf-8"><title>Done & Paid cover</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Schibsted+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* The submission cover and the film's first frame, in the app's own tokens (web/src/theme.css, DESIGN.md):
+     white-led, near-navy ink, PayPal-family blues, yellow only on the PAID stamp. Our own mark, not PayPal's. */
+  :root {
+    --ground: #F5F7FA; --ground-2: #FFFFFF; --ground-3: #EEF2F7;
+    --line: #DCE3EC; --line-strong: #B7C3D3;
+    --ink: #001C64; --ink-2: #2E3F66; --ink-3: #56657F;
+    --primary: #003087; --signal: #0070E0; --signal-hi: #005BB8; --signal-soft: #E6F0FC;
+    --paid: #FFD140; --paid-ink: #3D2E00;
+    --shadow-lg: 0 12px 36px rgba(0, 28, 100, 0.16);
+    --display: "Plus Jakarta Sans", sans-serif; --font: "Schibsted Grotesk", system-ui, sans-serif; --mono: "Martian Mono", ui-monospace, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: var(--ground); color: var(--ink); font-family: var(--font); overflow: hidden; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 48px 48px; opacity: .55; -webkit-mask-image: radial-gradient(ellipse 70% 80% at 74% 48%, #000 25%, transparent 72%); mask-image: radial-gradient(ellipse 70% 80% at 74% 48%, #000 25%, transparent 72%); }
+  .lead { position: absolute; left: 112px; top: 104px; width: 700px; }
+  .mark { display: flex; align-items: center; gap: 14px; font: 800 40px/1 var(--display); letter-spacing: -0.02em; color: var(--primary); }
+  .mark svg { width: 46px; height: 46px; color: var(--signal); }
+  h1 { font: 800 98px/1.0 var(--display); letter-spacing: -0.035em; margin: 64px 0 30px; color: var(--ink); }
+  h1 .accent { color: var(--signal); display: block; }
+  .pitch { font-size: 27px; line-height: 1.45; color: var(--ink-2); margin: 0 0 42px; max-width: 650px; }
+  .points { display: grid; gap: 22px; margin: 0; padding: 0; list-style: none; }
+  .points li { display: flex; align-items: baseline; gap: 18px; font-size: 25px; font-weight: 600; color: var(--ink); }
+  .points li b { font: 500 15px/1 var(--mono); color: var(--signal-hi); background: var(--signal-soft); border: 1px solid #9CC3F2; border-radius: 4px; padding: 7px 8px 6px; flex: none; min-width: 84px; text-align: center; letter-spacing: .04em; }
+  .event { position: absolute; left: 112px; bottom: 64px; font: 500 18px/1 var(--mono); color: var(--ink-3); letter-spacing: .02em; }
+  .event span { color: var(--primary); font-weight: 600; }
+  .screen { position: absolute; left: 872px; top: 120px; width: 940px; height: 820px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px; box-shadow: var(--shadow-lg); background: var(--ground); }
+  .screen img { position: absolute; display: block; }
+  .tick { position: absolute; width: 22px; height: 22px; border-color: var(--signal); border-style: solid; border-width: 0; }
+  .t1 { left: 858px; top: 106px; border-top-width: 2px; border-left-width: 2px; }
+  .t2 { left: 1804px; top: 932px; border-bottom-width: 2px; border-right-width: 2px; }
+  .paid { position: absolute; left: 1010px; top: 760px; display: inline-grid; justify-items: center; gap: 4px; padding: 14px 26px 11px; font: 600 40px/1 var(--mono); letter-spacing: .1em; color: var(--paid-ink); background: var(--paid); border: 3px solid #C99A00; outline: 2px solid #C99A00; outline-offset: 5px; border-radius: 2px; transform: rotate(-4deg); box-shadow: 0 10px 28px rgba(61, 46, 0, .22); }
+  .paid small { font: 500 16px/1 var(--mono); letter-spacing: .04em; }
+  .phone { position: absolute; left: 1540px; top: 330px; width: 330px; height: 700px; border-radius: 48px; overflow: hidden; border: 10px solid #1B2433; outline: 1px solid var(--line-strong); box-shadow: 0 30px 70px rgba(0, 28, 100, .28); background: var(--ground); }
+  .phone img { width: 100%; display: block; }
+  .label { position: absolute; font: 500 14px/1 var(--mono); color: var(--ink-3); letter-spacing: .02em; }
+</style></head>
+<body>
+  <div class="grid"></div>
+  <section class="lead">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17"/><path d="m7.5 12.5 3 3 6-7"/></svg>Done &amp; Paid</div>
+    <h1>The money waits <span class="accent">for the proof.</span></h1>
+    <p class="pitch">Hire a plumber or a handyman without paying up front. PayPal holds the money, AI checks the photos and the receipt against a written definition of done, and the pro is paid the moment every condition passes.</p>
+    <ul class="points">
+      <li><b>PAYPAL</b>Authorize, capture, one Payouts batch</li>
+      <li><b>AI</b>Our own models read the photos and receipts</li>
+      <li><b>AGENTS</b>Agents negotiate; your PIN guards the rest</li>
+    </ul>
+  </section>
+  <footer class="event"><span>PayPal AI Hackathon 2026</span> &nbsp;·&nbsp; built on PayPal's sandbox API &nbsp;·&nbsp; demo pros are fictional</footer>
+  <div class="screen"><img id="job" src="shot-job.png" alt="" /></div>
+  <i class="tick t1"></i><i class="tick t2"></i>
+  <div class="paid" aria-hidden="true">PAID<small>every condition passed</small></div>
+  <div class="phone" aria-hidden="true"><img src="shot-pro-phone.png" alt="" /></div>
+  <script>
+    // ?nostamp renders the film's first frame without the PAID stamp (the film lands it)
+    const q = new URLSearchParams(location.search), img = document.getElementById("job");
+    // shot-job.png is already cropped to the work order (head, conditions, the Paid panel): fit its width
+    const fit = () => { img.style.width = "940px"; img.style.left = "0px"; img.style.top = "0px"; };
+    if (img.complete) fit(); else img.onload = fit;
+    if (q.has("nostamp")) document.querySelector(".paid").style.display = "none";
+  </script>
+</body></html>

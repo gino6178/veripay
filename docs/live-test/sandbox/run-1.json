@@ -1,0 +1,146 @@
+{
+ "run": "chk-2a3da68e",
+ "at": "2026-11-04T14:32:07.261Z",
+ "steps": [
+  {
+   "name": "authorize $230.00 (test card, store_in_vault)",
+   "ok": true,
+   "ms": 5546,
+   "r": {
+    "id": "6A050872K1905993V",
+    "status": "COMPLETED",
+    "approveUrl": null,
+    "authorization": {
+     "id": "9TY22979L14145219",
+     "status": "CREATED",
+     "amount": 23000,
+     "expiresAt": "2026-12-03T14:32:11Z",
+     "createdAt": "2026-11-04T14:32:11Z"
+    },
+    "vaultId": "card:3j953325jx7129100",
+    "vaultStatus": "VAULTED",
+    "customerId": "rHavrwkebl",
+    "payerEmail": null,
+    "card": {
+     "brand": "VISA",
+     "last4": "1881"
+    }
+   }
+  },
+  {
+   "name": "authorize $50.00 on the card's vault id (merchant-initiated)",
+   "ok": true,
+   "ms": 5402,
+   "r": {
+    "id": "68J01450M5817745B",
+    "status": "COMPLETED",
+    "approveUrl": null,
+    "authorization": {
+     "id": "8KR02960UR898470E",
+     "status": "CREATED",
+     "amount": 5000,
+     "expiresAt": "2026-12-03T14:32:16Z",
+     "createdAt": "2026-11-04T14:32:16Z"
+    },
+    "vaultId": null,
+    "vaultStatus": null,
+    "customerId": null,
+    "payerEmail": null,
+    "card": {
+     "brand": "VISA",
+     "last4": "1881"
+    }
+   }
+  },
+  {
+   "name": "capture $200.00 of $230.00, final (buffer released)",
+   "ok": true,
+   "ms": 2660,
+   "r": {
+    "id": "2DK468084F562442W",
+    "status": "COMPLETED",
+    "amount": 20000,
+    "fee": null,
+    "net": 20000,
+    "final": true
+   }
+  },
+  {
+   "name": "payouts batch: pro 140 + helper 40",
+   "ok": true,
+   "ms": 449,
+   "r": {
+    "batchId": "AT6Z4PMXK56LA",
+    "status": "PENDING"
+   }
+  },
+  {
+   "name": "partial refund $25.00",
+   "ok": true,
+   "ms": 1696,
+   "r": {
+    "id": "36990823C56884028",
+    "status": "COMPLETED",
+    "amount": 2500
+   }
+  },
+  {
+   "name": "capture detail",
+   "ok": true,
+   "ms": 787,
+   "r": {
+    "id": "2DK468084F562442W",
+    "status": "PARTIALLY_REFUNDED",
+    "amount": 20000,
+    "fee": null,
+    "net": 20000,
+    "final": true
+   }
+  },
+  {
+   "name": "payout batch detail",
+   "ok": true,
+   "ms": 811,
+   "r": {
+    "batchId": "AT6Z4PMXK56LA",
+    "status": "PENDING",
+    "items": [
+     {
+      "id": "chk-2a3da68e-pro",
+      "itemId": "TBV38F62C43CL",
+      "transactionId": null,
+      "status": "PENDING",
+      "receiver": "pro-check@done-demo.example",
+      "amount": 14000,
+      "fee": null
+     },
+     {
+      "id": "chk-2a3da68e-helper",
+      "itemId": "245BBD6RQBY8C",
+      "transactionId": null,
+      "status": "PENDING",
+      "receiver": "helper-check@done-demo.example",
+      "amount": 4000,
+      "fee": null
+     }
+    ]
+   }
+  },
+  {
+   "name": "reauthorize the second hold (inside honor period)",
+   "ok": false,
+   "ms": 802,
+   "error": "PayPal POST /v2/payments/authorizations/8KR02960UR898470E/reauthorize: 422 UNPROCESSABLE_ENTITY REAUTHORIZATION_TOO_SOON",
+   "issue": "REAUTHORIZATION_TOO_SOON",
+   "debugId": "f45507810954c"
+  },
+  {
+   "name": "void the second hold",
+   "ok": true,
+   "ms": 878,
+   "r": {
+    "status": "VOIDED"
+   }
+  }
+ ]
+}

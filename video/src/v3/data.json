@@ -1,0 +1,362 @@
+{
+ "money": {
+  "number": "DP-1002",
+  "hold": {
+   "order": "77H43311C88250412",
+   "auth": "4FE05308505220535",
+   "amount": "$200.00"
+  },
+  "rehold": {
+   "order": "5L572496SY250574Y",
+   "auth": "284463934K6757305",
+   "amount": "$247.05"
+  },
+  "capture": "3E147340PR028970B",
+  "batch": "LEH3LNZTMY7G8",
+  "split": {
+   "release": "$232.05",
+   "fee": "$23.21",
+   "pro": "$208.84",
+   "helper": "$0.00",
+   "retained": "$0.00"
+  },
+  "captured": "$232.05"
+ },
+ "paypal": [
+  {
+   "what": "first hold: order",
+   "request": "GET /v2/checkout/orders/77H43311C88250412",
+   "http": 200,
+   "id": "77H43311C88250412",
+   "status": "COMPLETED",
+   "intent": "AUTHORIZE",
+   "amount": "200.00 USD",
+   "create_time": "2026-11-06T01:38:00Z"
+  },
+  {
+   "what": "re-hold: order",
+   "request": "GET /v2/checkout/orders/5L572496SY250574Y",
+   "http": 200,
+   "id": "5L572496SY250574Y",
+   "status": "COMPLETED",
+   "intent": "AUTHORIZE",
+   "amount": "247.05 USD",
+   "create_time": "2026-11-06T01:50:28Z"
+  },
+  {
+   "what": "first hold: authorization",
+   "request": "GET /v2/payments/authorizations/4FE05308505220535",
+   "http": 200,
+   "id": "4FE05308505220535",
+   "status": "VOIDED",
+   "amount": "200.00 USD",
+   "create_time": "2026-11-06T01:38:00Z",
+   "update_time": "2026-11-06T01:50:30Z"
+  },
+  {
+   "what": "re-hold: authorization",
+   "request": "GET /v2/payments/authorizations/284463934K6757305",
+   "http": 200,
+   "id": "284463934K6757305",
+   "status": "CAPTURED",
+   "amount": "247.05 USD",
+   "create_time": "2026-11-06T01:50:28Z",
+   "update_time": "2026-11-06T01:53:45Z"
+  },
+  {
+   "what": "capture",
+   "request": "GET /v2/payments/captures/3E147340PR028970B",
+   "http": 200,
+   "id": "3E147340PR028970B",
+   "status": "COMPLETED",
+   "amount": "232.05 USD",
+   "final_capture": true,
+   "create_time": "2026-11-06T01:53:45Z"
+  },
+  {
+   "what": "Payouts batch",
+   "request": "GET /v1/payments/payouts/LEH3LNZTMY7G8",
+   "http": 200,
+   "id": "LEH3LNZTMY7G8",
+   "status": "SUCCESS",
+   "amount": "208.84 USD",
+   "time_created": "2026-11-06T01:53:46Z",
+   "items": [
+    {
+     "transaction_id": "11817400N54205331",
+     "transaction_status": "SUCCESS",
+     "amount": "208.84 USD",
+     "sender_item_id": "DP-1002-pro"
+    }
+   ]
+  }
+ ],
+ "mandates": [
+  {
+   "status": "refused",
+   "reason": "replay",
+   "max": 200,
+   "expires": "2026-11-06T02:37:57.786Z",
+   "nonce": "2vxl1w1M",
+   "signedBy": null,
+   "receipt": "rcpt_ebc36037f2c0575b",
+   "scope": [
+    "hold"
+   ]
+  },
+  {
+   "status": "used",
+   "reason": null,
+   "max": 200,
+   "expires": "2026-11-06T02:37:57.786Z",
+   "nonce": "2vxl1w1M",
+   "signedBy": "server-held demo key",
+   "receipt": "rcpt_ba97cd660e59ce12",
+   "scope": [
+    "hold"
+   ]
+  },
+  {
+   "status": "refused",
+   "reason": "amount",
+   "max": 150,
+   "expires": "2026-11-06T02:37:57.617Z",
+   "nonce": "VZMcRG8-",
+   "signedBy": null,
+   "receipt": "rcpt_96a154a6bb36a340",
+   "scope": [
+    "hold"
+   ]
+  }
+ ],
+ "checks": [
+  {
+   "id": "running",
+   "what": "Photo of the faucet with the water running after the repair",
+   "verdict": "pass",
+   "by": "rules+vlm+model",
+   "confidence": 0.98,
+   "signals": [
+    "exif_time_ok: ev_20929fd710 taken 2026-11-05T19:55:14-06:00",
+    "gps_ok: ev_20929fd710 50 m from the job",
+    "demo library photo (tour)"
+   ]
+  },
+  {
+   "id": "off_dry",
+   "what": "Photo of the faucet turned off after the repair, with no water dripping",
+   "verdict": "pass",
+   "by": "rules+vlm+model",
+   "confidence": 0.99,
+   "signals": [
+    "exif_time_ok: ev_653663934c taken 2026-11-05T19:57:14-06:00",
+    "gps_ok: ev_653663934c 51 m from the job",
+    "demo library photo (tour)"
+   ]
+  },
+  {
+   "id": "receipt",
+   "what": "Receipt for the parts and materials (the shut-off valve under the sink is corroded and weeps), dated during the job",
+   "verdict": "pass",
+   "by": "rules+model",
+   "confidence": 0.9,
+   "signals": [
+    "receipt_items_match: 061538 1 4 turn stop valve",
+    "receipt: ev_cb04017a1a AUSTIN PLUMBING SUPPLY WILLIAM CANNON IL), 2026-11-05, total $47.05 (read by done-ocr (done-ocr det1+done2), confidence 0.95)",
+    "receipt_matches_change_orders: receipts $47.05, approved $47.05, parts paid $47.05"
+   ]
+  }
+ ],
+ "inj": {
+  "job": "job_24dc204f8b",
+  "number": "DP-1009",
+  "status": "review",
+  "decision": "review",
+  "conditions": [
+   {
+    "id": "running",
+    "verdict": "needs_fix",
+    "confidence": 0.4,
+    "needsPerson": false,
+    "signals": [
+     "injection: ev_26dcad6d0c text contains text that tries to instruct the checker (\"Ignore the rules.\"); it was ignored"
+    ],
+    "reason": "file for note 1 was not found"
+   },
+   {
+    "id": "off_dry",
+    "verdict": "pass",
+    "confidence": 0.96,
+    "needsPerson": false,
+    "signals": [],
+    "reason": "photo shows: The main objects and fixtures visible in the image are a sink and a faucet. The sink is made of stainless steel and is placed on a white wall. The faucet is attached to the sink and has a"
+   }
+  ],
+  "captured": "$0.00"
+ },
+ "recon": {
+  "counts": {
+   "matched": 2
+  },
+  "summary": {
+   "text": "The back-office reader confirmed $232.05 was correctly captured for the payment reconciliation.",
+   "source": "model"
+  },
+  "rows": [
+   {
+    "kind": "capture",
+    "job": "DP-1002",
+    "ref": "3E147340PR028970B",
+    "ours": 23205,
+    "paypal": 23205,
+    "status": "matched",
+    "via": "captures API"
+   },
+   {
+    "kind": "payout",
+    "job": "DP-1002",
+    "ref": "SZ2TSX2GUYHFC",
+    "ours": 20884,
+    "paypal": 20884,
+    "status": "matched",
+    "via": "payouts API"
+   }
+  ]
+ },
+ "thread": [
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "barton-creek-plumbing",
+    "name": "Barton Creek Plumbing"
+   },
+   "amount": "$220.00",
+   "text": "Barton Creek Plumbing can handle the job for $220.00, with a call-out of $75.00 and 1.5 hours of work scheduled. Marco Ruiz (apprentice) is available to assist."
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "eastside-pipe-drain",
+    "name": "Eastside Pipe & Drain"
+   },
+   "amount": "$195.00",
+   "text": "Eastside Pipe & Drain can do it for $195.00, arriving in about 8 minutes (Thu, Nov 5, 7:45 PM): $59.00 call-out, 1.5 h labor, no travel charge."
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "hill-country-leak-pros",
+    "name": "Hill Country Leak Pros"
+   },
+   "amount": "$255.00",
+   "text": "Hill Country Leak Pros can do it for $255.00, arriving in about 8 minutes (Thu, Nov 5, 7:45 PM): $89.00 call-out, 1.5 h labor, no travel charge. Leo Tran comes along."
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "mueller-plumbing",
+    "name": "Mueller Plumbing Co."
+   },
+   "amount": "$220.00",
+   "text": "Mueller Plumbing Co. can do it for $220.00, arriving in about 5 minutes (Thu, Nov 5, 7:42 PM): $69.00 call-out, 1.5 h labor, $1.00 travel."
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "lone-star-rooter",
+    "name": "Lone Star Rooter"
+   },
+   "amount": "$205.00",
+   "text": "Sure, that fits our budget. We can confirm the $205 offer at $49 call-out, $26 travel, and time slot available. Would you like to move forward?"
+  },
+  {
+   "who": {
+    "kind": "customer_agent",
+    "name": "Maria's agent"
+   },
+   "amount": "$170.00",
+   "text": "Would you do it for $170.00?"
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "eastside-pipe-drain",
+    "name": "Eastside Pipe & Drain"
+   },
+   "amount": "$185.00",
+   "text": "$170.00 is below our cost for this one; we can meet you at $185.00."
+  },
+  {
+   "who": {
+    "kind": "customer_agent",
+    "name": "Maria's agent"
+   },
+   "amount": "$185.00",
+   "text": "Accepted at $185.00. Holding the money with PayPal now."
+  },
+  {
+   "who": {
+    "kind": "pro_agent",
+    "pro": "eastside-pipe-drain",
+    "name": "Eastside Pipe & Drain"
+   },
+   "amount": "$47.05",
+   "text": "The shut-off valve under the sink is corroded and weeps, requiring replacement with a new cartridge for $47.05."
+  },
+  {
+   "who": {
+    "kind": "customer",
+    "name": "Customer"
+   },
+   "amount": "$47.05",
+   "text": "Approved +$47.05."
+  },
+  {
+   "who": {
+    "kind": "platform",
+    "name": "VeriPay check"
+   },
+   "text": "3 of 3 passed. All passed."
+  },
+  {
+   "who": {
+    "kind": "platform",
+    "name": "VeriPay"
+   },
+   "amount": "$232.05",
+   "text": "$232.05 released: $208.84 to Eastside Pipe & Drain, fee $23.21 (10%)."
+  }
+ ],
+ "offers": [
+  {
+   "pro": "Barton Creek Plumbing",
+   "amount": "$220.00",
+   "ask": "$220.00",
+   "status": "declined"
+  },
+  {
+   "pro": "Eastside Pipe & Drain",
+   "amount": "$185.00",
+   "ask": "$195.00",
+   "status": "accepted"
+  },
+  {
+   "pro": "Hill Country Leak Pros",
+   "amount": "$255.00",
+   "ask": "$255.00",
+   "status": "declined"
+  },
+  {
+   "pro": "Mueller Plumbing Co.",
+   "amount": "$220.00",
+   "ask": "$220.00",
+   "status": "declined"
+  },
+  {
+   "pro": "Lone Star Rooter",
+   "amount": "$205.00",
+   "ask": "$205.00",
+   "status": "declined"
+  }
+ ]
+}

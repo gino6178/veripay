@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "keyboard typing laptop",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:856166",
+      "title": "Rapid Laptop Keyboard Typing Click",
+      "author": "brktkrgll",
+      "duration_seconds": 5.0,
+      "preview_url": "https://cdn.freesound.org/previews/856/856166_18901108-hq.mp3",
+      "downloads": 130,
+      "page_url": "https://freesound.org/people/brktkrgll/sounds/856166/",
+      "license_label": "Creative Commons 0",
+      "description": "High-fidelity rapid laptop keyboard typing sound. Ideal for corporate office environments, coding/software tutorials, fast-paced editing, and ASMR keyboard click focus. Generated using AI sound design tools, then manually EQ'd, compressed, and mastered for clear, drop-in ready use. AI Generation Details: Service used: ElevenLabs Model used: ElevenLabs Sound Effects (Text-to-SFX) Query/Prompt used: \"High-fidelity rapid laptop keyboard typing sound, plastic keys clicking rapidly, office ambience\" Post-processing: Manually EQ'd, compressed, and mastered.",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:468330",
+      "title": "06_Typing.wav",
+      "author": "Juaner_",
+      "duration_seconds": 4.03585,
+      "preview_url": "https://cdn.freesound.org/previews/468/468330_9934567-hq.mp3",
+      "downloads": 114,
+      "page_url": "https://freesound.org/people/Juaner_/sounds/468330/",
+      "license_label": "Creative Commons 0",
+      "description": "A persons typing on a laptop keyboard",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:816013",
+      "title": "typing",
+      "author": "musselmox",
+      "duration_seconds": 4.34131,
+      "preview_url": "https://cdn.freesound.org/previews/816/816013_14858742-hq.mp3",
+      "downloads": 56,
+      "page_url": "https://freesound.org/people/musselmox/sounds/816013/",
+      "license_label": "Creative Commons 0",
+      "description": "My own custom typing sound effect made by pressing random keys on my laptop's keyboard. May or may not be loopable… Feel free to use and/or credit.",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:587777",
+      "title": "Typing on Keyboard and Confirming an Action.wav",
+      "author": "collieryouthservices",
+      "duration_seconds": 4.12215,
+      "preview_url": "https://cdn.freesound.org/previews/587/587777_4275266-hq.mp3",
+      "downloads": 92,
+      "page_url": "https://freesound.org/people/collieryouthservices/sounds/587777/",
+      "license_label": "Creative Commons 0",
+      "description": "one of my students typing on a keyboard. recorded in collier middle school.",
+      "rating": 2.8,
+      "rating_count": 4
+    },
+    {
+      "id": "fs:539146",
+      "title": "Keyboard Typing 001.wav",
+      "author": "ristooooo1",
+      "duration_seconds": 3.64762,
+      "preview_url": "https://cdn.freesound.org/previews/539/539146_6205597-hq.mp3",
+      "downloads": 784,
+      "page_url": "https://freesound.org/people/ristooooo1/sounds/539146/",
+      "license_label": "Creative Commons 0",
+      "description": "Typing of a PC keyboard",
+      "rating": 4.0,
+      "rating_count": 5
+    },
+    {
+      "id": "fs:645921",
+      "title": "keyboard typing.wav",
+      "author": "Yoshicakes77",
+      "duration_seconds": 3.34367,
+      "preview_url": "https://cdn.freesound.org/previews/645/645921_12983992-hq.mp3",
+      "downloads": 89,
+      "page_url": "https://freesound.org/people/Yoshicakes77/sounds/645921/",
+      "license_label": "Creative Commons 0",
+      "description": "A typing sound I made with a gaming keyboard.",
+      "rating": null,
+      "rating_count": null
+    }
+  ]
+}

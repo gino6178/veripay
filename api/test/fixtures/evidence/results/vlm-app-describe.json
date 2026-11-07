@@ -1,0 +1,229 @@
+{
+ "set": "vlm-set condition cases (16; illustrated scenes) through checkEvidence",
+ "mode": "describe",
+ "vlm": "done-vlm",
+ "audit": "done-audit",
+ "released_when_it_should_not": {
+  "k": 0,
+  "n": 10,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.278
+  ]
+ },
+ "good_released": {
+  "k": 0,
+  "n": 6,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.39
+  ]
+ },
+ "left_to_a_person": {
+  "k": 8,
+  "n": 16,
+  "rate": 0.5,
+  "ci95": [
+   0.28,
+   0.72
+  ]
+ },
+ "ms_median_per_case": 54559,
+ "rows": [
+  {
+   "id": "c01",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 90193
+  },
+  {
+   "id": "c02",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 90076
+  },
+  {
+   "id": "c03",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 90021
+  },
+  {
+   "id": "c04",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.99,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a kitchen sink with a faucet. The faucet is white and has a blue liquid in it. There are two sinks in the kitchen, one on the left ",
+   "reason": "No photo for this check was submitted.",
+   "ms": 15736
+  },
+  {
+   "id": "c05",
+   "label": "pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.63,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a wall with a window. The window has a white frame and a brown border.",
+   "reason": "Photo a0 shows something else, not that the damaged wall is patched, sanded smooth and painted to match, with no hole or bare patch visible.",
+   "ms": 54559
+  },
+  {
+   "id": "c06",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 1,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a room with a light green wall. On the wall, there is a black hole.",
+   "reason": "Photo a0 shows it isn't done yet: the damaged wall is patched, sanded smooth and painted to match, with no hole or bare patch visible is not true.",
+   "ms": 50534
+  },
+  {
+   "id": "c07",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 90013
+  },
+  {
+   "id": "c08",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 90092
+  },
+  {
+   "id": "c09",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.89,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The main objects and fixtures visible in the image are a television and a table. The television is placed on a table, and it is turned off.",
+   "reason": "Photo a0 shows it isn't done yet: the TV is mounted on the wall and level (not tilted) is not true.",
+   "ms": 88843
+  },
+  {
+   "id": "c10",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 1,
+   "by": "rules",
+   "sees": "",
+   "reason": "a0 is labelled as tv (tv mount work), not this job (The TV is mounted on the wall and level (not tilted))",
+   "ms": 4
+  },
+  {
+   "id": "c11",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.8,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The main objects and fixtures visible in the image are a bed, a bed frame, a bed sheet, a pillow, a pillow case, a pillow, a pillow, a pillow, a pi",
+   "reason": "No photo for this check was submitted.",
+   "ms": 61340
+  },
+  {
+   "id": "c12",
+   "label": "pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.56,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a wall with a window. The window has a white frame and a brown border.",
+   "reason": "Photo a0 shows something else, not that the damaged wall is patched, sanded smooth and painted to match, with no hole or bare patch visible.",
+   "ms": 3845
+  },
+  {
+   "id": "c13",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 15452
+  },
+  {
+   "id": "c14",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 15412
+  },
+  {
+   "id": "c15",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "no photo description; a person confirms",
+   "ms": 15532
+  },
+  {
+   "id": "c16",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 0.99,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a kitchen sink with a faucet. The faucet is white and has a blue liquid in it. There are two sinks in the kitchen, one on the left ",
+   "reason": "No photo for this check was submitted.",
+   "ms": 3520
+  }
+ ],
+ "at": "2026-11-05T00:01:23.273Z"
+}

@@ -1,0 +1,908 @@
+{
+ "faucet_before": {
+  "scene": "faucet",
+  "role": "before",
+  "condition": "The kitchen faucet before the repair",
+  "candidates": 20,
+  "passed": 20,
+  "picked": [
+   {
+    "file": "a_kitchen_faucet_00.jpg",
+    "sees": "The image shows a modern bathroom with a sink, faucet, and a bathtub. The sink is made of stainless steel and has a chrome faucet. The faucet has a single handle and a spout. The bathtub is also made of stainless steel and has a chrome faucet. The bathtub is positioned in the corner of the room.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Ronnica123",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:PU_014%2B015%2B033%2B022_Packshot_RAVAK_2019.jpg",
+    "title": "File:PU 014+015+033+022 Packshot RAVAK 2019.jpg"
+   },
+   {
+    "file": "a_kitchen_faucet_01.jpg",
+    "sees": "The image shows a modern bathroom with a sink, faucet, and a bathtub. The faucet is made of chrome and has a curved design, while the bathtub has a sleek design with a metallic finish. The sink is also made of chrome and has a curved design.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Ronnica123",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:PU_014%2B015%2B033%2B022_Packshot_RAVAK_2019.jpg",
+    "title": "File:PU 014+015+033+022 Packshot RAVAK 2019.jpg"
+   },
+   {
+    "file": "a_kitchen_faucet_02.jpg",
+    "sees": "The main objects and fixtures in the image are a sink and a faucet. The sink is white and has a silver faucet. There are two objects in the sink, one is a green and white star-shaped object and the other is a white star-shaped object.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Roy Zuo",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:(20260118)_Soap,_bathroom_01.jpg",
+    "title": "File:(20260118) Soap, bathroom 01.jpg"
+   }
+  ]
+ },
+ "faucet_installed": {
+  "scene": "faucet",
+  "role": "after",
+  "condition": "The kitchen faucet is installed and in good condition",
+  "candidates": 20,
+  "passed": 20,
+  "picked": [
+   {
+    "file": "a_kitchen_faucet_19.jpg",
+    "sees": "The image shows a close-up view of a faucet with water flowing from it. The faucet is made of metal and has a shiny finish. The water is flowing from the right side of the faucet, and it appears to be flowing smoothly. The faucet is placed on a white sink, which is also visible in the image.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "Pinnacle Leeds",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Pinnacle,_Leeds_1.jpg",
+    "title": "File:Pinnacle, Leeds 1.jpg"
+   },
+   {
+    "file": "a_kitchen_faucet_04.jpg",
+    "sees": "The image shows a chrome faucet with a single handle. The faucet is positioned on a white background, and there are no other objects in the image. The faucet is made of chrome and has a modern design.",
+    "verdict": "pass",
+    "confidence": 0.997,
+    "author": "Busquett",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2508-god.jpg",
+    "title": "File:2508-god.jpg"
+   },
+   {
+    "file": "a_kitchen_faucet_05.jpg",
+    "sees": "The image shows a sink with a faucet attached to it. The faucet is made of metal and has a handle on it. There is a hose connected to the faucet, which is likely used for cleaning purposes. The sink is made of stainless steel and is placed on a countertop.",
+    "verdict": "pass",
+    "confidence": 0.997,
+    "author": "Carsten R D",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Blandebatteri_med_stoppkran.JPG",
+    "title": "File:Blandebatteri med stoppkran.JPG"
+   }
+  ]
+ },
+ "under_sink_dry": {
+  "scene": "faucet",
+  "role": "after",
+  "condition": "The area under the sink is clean and dry",
+  "candidates": 32,
+  "passed": 5,
+  "picked": [
+   {
+    "file": "a_P_trap_under_a_sink_19.jpg",
+    "sees": "The image shows a bathroom with white tiles on the floor and walls. There is a white toilet with a white lid and a white pipe connected to it. The toilet is placed on a white sink.",
+    "verdict": "pass",
+    "confidence": 0.992,
+    "author": "Donald Trung Quoc Don (Ch\u1eef H\u00e1n: \u5fb5\u570b\u55ae) - Wikimedia Commons - \u00a9 CC BY-SA 4.0 International.(Want to use this image?)Original publication \ud83d\udce4: --Donald Trung \u300e\u5fb5\u570b\u55ae\u300f (No Fake News \ud83d\udcac) (WikiProject Numismatics ",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Onze_Woning_apartment_renovation,_Hillegersberg,_Rotterdam_(2020)_103.jpg",
+    "title": "File:Onze Woning apartment renovation, Hillegersberg, Rotterdam (2020) 103.jpg"
+   },
+   {
+    "file": "a_P_trap_under_a_sink_06.jpg",
+    "sees": "The main objects and fixtures visible in the image are a pipe and a faucet. The pipe is connected to the faucet, and the faucet is connected to a sink. The faucet is turned on, and water is flowing out of the faucet.",
+    "verdict": "pass",
+    "confidence": 0.991,
+    "author": "Tomwsulcer",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Draintrap.jpg",
+    "title": "File:Draintrap.jpg"
+   },
+   {
+    "file": "a_P_trap_under_a_sink_05.jpg",
+    "sees": "The image shows a kitchen sink with a faucet and a pipe connected to it. The sink is placed on a countertop, and there is a window in the background. The faucet is located on the left side of the sink, and the pipe is on the right side. The sink is made of ceramic, and the faucet is made of metal.",
+    "verdict": "pass",
+    "confidence": 0.985,
+    "author": "various",
+    "license": "Public domain",
+    "license_url": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Die_Gartenlaube_(1889)_b_034_2.jpg",
+    "title": "File:Die Gartenlaube (1889) b 034 2.jpg"
+   }
+  ]
+ },
+ "drain_before": {
+  "scene": "drain",
+  "role": "before",
+  "condition": "The sink before the drain was cleared",
+  "candidates": 24,
+  "passed": 18,
+  "picked": [
+   {
+    "file": "a_kitchen_sink_00.jpg",
+    "sees": "The image shows a kitchen sink with two basins, a faucet, and a drain. The sink is placed on a countertop, and there is a window in the background. The sink appears to be in a state of disrepair, with some of the paint peeling off and the faucet damaged.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Park taeho",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:-41_sink.jpg",
+    "title": "File:-41 sink.jpg"
+   },
+   {
+    "file": "a_kitchen_sink_01.jpg",
+    "sees": "The image depicts a small kitchen area with a sink, stove, and a stove top oven. The sink is located on the left side of the image, while the stove is on the right side. The stove has four burners and a control panel, and the oven is white and has a glass door. The floor is covered with a wooden floor",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Depzzmtd loga",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:311_%D0%93%D1%83%D1%80%D1%82%D0%BE%D0%B6%D0%B8%D1%82%D0%BE%D0%BA_%D0%9B%D1%83%D0%B3%D0%B0%D0%BD%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BD%D0%B0%D1%86%D1%96%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE_%D1%83%D0%BD%D1%96%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82%D1%83_%D1%96%D0%BC_%D0%A2_%D0%A8%D0%B5%D0%B2%D1%87%D0%B5%D0%BD%D0%BA%D0%B0_before_2.jpg",
+    "title": "File:311 \u0413\u0443\u0440\u0442\u043e\u0436\u0438\u0442\u043e\u043a \u041b\u0443\u0433\u0430\u043d\u0441\u044c\u043a\u043e\u0433\u043e \u043d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0443\u043d\u0456\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442\u0443 \u0456\u043c \u0422 \u0428\u0435\u0432\u0447\u0435\u043d\u043a\u0430 before 2.jpg"
+   },
+   {
+    "file": "a_kitchen_sink_02.jpg",
+    "sees": "A woman is washing dishes in a kitchen. There is a sink, a dish rack, a sponge, a sponge, a bowl, a cup, a bottle, a glass, a bottle, a cup, a bottle, a bottle, a bottle, a bottle, a bottle, a bottle, a bottle, a bottle, a bottle, a",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "DiegoKR",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:A_job_for_two.jpg",
+    "title": "File:A job for two.jpg"
+   }
+  ]
+ },
+ "trap_opened": {
+  "scene": "drain",
+  "role": "after",
+  "condition": "The P-trap under the sink is reconnected",
+  "candidates": 20,
+  "passed": 12,
+  "picked": [
+   {
+    "file": "a_P_trap_under_a_sink_06.jpg",
+    "sees": "The main objects and fixtures visible in the image are a pipe and a faucet. The pipe is connected to the faucet, and the faucet is connected to a sink. The faucet is turned on, and water is flowing out of the faucet.",
+    "verdict": "pass",
+    "confidence": 0.999,
+    "author": "Tomwsulcer",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Draintrap.jpg",
+    "title": "File:Draintrap.jpg"
+   },
+   {
+    "file": "a_P_trap_under_a_sink_08.jpg",
+    "sees": "The image shows a gray pipe with a metal cap on it. The pipe is lying on a white surface, and there are no other objects in the scene. The pipe is not damaged, and it appears to be in good condition.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "Steven Pavlov",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Fernco_PVC_Drain_Trap_J-Bend.jpg",
+    "title": "File:Fernco PVC Drain Trap J-Bend.jpg"
+   },
+   {
+    "file": "a_P_trap_under_a_sink_01.jpg",
+    "sees": "The image shows a pair of black and gray pipes connected at a right angle. The pipes are placed against a white wall, and there is a label on the left pipe that reads \"Komo-Nen\".",
+    "verdict": "pass",
+    "confidence": 0.993,
+    "author": "McGeddon",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Annotated_plumbing_trap.jpg",
+    "title": "File:Annotated plumbing trap.jpg"
+   }
+  ]
+ },
+ "draining": {
+  "scene": "drain",
+  "role": "after",
+  "condition": "The sink is empty and drains freely",
+  "candidates": 12,
+  "passed": 2,
+  "picked": [
+   {
+    "file": "a_kitchen_sink_06.jpg",
+    "sees": "The image shows a bathroom with a sink, a toilet, and a window. The sink is made of ceramic and has a blue and white design on it. The toilet is also made of ceramic and has a blue and white design on it. The window has a red frame and is covered with a white curtain.",
+    "verdict": "pass",
+    "confidence": 0.92,
+    "author": "Dguendel",
+    "license": "CC BY 3.0",
+    "license_url": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Braubach,_Marksburg,_Sp%C3%BClbecken.jpg",
+    "title": "File:Braubach, Marksburg, Sp\u00fclbecken.jpg"
+   },
+   {
+    "file": "a_kitchen_sink_08.jpg",
+    "sees": "The image shows a white sink with two holes in it, a blue soap dispenser, a white dish rack, and a white bowl. The sink is placed on a wooden countertop, and there is a window in the background. The soap dispenser is located in the middle of the sink, and the dish rack is on the right side of",
+    "verdict": "pass",
+    "confidence": 0.711,
+    "author": "Stilfehler",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:California_Kitchen_from_1980_%E2%80%93_04.jpg",
+    "title": "File:California Kitchen from 1980 \u2013 04.jpg"
+   }
+  ]
+ },
+ "toilet_tank": {
+  "scene": "toilet",
+  "role": "after",
+  "condition": "New parts are installed inside the toilet tank",
+  "candidates": 20,
+  "passed": 2,
+  "picked": [
+   {
+    "file": "a_toilet_tank_s_inside_17.jpg",
+    "sees": "The image shows a toilet with a blue lid and a white tank. The toilet is placed in a bathroom, and there is a white toilet paper roll on the right side of the toilet. The toilet is not in use, and there is no water in the tank.",
+    "verdict": "pass",
+    "confidence": 0.961,
+    "author": "BaINSCHAUW Lamidou",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:HK_KTD_Sau_Mau_Ping_%E5%AE%89%E6%B3%B0%E9%82%A8_On_Tai_Estate_%E6%8A%BD%E6%B0%B4%E9%A6%AC%E6%A1%B6_Flush_toilet_tank_January_2023_Px3_02.jpg",
+    "title": "File:HK KTD Sau Mau Ping \u5b89\u6cf0\u90a8 On Tai Estate \u62bd\u6c34\u99ac\u6876 Flush toilet tank January 2023 Px3 02.jpg"
+   },
+   {
+    "file": "a_toilet_tank_s_inside_18.jpg",
+    "sees": "The image shows a white and blue water filter placed in a beige-colored toilet tank. The filter is positioned on the right side of the tank, and there is a blue cap on top of it. The tank is filled with water, and there is a white cap on the left side of the tank.",
+    "verdict": "pass",
+    "confidence": 0.934,
+    "author": "BaINSCHAUW Lamidou",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:HK_KTD_Sau_Mau_Ping_%E5%AE%89%E6%B3%B0%E9%82%A8_On_Tai_Estate_%E6%8A%BD%E6%B0%B4%E9%A6%AC%E6%A1%B6_Flush_toilet_tank_January_2023_Px3_03.jpg",
+    "title": "File:HK KTD Sau Mau Ping \u5b89\u6cf0\u90a8 On Tai Estate \u62bd\u6c34\u99ac\u6876 Flush toilet tank January 2023 Px3 03.jpg"
+   }
+  ]
+ },
+ "toilet_installed": {
+  "scene": "toilet",
+  "role": "after",
+  "condition": "The toilet is installed and clean",
+  "candidates": 12,
+  "passed": 8,
+  "picked": [
+   {
+    "file": "a_toilet_09.jpg",
+    "sees": "The image shows a toilet with a blue ring around the top. The toilet is placed on a tiled floor.",
+    "verdict": "pass",
+    "confidence": 1.0,
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Canary_Wharf_Station_disabled_accessible_toilet.jpg",
+    "title": "File:Canary Wharf Station disabled accessible toilet.jpg"
+   },
+   {
+    "file": "a_toilet_05.jpg",
+    "sees": "The toilet is white and has a lid. There is a toilet paper on the toilet.",
+    "verdict": "pass",
+    "confidence": 0.999,
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Armitage_Shanks_toilet_at_Sainsbury%27s.jpg",
+    "title": "File:Armitage Shanks toilet at Sainsbury's.jpg"
+   },
+   {
+    "file": "a_toilet_01.jpg",
+    "sees": "The main objects and fixtures visible in the image are a toilet and a sink. The toilet is placed on the floor and has a lid that is open. The sink is located on the right side of the toilet and has a faucet.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Accessible_toilet_WC_Liverpool_Street_Station_London_England_01.jpg",
+    "title": "File:Accessible toilet WC Liverpool Street Station London England 01.jpg"
+   }
+  ]
+ },
+ "heater_old": {
+  "scene": "water_heater",
+  "role": "before",
+  "condition": "The old water heater before replacement",
+  "candidates": 12,
+  "passed": 6,
+  "picked": [
+   {
+    "file": "a_water_heater_00.jpg",
+    "sees": "The image shows a water heater placed on the ground, with a chain attached to it. The water heater is white and has a yellow warning sign attached to it. There are some plants and a fence around the water heater.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Geof Sheppard",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2019_at_Hull_Paragon_-_platform_water_tank.JPG",
+    "title": "File:2019 at Hull Paragon - platform water tank.JPG"
+   },
+   {
+    "file": "a_water_heater_01.jpg",
+    "sees": "The image shows a white water heater placed on the floor. The water heater is connected to a pipe, which is visible on the right side of the image.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Andy Butkaj",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Boiler_and_Cylinder.jpg",
+    "title": "File:Boiler and Cylinder.jpg"
+   },
+   {
+    "file": "a_water_heater_03.jpg",
+    "sees": "The image shows a large cylindrical water tank with various pipes and valves attached to it. The tank is placed on a white platform, and there are several pipes and valves connected to it. The pipes are made of metal and are connected to the tank through valves. The tank is surrounded by a white wall, and there are some pipes and valves attached to",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Bin im Garten",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:IFA_2010_Internationale_Funkausstellung_Berlin_100.JPG",
+    "title": "File:IFA 2010 Internationale Funkausstellung Berlin 100.JPG"
+   }
+  ]
+ },
+ "heater_installed": {
+  "scene": "water_heater",
+  "role": "after",
+  "condition": "A water heater tank is installed",
+  "candidates": 12,
+  "passed": 3,
+  "picked": [
+   {
+    "file": "a_water_heater_01.jpg",
+    "sees": "The image shows a white water heater placed on the floor. The water heater is connected to a pipe, which is visible on the right side of the image.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "Andy Butkaj",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Boiler_and_Cylinder.jpg",
+    "title": "File:Boiler and Cylinder.jpg"
+   },
+   {
+    "file": "a_water_heater_11.jpg",
+    "sees": "The image shows a water heater placed on the floor. The water heater is gray and has a control panel on the top. There is a red valve on the right side of the water heater. The water heater is placed on a white wall.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "FinkJ at Slovenian Wikipedia",
+    "license": "Public domain",
+    "license_url": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Toplotna_crpalka-postavitev.JPG",
+    "title": "File:Toplotna crpalka-postavitev.JPG"
+   },
+   {
+    "file": "a_water_heater_00.jpg",
+    "sees": "The image shows a water heater placed on the ground, with a chain attached to it. The water heater is white and has a yellow warning sign attached to it. There are some plants and a fence around the water heater.",
+    "verdict": "pass",
+    "confidence": 0.995,
+    "author": "Geof Sheppard",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2019_at_Hull_Paragon_-_platform_water_tank.JPG",
+    "title": "File:2019 at Hull Paragon - platform water tank.JPG"
+   }
+  ]
+ },
+ "rating_plate": {
+  "scene": "water_heater",
+  "role": "after",
+  "condition": "The rating plate of the new water heater is readable",
+  "candidates": 12,
+  "passed": 0,
+  "picked": []
+ },
+ "tv_mounted": {
+  "scene": "tv_mount",
+  "role": "after",
+  "condition": "The TV is mounted on the wall",
+  "candidates": 9,
+  "passed": 1,
+  "picked": [
+   {
+    "file": "a_TV_mounted_on_a_wall_00.jpg",
+    "sees": "The image shows a television mounted on a wall. The television is black and has a screen that is turned off. There are no other objects or people visible in the image.",
+    "verdict": "pass",
+    "confidence": 0.997,
+    "author": "Ahmet D\u00fcz, Dreil\u00e4nder- &amp; Oberrheinfotograf",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2023-05-13_Augusta_Raurica_TOT_055.jpg",
+    "title": "File:2023-05-13 Augusta Raurica TOT 055.jpg"
+   }
+  ]
+ },
+ "level_used": {
+  "scene": "tv_mount",
+  "role": "after",
+  "condition": "A bubble level is used to check the mount is level",
+  "candidates": 12,
+  "passed": 2,
+  "picked": [
+   {
+    "file": "a_bubble_level_00.jpg",
+    "sees": "The main objects and fixtures in the image are a yellow level and a red and black tool. The level is placed on a stand, and the red and black tool is placed on the level.",
+    "verdict": "pass",
+    "confidence": 0.993,
+    "author": "",
+    "license": "CC BY-SA 3.0",
+    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:80lmx-p-l.jpg",
+    "title": "File:80lmx-p-l.jpg"
+   },
+   {
+    "file": "a_bubble_level_02.jpg",
+    "sees": "The image shows a metal level placed on a surface. The level has a metal frame with several holes and a circular hole in the middle. The surface on which the level is placed appears to be a wooden surface, possibly a table or a wall. The level is not in use, and there are no other objects in the scene. The level is",
+    "verdict": "pass",
+    "confidence": 0.695,
+    "author": "cogdogblog",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:An_effort_to_kindle_a_connection_today._(9064541010).jpg",
+    "title": "File:An effort to kindle a connection today. (9064541010).jpg"
+   }
+  ]
+ },
+ "boxes_before": {
+  "scene": "furniture",
+  "role": "before",
+  "condition": "Flat-pack boxes before assembly",
+  "candidates": 12,
+  "passed": 7,
+  "picked": [
+   {
+    "file": "cardboard_boxes_00.jpg",
+    "sees": "The image shows a bicycle and a box on the ground. The bicycle is placed on the ground, while the box is placed on the ground. The bicycle is positioned on the left side of the image, while the box is positioned on the right side. There is a fence in the background, and there are some objects on the ground, including a",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bicycles_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_01.jpg",
+    "title": "File:Bicycles Sclater Street Brick Lane Market Shoreditch London England 01.jpg"
+   },
+   {
+    "file": "cardboard_boxes_04.jpg",
+    "sees": "The image shows a cardboard box with a handle on the top. The box is placed on a white surface, and there is a white background behind it. The box appears to be empty and is not being used for any purpose.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Speedyizmir",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:0g.jpg",
+    "title": "File:0g.jpg"
+   },
+   {
+    "file": "cardboard_boxes_05.jpg",
+    "sees": "The image features a box with a blue and white pattern, placed on a white surface. The box is labeled with the text \"Original W.F. Wratten\" and \"Unterk\u00fcsst in Werk\", indicating its origin and the type of product it contains. The box is closed, and there are no visible objects inside",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Christoph Braun",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:1_Satz_Unterbrecherkontakte,_SahiFa_Braunschweig,_AP3Q0084_edit.jpg",
+    "title": "File:1 Satz Unterbrecherkontakte, SahiFa Braunschweig, AP3Q0084 edit.jpg"
+   }
+  ]
+ },
+ "dresser": {
+  "scene": "furniture",
+  "role": "after",
+  "condition": "The dresser is assembled with its drawers in place",
+  "candidates": 12,
+  "passed": 8,
+  "picked": [
+   {
+    "file": "a_chest_of_drawers_08.jpg",
+    "sees": "The main objects and fixtures visible in the image are a wooden dresser with four drawers. The dresser is made of wood and has a wooden frame. The drawers have white knobs on them.",
+    "verdict": "pass",
+    "confidence": 0.999,
+    "author": "Tangerineduel",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Antique_European_Baltic_Pine_Chest.jpg",
+    "title": "File:Antique European Baltic Pine Chest.jpg"
+   },
+   {
+    "file": "a_chest_of_drawers_03.jpg",
+    "sees": "The image shows a wooden chest of drawers with four drawers. The chest of drawers is made of wood and has a dark brown color. The drawers have metal handles and are arranged in a vertical orientation. The chest of drawers is placed on a white surface.",
+    "verdict": "pass",
+    "confidence": 0.994,
+    "author": "NPS Photo",
+    "license": "Public domain",
+    "license_url": "",
+    "source": "https://commons.wikimedia.org/wiki/File:A_pine_chest_of_drawers_with_bun_feet._(c7f76543-8a3b-4a42-aead-480edaf72163).jpg",
+    "title": "File:A pine chest of drawers with bun feet. (c7f76543-8a3b-4a42-aead-480edaf72163).jpg"
+   },
+   {
+    "file": "a_chest_of_drawers_07.jpg",
+    "sees": "The main objects and fixtures visible in the image are a wooden dresser with brass handles, a chair, and a mirror. The dresser is placed on a blue carpeted floor, and the mirror is positioned above it.",
+    "verdict": "pass",
+    "confidence": 0.992,
+    "author": "Leon Brooks",
+    "license": "Public domain",
+    "license_url": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Antique_chest_of_drawers_and_octagonal_table.jpg",
+    "title": "File:Antique chest of drawers and octagonal table.jpg"
+   }
+  ]
+ },
+ "bed": {
+  "scene": "furniture",
+  "role": "after",
+  "condition": "The bed frame is assembled",
+  "candidates": 20,
+  "passed": 17,
+  "picked": [
+   {
+    "file": "a_bed_frame_19.jpg",
+    "sees": "The room has a bed with a brown blanket and a pillow. There are clothes on the bed. There are two wall lamps on the wall.",
+    "verdict": "pass",
+    "confidence": 0.988,
+    "author": "Thomas Woodtli from Z\u00fcrich, Switzerland",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Azilal_Province_(27936530924).jpg",
+    "title": "File:Azilal Province (27936530924).jpg"
+   },
+   {
+    "file": "a_bed_frame_00.jpg",
+    "sees": "The image shows a bedroom with a bed, a nightstand, a plant, and a bedside table. The bed is made with a dark gray blanket and has two pillows. The nightstand has a lamp on it. The plant is placed on the floor next to the bed. The overall condition of the room is clean and well-organized.",
+    "verdict": "pass",
+    "confidence": 0.982,
+    "author": "\u042e\u0440\u0438\u0439 \u041a\u043e\u0440\u0436\u043e\u0432",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:13_tango_jersey.jpg",
+    "title": "File:13 tango jersey.jpg"
+   },
+   {
+    "file": "a_bed_frame_12.jpg",
+    "sees": "The image depicts a bedroom with a bed, a nightstand, and a dresser. The bed is covered with a white comforter and has a white headboard. The nightstand has a lamp on it, and the dresser has a mirror on top. The room has a light-colored wall and a wooden floor.",
+    "verdict": "pass",
+    "confidence": 0.977,
+    "author": "Daniela Dallavalle Spa",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Arte_Pura_by_Daniela_Dallavalle.jpg",
+    "title": "File:Arte Pura by Daniela Dallavalle.jpg"
+   }
+  ]
+ },
+ "hole_before": {
+  "scene": "drywall",
+  "role": "before",
+  "condition": "The hole in the drywall before the repair",
+  "candidates": 12,
+  "passed": 11,
+  "picked": [
+   {
+    "file": "a_hole_in_drywall_00.jpg",
+    "sees": "The image shows a street scene with a graffiti on a wall. The graffiti is colorful and has a lot of text. There is a black trash bin on the right side of the image.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Luis Apiolaza",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:100_Bairro_Alto_(29628903).jpeg",
+    "title": "File:100 Bairro Alto (29628903).jpeg"
+   },
+   {
+    "file": "a_hole_in_drywall_01.jpg",
+    "sees": "The image depicts a long, empty, and dirty swimming pool. The pool is surrounded by white tiles, and there are scattered pieces of debris on the floor. The pool appears to be in a state of disrepair, with visible cracks and damage to the tiles.",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Pacopac",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2007_09_19_Defici%C3%A8ncies_al_pas_inferior_de_l%27estaci%C3%B3_de_Renfe_a_Massalfassar_02.jpg",
+    "title": "File:2007 09 19 Defici\u00e8ncies al pas inferior de l'estaci\u00f3 de Renfe a Massalfassar 02.jpg"
+   },
+   {
+    "file": "a_hole_in_drywall_02.jpg",
+    "sees": "The image depicts a room with a tiled wall and a tiled floor. The floor is covered with a few pieces of broken tiles, indicating that the room has been used for some time. The walls are white and have a blue border, adding a decorative touch to the room. The tiles are arranged in a neat pattern, suggesting that the room",
+    "verdict": "reference",
+    "confidence": null,
+    "author": "Pacopac",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2007_09_19_Defici%C3%A8ncies_al_pas_inferior_de_l%27estaci%C3%B3_de_Renfe_a_Massalfassar_03.jpg",
+    "title": "File:2007 09 19 Defici\u00e8ncies al pas inferior de l'estaci\u00f3 de Renfe a Massalfassar 03.jpg"
+   }
+  ]
+ },
+ "painting": {
+  "scene": "drywall",
+  "role": "after",
+  "condition": "The wall is painted with a roller",
+  "candidates": 12,
+  "passed": 4,
+  "picked": [
+   {
+    "file": "a_paint_roller_03.jpg",
+    "sees": "The image shows a blue paint roller placed on a red and blue surface. The roller is being used to apply paint onto the surface.",
+    "verdict": "pass",
+    "confidence": 0.97,
+    "author": "marc falardeau from toronto",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Blue_paint_roller_(6819216874).jpg",
+    "title": "File:Blue paint roller (6819216874).jpg"
+   },
+   {
+    "file": "a_paint_roller_07.jpg",
+    "sees": "The image shows a paint roller placed on a beige floor. The paint roller is placed on a beige floor, and there is a yellow paint can nearby. The paint roller is being used to apply paint to the floor.",
+    "verdict": "pass",
+    "confidence": 0.925,
+    "author": "James Lee from Chester, NH, USA",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Finish_Line_(4477301427).jpg",
+    "title": "File:Finish Line (4477301427).jpg"
+   },
+   {
+    "file": "a_paint_roller_10.jpg",
+    "sees": "The man is painting the wall. He is wearing a red jacket. There is a table in front of him. There is a window in the background. There is a telephone on the table. There is a white cloth on the table. There is a white bowl on the table. There is a white wall in the background.",
+    "verdict": "pass",
+    "confidence": 0.783,
+    "author": "Oxfordian Kissuth",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Heimwerker_-_Maler_(DIY)_02.jpg",
+    "title": "File:Heimwerker - Maler (DIY) 02.jpg"
+   }
+  ]
+ },
+ "kitchen_clean": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The kitchen sink and counter are clean",
+  "candidates": 12,
+  "passed": 2,
+  "picked": [
+   {
+    "file": "a_kitchen_sink_06.jpg",
+    "sees": "The image shows a bathroom with a sink, a toilet, and a window. The sink is made of ceramic and has a blue and white design on it. The toilet is also made of ceramic and has a blue and white design on it. The window has a red frame and is covered with a white curtain.",
+    "verdict": "pass",
+    "confidence": 0.831,
+    "author": "Dguendel",
+    "license": "CC BY 3.0",
+    "license_url": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Braubach,_Marksburg,_Sp%C3%BClbecken.jpg",
+    "title": "File:Braubach, Marksburg, Sp\u00fclbecken.jpg"
+   },
+   {
+    "file": "a_kitchen_sink_01.jpg",
+    "sees": "The image depicts a small kitchen area with a sink, stove, and a stove top oven. The sink is located on the left side of the image, while the stove is on the right side. The stove has four burners and a control panel, and the oven is white and has a glass door. The floor is covered with a wooden floor",
+    "verdict": "pass",
+    "confidence": 0.75,
+    "author": "Depzzmtd loga",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:311_%D0%93%D1%83%D1%80%D1%82%D0%BE%D0%B6%D0%B8%D1%82%D0%BE%D0%BA_%D0%9B%D1%83%D0%B3%D0%B0%D0%BD%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BD%D0%B0%D1%86%D1%96%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE_%D1%83%D0%BD%D1%96%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82%D1%83_%D1%96%D0%BC_%D0%A2_%D0%A8%D0%B5%D0%B2%D1%87%D0%B5%D0%BD%D0%BA%D0%B0_before_2.jpg",
+    "title": "File:311 \u0413\u0443\u0440\u0442\u043e\u0436\u0438\u0442\u043e\u043a \u041b\u0443\u0433\u0430\u043d\u0441\u044c\u043a\u043e\u0433\u043e \u043d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0443\u043d\u0456\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442\u0443 \u0456\u043c \u0422 \u0428\u0435\u0432\u0447\u0435\u043d\u043a\u0430 before 2.jpg"
+   }
+  ]
+ },
+ "bathroom_clean": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The bathroom tub and toilet are clean",
+  "candidates": 24,
+  "passed": 14,
+  "picked": [
+   {
+    "file": "a_bathtub_05.jpg",
+    "sees": "The image shows a bathroom with a bathtub, a sink, and a toilet. The bathtub is placed on a stone floor, and there is a potted plant nearby. The sink is located near the bathtub, and the toilet is positioned near the sink. The bathroom appears to be well-maintained and clean.",
+    "verdict": "pass",
+    "confidence": 0.997,
+    "author": "Olashxs",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:A_Kenya_(10).jpg",
+    "title": "File:A Kenya (10).jpg"
+   },
+   {
+    "file": "a_bathtub_04.jpg",
+    "sees": "The image shows a bathroom with a bathtub. The bathtub is blue and has a modern design. The floor is covered with tiles, and there is a sink in the background. The bathtub is placed on the floor, and there is a mirror above it.",
+    "verdict": "pass",
+    "confidence": 0.996,
+    "author": "Rrinsindika",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:95%25_CERAMIC.jpg",
+    "title": "File:95% CERAMIC.jpg"
+   },
+   {
+    "file": "a_toilet_01.jpg",
+    "sees": "The main objects and fixtures visible in the image are a toilet and a sink. The toilet is placed on the floor and has a lid that is open. The sink is located on the right side of the toilet and has a faucet.",
+    "verdict": "pass",
+    "confidence": 0.995,
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Accessible_toilet_WC_Liverpool_Street_Station_London_England_01.jpg",
+    "title": "File:Accessible toilet WC Liverpool Street Station London England 01.jpg"
+   }
+  ]
+ },
+ "mirror_clean": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The bathroom mirror is clean",
+  "candidates": 12,
+  "passed": 8,
+  "picked": [
+   {
+    "file": "a_bathroom_mirror_08.jpg",
+    "sees": "The image shows a bathroom with a white sink and a mirror above it. The sink is placed on a wooden cabinet, and there are two faucets on the sink. The mirror is framed in a wooden frame, and there are two towel racks on the wall.",
+    "verdict": "pass",
+    "confidence": 0.994,
+    "author": "thierrytutin",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2016_Grevillia_(27580528853).jpg",
+    "title": "File:2016 Grevillia (27580528853).jpg"
+   },
+   {
+    "file": "a_bathroom_mirror_07.jpg",
+    "sees": "The image shows a modern bathroom with a white sink and a mirror above it. There are also two faucets on the sink. The floor is covered with a marble tile, and there is a towel rack on the wall.",
+    "verdict": "pass",
+    "confidence": 0.993,
+    "author": "thierrytutin",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2016_Grevillia_(27580067833).jpg",
+    "title": "File:2016 Grevillia (27580067833).jpg"
+   },
+   {
+    "file": "a_bathroom_mirror_02.jpg",
+    "sees": "The image depicts a bathroom with a sink, a mirror, and a bathtub. The sink is made of granite and has a white countertop. The mirror is framed in dark wood, and there is a towel hanging on the wall. The bathtub is white and is located next to the sink. The bathroom appears to be well-maintained and clean",
+    "verdict": "pass",
+    "confidence": 0.992,
+    "author": "Missvain",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:1_King_Bed_Pullman_Train_Car_at_Crowne_Plaza_-_June_2022_-_Sarah_Stierch_05.jpg",
+    "title": "File:1 King Bed Pullman Train Car at Crowne Plaza - June 2022 - Sarah Stierch 05.jpg"
+   }
+  ]
+ },
+ "floor_mopped": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The floor is mopped clean",
+  "candidates": 23,
+  "passed": 5,
+  "picked": [
+   {
+    "file": "tiles_00.jpg",
+    "sees": "The image shows a room with a tiled floor. The tiles are arranged in a pattern of hexagons, and there is a wooden door frame visible in the background. The floor appears to be in good condition, with no visible damage or discoloration.",
+    "verdict": "pass",
+    "confidence": 0.998,
+    "author": "Ribax",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Anschlag_T%C3%BCrrahmen_Schwelle_5,5cm_H%C3%B6he_IMG_3066.jpg",
+    "title": "File:Anschlag T\u00fcrrahmen Schwelle 5,5cm H\u00f6he IMG 3066.jpg"
+   },
+   {
+    "file": "tiles_07.jpg",
+    "sees": "The image depicts a white ceramic tile with a square shape. The tile is placed on a beige-colored surface, which appears to be a floor or a countertop. The tile is clean and free of any imperfections, suggesting it has been recently installed or is in good condition. The tile's color is uniform and bright, indicating it is made",
+    "verdict": "pass",
+    "confidence": 0.992,
+    "author": "Epolk",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ceramic_wall_tile_cream.jpg",
+    "title": "File:Ceramic wall tile cream.jpg"
+   },
+   {
+    "file": "a_mopped_floor_01.jpg",
+    "sees": "The image shows a tiled floor with a reflection of a building. The tiles are arranged in a grid pattern, and the floor appears clean and well-maintained. There are no visible signs of damage or wear on the tiles. The reflection of the building is clear and undistorted, indicating that the tiles are properly aligned and the tiles are in",
+    "verdict": "pass",
+    "confidence": 0.988,
+    "author": "Roy Zuo",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:(20241206)_Berlin_05.jpg",
+    "title": "File:(20241206) Berlin 05.jpg"
+   }
+  ]
+ },
+ "oven_clean": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The inside of the oven is clean",
+  "candidates": 12,
+  "passed": 1,
+  "picked": [
+   {
+    "file": "the_inside_of_an_oven_03.jpg",
+    "sees": "The image shows a kitchen with a stove and oven. The stove has four burners and a frying pan on top. The oven has a glass door and a metal handle. There are some dishes and utensils placed on the counter.",
+    "verdict": "pass",
+    "confidence": 0.61,
+    "author": "Juampayo de Pelo Largo",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2015-11-05_jueves_174624_-_Cocina_Mabe.jpg",
+    "title": "File:2015-11-05 jueves 174624 - Cocina Mabe.jpg"
+   }
+  ]
+ },
+ "fridge_clean": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The inside of the fridge is clean and empty",
+  "candidates": 6,
+  "passed": 1,
+  "picked": [
+   {
+    "file": "the_inside_of_a_refrigerator_00.jpg",
+    "sees": "The image shows a white refrigerator with a freezer compartment. Inside the freezer compartment, there is a white plastic shelf. The freezer compartment is equipped with a white plastic shelf and a white plastic drawer. The drawer is connected to the freezer compartment by a white plastic cable. The drawer is also equipped with a white plastic drawer cover. The drawer cover is attached",
+    "verdict": "pass",
+    "confidence": 0.861,
+    "author": "Kshew12",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:0416999-2k.JPG",
+    "title": "File:0416999-2k.JPG"
+   }
+  ]
+ },
+ "trash_out": {
+  "scene": "cleaning",
+  "role": "after",
+  "condition": "The trash cans are empty",
+  "candidates": 12,
+  "passed": 4,
+  "picked": [
+   {
+    "file": "a_trash_can_07.jpg",
+    "sees": "The image shows a trash bin with a lid that is open. The trash bin is placed on a cobblestone street.",
+    "verdict": "pass",
+    "confidence": 0.997,
+    "author": "Mateus2019",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2021_%E2%80%94_Erste_Julireise_Mateus2019_%E2%80%94_Batch_(244).jpg",
+    "title": "File:2021 \u2014 Erste Julireise Mateus2019 \u2014 Batch (244).jpg"
+   },
+   {
+    "file": "a_trash_can_05.jpg",
+    "sees": "The image shows a gray trash bin placed on the floor. The trash bin is empty and has a plastic cover on it. The trash bin is placed on the floor, and there is a white wall in the background.",
+    "verdict": "pass",
+    "confidence": 0.99,
+    "author": "Famartin",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2017-10-07_06_53_44_Trash_can_within_the_upper_air_shelter_at_the_National_Weather_Service%27s_Baltimore-Washington_Weather_Forecast_Office_in_the_Dulles_section_of_Sterling,_Loudoun_County,_Virginia.jpg",
+    "title": "File:2017-10-07 06 53 44 Trash can within the upper air shelter at the National Weather Service's Baltimore-Washington Weather Forecast Office in the Dulles section of Sterling, Loudoun County, Virginia.jpg"
+   },
+   {
+    "file": "a_trash_can_11.jpg",
+    "sees": "There are three trash cans in the image. The trash cans are yellow, blue, and black. The yellow trash can has a picture of a person on it. The blue trash can has a picture of a book on it. The black trash can has a picture of a trash can on it.",
+    "verdict": "pass",
+    "confidence": 0.983,
+    "author": "Ahmet D\u00fcz, Dreil\u00e4nder- &amp; Oberrheinfotograf",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2023-06-07_BUGA_Mannheim_141.jpg",
+    "title": "File:2023-06-07 BUGA Mannheim 141.jpg"
+   }
+  ]
+ }
+}

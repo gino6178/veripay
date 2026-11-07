@@ -1,0 +1,168 @@
+{
+ "at": "2026-11-04T15:05:10.778Z",
+ "paypal": "sandbox",
+ "jobs": [
+  {
+   "label": "tour: hire, change order, evidence, paid",
+   "number": "DP-1001",
+   "status": "released",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "captured",
+    "amount": "$248.50",
+    "order": "3WV89200JB1619000",
+    "authorization": "20J79041LU274362S",
+    "capture": "9UK74138J2449635B",
+    "history": [
+     "authorized",
+     "re-held: change order +$45.00 is more than the buffer left"
+    ]
+   },
+   "due": "$230.00",
+   "checks": {
+    "decision": "release",
+    "checker": "rules",
+    "verdicts": [
+     "before:pass",
+     "new_part:pass",
+     "no_drip:pass",
+     "receipt:pass",
+     "work_note:pass"
+    ]
+   },
+   "money": {
+    "captured": "$230.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "split": {
+     "release": "$230.00",
+     "fee": "$23.00",
+     "pro": "$207.00",
+     "helper": "$0.00"
+    },
+    "balanced": true,
+    "payout": {
+     "batchId": "SZJ87L326L3WW",
+     "status": "PENDING",
+     "items": [
+      {
+       "id": "DP-1001-pro",
+       "amount": 20700,
+       "to": "pro"
+      }
+     ],
+     "at": "2026-11-04T15:05:27.658Z"
+    },
+    "ledger": [
+     "hold $222.00 0G7070482R884422T",
+     "rehold $248.50 20J79041LU274362S",
+     "capture $230.00 9UK74138J2449635B",
+     "buffer_released $18.50 20J79041LU274362S",
+     "platform_fee $23.00",
+     "pro_payout $207.00"
+    ]
+   }
+  },
+  {
+   "label": "dispute settled part and part",
+   "number": "DP-1002",
+   "status": "resolved",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "captured",
+    "amount": "$222.00",
+    "order": "2A222774GX980293Y",
+    "authorization": "0W884694T3390952K",
+    "capture": "7MT99719XV182810B",
+    "history": [
+     "authorized"
+    ]
+   },
+   "due": "$185.00",
+   "checks": null,
+   "money": {
+    "captured": "$185.00",
+    "refunded": "$74.00",
+    "paypalFee": "$0.00",
+    "split": {
+     "release": "$111.00",
+     "fee": "$11.10",
+     "pro": "$99.90",
+     "helper": "$0.00"
+    },
+    "balanced": true,
+    "payout": {
+     "batchId": "YAMENPN3BDBLA",
+     "status": "PENDING",
+     "items": [
+      {
+       "id": "DP-1002-pro",
+       "amount": 9990,
+       "to": "pro"
+      }
+     ],
+     "at": "2026-11-04T15:05:35.667Z"
+    },
+    "ledger": [
+     "hold $222.00 0W884694T3390952K",
+     "capture $185.00 7MT99719XV182810B",
+     "buffer_released $37.00 0W884694T3390952K",
+     "refund $74.00 3GN65740Y6287425B",
+     "platform_fee $11.10",
+     "pro_payout $99.90"
+    ]
+   }
+  },
+  {
+   "label": "hired then cancelled: hold voided",
+   "number": "DP-1003",
+   "status": "cancelled",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "voided",
+    "amount": "$222.00",
+    "order": "6KE971391L610860J",
+    "authorization": "4PN25368FS5628820",
+    "capture": null,
+    "history": [
+     "authorized",
+     "voided: cancelled"
+    ]
+   },
+   "due": "$185.00",
+   "checks": null,
+   "money": {
+    "captured": "$0.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "balanced": true,
+    "payout": null,
+    "ledger": [
+     "hold $222.00 4PN25368FS5628820",
+     "void $222.00 4PN25368FS5628820"
+    ]
+   }
+  }
+ ],
+ "recon": {
+  "counts": {
+   "matched": 3,
+   "paypal_unclaimed": 1,
+   "pending": 1
+  },
+  "summary": {
+   "text": "5 PayPal movements checked: 3 matched, 1 paypal unclaimed, 1 pending.",
+   "source": "rules"
+  },
+  "rows": [
+   "capture DP-1001 9UK74138J2449635B ours=23000 paypal=23000 matched (captures API)",
+   "payout DP-1001 ACCX94HU757PC ours=20700 paypal=20700 paypal_unclaimed (payouts API)",
+   "capture DP-1002 7MT99719XV182810B ours=18500 paypal=18500 matched (captures API)",
+   "refund DP-1002 3GN65740Y6287425B ours=7400 paypal=7400 matched (get_refund)",
+   "payout DP-1002 ELVN39W45QDBE ours=9990 paypal=9990 pending (payouts API)"
+  ]
+ }
+}

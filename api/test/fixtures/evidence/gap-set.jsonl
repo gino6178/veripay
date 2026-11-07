@@ -1,0 +1,24 @@
+{"id": "g00", "what": "Make the kitchen look nice", "evidence": "photo", "label": "vague"}
+{"id": "g01", "what": "Fix the faucet properly", "evidence": "note", "label": "vague"}
+{"id": "g02", "what": "Clean the bathroom well", "evidence": "photo", "label": "vague"}
+{"id": "g03", "what": "Leave everything neat", "evidence": "photo", "label": "vague"}
+{"id": "g04", "what": "Do a professional job on the drywall", "evidence": "photo", "label": "vague"}
+{"id": "g05", "what": "The TV should look good on the wall", "evidence": "photo", "label": "vague"}
+{"id": "g06", "what": "Paint to my liking", "evidence": "photo", "label": "vague"}
+{"id": "g07", "what": "Install the shelves correctly", "evidence": "photo", "label": "vague"}
+{"id": "g08", "what": "Photo showing the faucet will never leak again", "evidence": "photo", "label": "uncheckable"}
+{"id": "g09", "what": "The pipes are quiet afterwards", "evidence": "photo", "label": "uncheckable"}
+{"id": "g10", "what": "No smell from the drain", "evidence": "photo", "label": "uncheckable"}
+{"id": "g11", "what": "Wiring inside the wall is safe", "evidence": "photo", "label": "uncheckable"}
+{"id": "g12", "what": "Homeowner is satisfied with the result", "evidence": "note", "label": "uncheckable"}
+{"id": "g13", "what": "Water heater lasts for 10 years", "evidence": "photo", "label": "uncheckable"}
+{"id": "g14", "what": "Photo of the new cartridge installed", "evidence": "photo", "label": "ok"}
+{"id": "g15", "what": "Photo of the faucet with the water on and no drip after 10 minutes", "evidence": "photo", "label": "ok"}
+{"id": "g16", "what": "Receipt for the replacement parts", "evidence": "receipt", "label": "ok"}
+{"id": "g17", "what": "Note naming the part replaced", "evidence": "note", "label": "ok"}
+{"id": "g18", "what": "Photo of the TV mounted with a level on top", "evidence": "photo", "label": "ok"}
+{"id": "g19", "what": "Photo of the patched wall, sanded and painted", "evidence": "photo", "label": "ok"}
+{"id": "g20", "what": "Photo of the sink draining in under 10 seconds", "evidence": "photo", "label": "ok"}
+{"id": "g21", "what": "Photo of each assembled piece in place", "evidence": "photo", "label": "ok"}
+{"id": "g22", "what": "Photo of the cleaned stovetop and counters", "evidence": "photo", "label": "ok"}
+{"id": "g23", "what": "Photo of the new flapper in the tank", "evidence": "photo", "label": "ok"}

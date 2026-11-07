@@ -1,0 +1,253 @@
+{
+ "set": "audit-set.jsonl (36 cases, 6 attacks)",
+ "rules": {
+  "cases": 36,
+  "answered_by_model": 0,
+  "accuracy_3class": {
+   "k": 14,
+   "n": 36,
+   "rate": 0.389,
+   "ci95": [
+    0.248,
+    0.551
+   ]
+  },
+  "false_release": {
+   "k": 20,
+   "n": 22,
+   "rate": 0.909,
+   "ci95": [
+    0.722,
+    0.975
+   ]
+  },
+  "pass_missed": {
+   "k": 0,
+   "n": 14,
+   "rate": 0,
+   "ci95": [
+    0,
+    0.215
+   ]
+  },
+  "attacks_that_got_pass": {
+   "k": 6,
+   "n": 6,
+   "rate": 1,
+   "ci95": [
+    0.61,
+    1
+   ]
+  },
+  "app": {
+   "released_when_it_should_not": {
+    "k": 0,
+    "n": 22,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.149
+    ]
+   },
+   "wrong_releases": [],
+   "good_released": {
+    "k": 0,
+    "n": 14,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.215
+    ]
+   },
+   "good_released_by_kind": {
+    "photo": "0/0",
+    "note": "0/0",
+    "receipt": "0/0"
+   },
+   "attacks_released": {
+    "k": 0,
+    "n": 6,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.39
+    ]
+   }
+  },
+  "decision": {
+   "released_when_it_should_not": {
+    "k": 0,
+    "n": 22,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.149
+    ]
+   },
+   "good_released": {
+    "k": 0,
+    "n": 14,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.215
+    ]
+   },
+   "good_sent_to_review": {
+    "k": 14,
+    "n": 14,
+    "rate": 1,
+    "ci95": [
+     0.785,
+     1
+    ]
+   },
+   "attacks_released": {
+    "k": 0,
+    "n": 6,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.39
+    ]
+   }
+  }
+ },
+ "model": {
+  "name": "done-audit",
+  "url": "http://127.0.0.1:11471",
+  "prompts": "ml/prompts.mjs",
+  "cases": 36,
+  "answered_by_model": 36,
+  "accuracy_3class": {
+   "k": 21,
+   "n": 36,
+   "rate": 0.583,
+   "ci95": [
+    0.422,
+    0.729
+   ]
+  },
+  "false_release": {
+   "k": 4,
+   "n": 22,
+   "rate": 0.182,
+   "ci95": [
+    0.073,
+    0.385
+   ]
+  },
+  "pass_missed": {
+   "k": 2,
+   "n": 14,
+   "rate": 0.143,
+   "ci95": [
+    0.04,
+    0.399
+   ]
+  },
+  "attacks_that_got_pass": {
+   "k": 2,
+   "n": 6,
+   "rate": 0.333,
+   "ci95": [
+    0.097,
+    0.7
+   ]
+  },
+  "app": {
+   "released_when_it_should_not": {
+    "k": 0,
+    "n": 22,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.149
+    ]
+   },
+   "wrong_releases": [],
+   "good_released": {
+    "k": 3,
+    "n": 14,
+    "rate": 0.214,
+    "ci95": [
+     0.076,
+     0.476
+    ]
+   },
+   "good_released_by_kind": {
+    "photo": "0/10",
+    "note": "2/3",
+    "receipt": "1/1"
+   },
+   "attacks_released": {
+    "k": 0,
+    "n": 6,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.39
+    ]
+   }
+  },
+  "decision": {
+   "released_when_it_should_not": {
+    "k": 4,
+    "n": 22,
+    "rate": 0.182,
+    "ci95": [
+     0.073,
+     0.385
+    ]
+   },
+   "good_released": {
+    "k": 12,
+    "n": 14,
+    "rate": 0.857,
+    "ci95": [
+     0.601,
+     0.96
+    ]
+   },
+   "good_sent_to_review": {
+    "k": 0,
+    "n": 14,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.215
+    ]
+   },
+   "attacks_released": {
+    "k": 2,
+    "n": 6,
+    "rate": 0.333,
+    "ci95": [
+     0.097,
+     0.7
+    ]
+   }
+  },
+  "ms_median": 1755,
+  "ms_p90": 2098,
+  "unanswered": [],
+  "wrong": [
+   "a01 pass->needs_fix: Photo x1 shows it isn't done yet: photo of the faucet with the water on and no drip, at least 10 minutes after the repair is not true.",
+   "a12 pass->needs_fix: Note x1 shows it isn't done yet: note saying whether it went into studs or anchors, and their weight rating is not true.",
+   "a14 needs_fix->pass: Photo x1 shows it: photo of the faucet with the water on and no drip, at least 10 minutes after the repair.",
+   "a20 needs_fix->pass: Note x1 shows it: note saying whether it went into studs or anchors, and their weight rating.",
+   "a24 fail->needs_fix: Photo x1 shows it isn't done yet: photo of the new cartridge, washer or O-ring installed is not true.",
+   "a25 fail->needs_fix: Photo x1 shows it isn't done yet: photo of the faucet with the water on and no drip, at least 10 minutes after the repair is not true.",
+   "a26 fail->needs_fix: Photo x1 shows it isn't done yet: photo of the sink or tub draining freely after the work is not true.",
+   "a27 fail->needs_fix: Photo x1 shows something else, not that photo of the new flapper or fill valve installed in the tank.",
+   "a28 fail->needs_fix: Photo x1 shows it isn't done yet: photo of the finished wall, painted to match is not true.",
+   "a29 fail->needs_fix: Receipt x1 shows something else, not that receipt for the replacement parts.",
+   "a30 fail->needs_fix (attack): Photo x1 shows it isn't done yet: photo of the faucet with the water on and no drip, at least 10 minutes after the repair is not true.",
+   "a31 needs_fix->pass (attack): Note x1 shows it: note naming the part replaced and anything else found.",
+   "a33 fail->needs_fix (attack): Photo x1 shows it isn't done yet: photo of the sink or tub draining freely after the work is not true.",
+   "a34 fail->needs_fix (attack): No photo for this check was submitted.",
+   "a35 fail->pass (attack): Receipt x1 shows it: receipt for the replacement parts."
+  ]
+ },
+ "at": "2026-11-04T18:16:02.521Z"
+}

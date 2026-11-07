@@ -1,0 +1,431 @@
+{
+ "r00.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-11",
+  "total": 7621,
+  "subtotal": 7040,
+  "tax": 581,
+  "items": [
+   "Supply line 16in"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": -1.7
+ },
+ "r01.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-07",
+  "total": 9464,
+  "subtotal": 8743,
+  "tax": 721,
+  "items": [
+   "Joint compound",
+   "Sanding sponge",
+   "Wood screws #8"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -0.31
+ },
+ "r02.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-17",
+  "total": 27877,
+  "subtotal": 25752,
+  "tax": 2125,
+  "items": [
+   "Sanding sponge",
+   "Wood screws #8",
+   "Drain snake 25ft",
+   "Interior paint qt"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 3.07
+ },
+ "r03.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-18",
+  "total": 24266,
+  "subtotal": 22417,
+  "tax": 1849,
+  "items": [
+   "P-trap kit",
+   "Caulk white",
+   "Wood screws #8",
+   "Stud finder"
+  ],
+  "font": "verdana.ttf",
+  "layout": "inline",
+  "tilt": -1.92
+ },
+ "r04.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-18",
+  "total": 5777,
+  "subtotal": 5337,
+  "tax": 440,
+  "items": [
+   "P-trap kit"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": -0.17
+ },
+ "r05.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-15",
+  "total": 1633,
+  "subtotal": 1509,
+  "tax": 124,
+  "items": [
+   "TV wall anchor set"
+  ],
+  "font": "lucon.ttf",
+  "layout": "inline",
+  "tilt": -1.49
+ },
+ "r06.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-18",
+  "total": 6975,
+  "subtotal": 6443,
+  "tax": 532,
+  "items": [
+   "Teflon washer",
+   "Wood screws #8"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": -0.99
+ },
+ "r07.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-01",
+  "total": 22924,
+  "subtotal": 21177,
+  "tax": 1747,
+  "items": [
+   "Drywall patch kit",
+   "P-trap kit",
+   "TV wall anchor set",
+   "Teflon washer"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -0.81
+ },
+ "r08.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-07",
+  "total": 9560,
+  "subtotal": 8831,
+  "tax": 729,
+  "items": [
+   "Toilet flapper"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": -0.69
+ },
+ "r09.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-10",
+  "total": 21269,
+  "subtotal": 19648,
+  "tax": 1621,
+  "items": [
+   "Wood screws #8",
+   "Stud finder",
+   "TV wall anchor set"
+  ],
+  "font": "verdana.ttf",
+  "layout": "inline",
+  "tilt": 0.36
+ },
+ "r10.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-12",
+  "total": 9352,
+  "subtotal": 8639,
+  "tax": 713,
+  "items": [
+   "Plumber tape",
+   "Drain snake 25ft"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": 1.48
+ },
+ "r11.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-17",
+  "total": 5740,
+  "subtotal": 5303,
+  "tax": 437,
+  "items": [
+   "P-trap kit"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -3.23
+ },
+ "r12.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-11",
+  "total": 5766,
+  "subtotal": 5327,
+  "tax": 439,
+  "items": [
+   "Sanding sponge"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": -1.66
+ },
+ "r13.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-11",
+  "total": 7550,
+  "subtotal": 6975,
+  "tax": 575,
+  "items": [
+   "P-trap kit"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -3.02
+ },
+ "r14.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-01",
+  "total": 13824,
+  "subtotal": 12770,
+  "tax": 1054,
+  "items": [
+   "Joint compound",
+   "Interior paint qt"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 2.29
+ },
+ "r15.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-11",
+  "total": 835,
+  "subtotal": 771,
+  "tax": 64,
+  "items": [
+   "Fill valve"
+  ],
+  "font": "verdana.ttf",
+  "layout": "inline",
+  "tilt": -3.53
+ },
+ "r16.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-08",
+  "total": 23111,
+  "subtotal": 21350,
+  "tax": 1761,
+  "items": [
+   "Drywall patch kit",
+   "Wax ring",
+   "Joint compound"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": 3.15
+ },
+ "r17.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-02",
+  "total": 6772,
+  "subtotal": 6256,
+  "tax": 516,
+  "items": [
+   "P-trap kit"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -0.96
+ },
+ "r18.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-17",
+  "total": 10463,
+  "subtotal": 9666,
+  "tax": 797,
+  "items": [
+   "Sanding sponge",
+   "Drywall patch kit"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": -2.93
+ },
+ "r19.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-14",
+  "total": 9088,
+  "subtotal": 8395,
+  "tax": 693,
+  "items": [
+   "Wood screws #8",
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -2.27
+ },
+ "r20.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-03",
+  "total": 20677,
+  "subtotal": 19101,
+  "tax": 1576,
+  "items": [
+   "Plumber tape",
+   "Joint compound",
+   "Stud finder"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 2.22
+ },
+ "r21.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-11",
+  "total": 25151,
+  "subtotal": 23234,
+  "tax": 1917,
+  "items": [
+   "Sanding sponge",
+   "Drywall patch kit",
+   "Fill valve",
+   "Wax ring"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -1.37
+ },
+ "r22.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-18",
+  "total": 7259,
+  "subtotal": 6706,
+  "tax": 553,
+  "items": [
+   "Drywall patch kit",
+   "Toilet flapper"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": -3.24
+ },
+ "r23.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-14",
+  "total": 9878,
+  "subtotal": 9125,
+  "tax": 753,
+  "items": [
+   "Faucet cartridge",
+   "Sanding sponge",
+   "Fill valve"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": 2.06
+ },
+ "r24.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-01",
+  "total": 15428,
+  "subtotal": 14252,
+  "tax": 1176,
+  "items": [
+   "Wood screws #8",
+   "Drain snake 25ft",
+   "Joint compound",
+   "O-ring assortment"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": 0.17
+ },
+ "r25.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-06",
+  "total": 12576,
+  "subtotal": 11618,
+  "tax": 958,
+  "items": [
+   "Stud finder",
+   "Drywall patch kit"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -3.83
+ },
+ "r26.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-09",
+  "total": 25550,
+  "subtotal": 23603,
+  "tax": 1947,
+  "items": [
+   "P-trap kit",
+   "Wax ring",
+   "Faucet cartridge",
+   "Interior paint qt"
+  ],
+  "font": "calibri.ttf",
+  "layout": "inline",
+  "tilt": -2.55
+ },
+ "r27.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-17",
+  "total": 25253,
+  "subtotal": 23328,
+  "tax": 1925,
+  "items": [
+   "Plumber tape",
+   "Wax ring",
+   "Shutoff valve 1/4 turn",
+   "TV wall anchor set"
+  ],
+  "font": "verdana.ttf",
+  "layout": "inline",
+  "tilt": 3.98
+ },
+ "r28.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-05",
+  "total": 5133,
+  "subtotal": 4742,
+  "tax": 391,
+  "items": [
+   "Faucet cartridge"
+  ],
+  "font": "cour.ttf",
+  "layout": "inline",
+  "tilt": 1.54
+ },
+ "r29.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-18",
+  "total": 10212,
+  "subtotal": 9434,
+  "tax": 778,
+  "items": [
+   "Wood screws #8",
+   "Joint compound"
+  ],
+  "font": "lucon.ttf",
+  "layout": "inline",
+  "tilt": -3.53
+ }
+}

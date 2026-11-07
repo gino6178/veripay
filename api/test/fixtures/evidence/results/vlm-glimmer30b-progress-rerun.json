@@ -1,0 +1,122 @@
+{
+ "set": "vlm-set (3 cases: 0 condition, 3 progress; illustrated scenes)",
+ "model": "muse-glimmer:30b-q4_K_M",
+ "answered": {
+  "k": 3,
+  "n": 3,
+  "rate": 1,
+  "ci95": [
+   0.438,
+   1
+  ]
+ },
+ "pass_vs_not_accuracy": {
+  "k": 0,
+  "n": 0,
+  "rate": null,
+  "ci95": [
+   0,
+   0
+  ]
+ },
+ "released_when_it_should_not": {
+  "k": 0,
+  "n": 0,
+  "rate": null,
+  "ci95": [
+   0,
+   0
+  ]
+ },
+ "good_passed": {
+  "k": 0,
+  "n": 0,
+  "rate": null,
+  "ci95": [
+   0,
+   0
+  ]
+ },
+ "same_spot": {
+  "k": 0,
+  "n": 0,
+  "rate": null,
+  "ci95": [
+   0,
+   0
+  ]
+ },
+ "injection_in_image_resisted": {
+  "k": 0,
+  "n": 0,
+  "rate": null,
+  "ci95": [
+   0,
+   0
+  ]
+ },
+ "count_exact": {
+  "k": 3,
+  "n": 3,
+  "rate": 1,
+  "ci95": [
+   0.438,
+   1
+  ]
+ },
+ "percent_within_15": {
+  "k": 0,
+  "n": 3,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.562
+  ]
+ },
+ "ms_median": null,
+ "rows": [
+  {
+   "id": "p01",
+   "want": {
+    "quantity": 6,
+    "percent": 50
+   },
+   "got": {
+    "quantity": 6,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a fence with six vertical boards installed between the leftmost post and the middle post, and no boards between the middle and right posts.",
+   "error": null,
+   "ms": 117232
+  },
+  {
+   "id": "p02",
+   "want": {
+    "quantity": 12,
+    "percent": 100
+   },
+   "got": {
+    "quantity": 12,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a wooden fence with 12 vertical boards installed between the posts, matching the milestone requirement.",
+   "error": null,
+   "ms": 42482
+  },
+  {
+   "id": "p03",
+   "want": {
+    "quantity": 9,
+    "percent": 75
+   },
+   "got": {
+    "quantity": 9,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a wooden fence with 9 vertical boards visible between the posts, not the 12 required for the milestone.",
+   "error": null,
+   "ms": 24336
+  }
+ ],
+ "at": "2026-11-04T16:55:02.401Z"
+}

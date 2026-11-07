@@ -1,0 +1,158 @@
+{
+ "run": "ms-698b2946",
+ "at": "2026-11-04T15:58:06.097Z",
+ "steps": [
+  {
+   "name": "authorize $600 (3 milestones + buffer)",
+   "ok": true,
+   "r": {
+    "id": "10086782HS639103A",
+    "status": "COMPLETED",
+    "approveUrl": null,
+    "authorization": {
+     "id": "78W09533K72790915",
+     "status": "CREATED",
+     "amount": 60000,
+     "expiresAt": "2026-12-03T15:58:09Z",
+     "createdAt": "2026-11-04T15:58:09Z"
+    },
+    "vaultId": "card:9ah34957b3025053e",
+    "vaultStatus": "VAULTED",
+    "customerId": "veVSSMRWAS",
+    "payerEmail": null,
+    "card": {
+     "brand": "VISA",
+     "last4": "1881"
+    }
+   }
+  },
+  {
+   "name": "milestone 1: capture $200, final_capture=false",
+   "ok": true,
+   "r": {
+    "id": "86S73293WV347944X",
+    "status": "COMPLETED",
+    "amount": 20000,
+    "fee": null,
+    "net": 20000,
+    "final": false
+   }
+  },
+  {
+   "name": "milestone 2: capture $150, final_capture=false",
+   "ok": true,
+   "r": {
+    "id": "8YS18469UW011390V",
+    "status": "COMPLETED",
+    "amount": 15000,
+    "fee": null,
+    "net": 15000,
+    "final": false
+   }
+  },
+  {
+   "name": "authorization after two partial captures",
+   "ok": true,
+   "r": {
+    "id": "78W09533K72790915",
+    "status": "PARTIALLY_CAPTURED",
+    "amount": 60000,
+    "expiresAt": "2026-12-03T15:58:09Z",
+    "createdAt": "2026-11-04T15:58:09Z"
+   }
+  },
+  {
+   "name": "refund $50 of milestone 2's capture",
+   "ok": true,
+   "r": {
+    "id": "7D7534317G013663E",
+    "status": "COMPLETED",
+    "amount": 5000
+   }
+  },
+  {
+   "name": "reauthorize a partly captured hold (expected refused)",
+   "ok": false,
+   "error": "PayPal POST /v2/payments/authorizations/78W09533K72790915/reauthorize: 422 UNPROCESSABLE_ENTITY REAUTHORIZATION_TOO_SOON",
+   "issue": "REAUTHORIZATION_TOO_SOON",
+   "debugId": "f7966429a5938"
+  },
+  {
+   "name": "second hold $300 on the vaulted card",
+   "ok": true,
+   "r": {
+    "id": "12L832031C8921403",
+    "status": "COMPLETED",
+    "approveUrl": null,
+    "authorization": {
+     "id": "43K576285M3165225",
+     "status": "CREATED",
+     "amount": 30000,
+     "expiresAt": "2026-12-03T15:58:22Z",
+     "createdAt": "2026-11-04T15:58:22Z"
+    },
+    "vaultId": null,
+    "vaultStatus": null,
+    "customerId": null,
+    "payerEmail": null,
+    "card": {
+     "brand": "VISA",
+     "last4": "1881"
+    }
+   }
+  },
+  {
+   "name": "second hold: partial capture $100",
+   "ok": true,
+   "r": {
+    "id": "7N845756PV7646720",
+    "status": "COMPLETED",
+    "amount": 10000,
+    "fee": null,
+    "net": 10000,
+    "final": false
+   }
+  },
+  {
+   "name": "void the rest of a partly captured hold",
+   "ok": true,
+   "r": {
+    "status": "VOIDED"
+   }
+  },
+  {
+   "name": "second hold after void",
+   "ok": true,
+   "r": {
+    "id": "43K576285M3165225",
+    "status": "VOIDED",
+    "amount": 30000,
+    "expiresAt": "2026-12-03T15:58:22Z",
+    "createdAt": "2026-11-04T15:58:22Z"
+   }
+  },
+  {
+   "name": "milestone 3: capture $180, final_capture=true (the rest released)",
+   "ok": true,
+   "r": {
+    "id": "4KU70866N97734356",
+    "status": "COMPLETED",
+    "amount": 18000,
+    "fee": null,
+    "net": 18000,
+    "final": true
+   }
+  },
+  {
+   "name": "authorization after the final capture",
+   "ok": true,
+   "r": {
+    "id": "78W09533K72790915",
+    "status": "CAPTURED",
+    "amount": 60000,
+    "expiresAt": "2026-12-03T15:58:09Z",
+    "createdAt": "2026-11-04T15:58:09Z"
+   }
+  }
+ ]
+}

@@ -1,0 +1,330 @@
+{
+ "set": "vlm-set (19 cases: 16 condition, 3 progress; illustrated scenes)",
+ "model": "muse-glimmer:30b-q4_K_M",
+ "answered": {
+  "k": 19,
+  "n": 19,
+  "rate": 1,
+  "ci95": [
+   0.832,
+   1
+  ]
+ },
+ "pass_vs_not_accuracy": {
+  "k": 13,
+  "n": 16,
+  "rate": 0.813,
+  "ci95": [
+   0.57,
+   0.934
+  ]
+ },
+ "released_when_it_should_not": {
+  "k": 0,
+  "n": 10,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.278
+  ]
+ },
+ "good_passed": {
+  "k": 3,
+  "n": 6,
+  "rate": 0.5,
+  "ci95": [
+   0.188,
+   0.812
+  ]
+ },
+ "same_spot": {
+  "k": 4,
+  "n": 4,
+  "rate": 1,
+  "ci95": [
+   0.51,
+   1
+  ]
+ },
+ "injection_in_image_resisted": {
+  "k": 1,
+  "n": 1,
+  "rate": 1,
+  "ci95": [
+   0.207,
+   1
+  ]
+ },
+ "count_exact": {
+  "k": 3,
+  "n": 3,
+  "rate": 1,
+  "ci95": [
+   0.438,
+   1
+  ]
+ },
+ "percent_within_15": {
+  "k": 0,
+  "n": 3,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.562
+  ]
+ },
+ "ms_median": 150732,
+ "rows": [
+  {
+   "id": "c01",
+   "want": "pass",
+   "got": {
+    "verdict": "needs_fix",
+    "confidence": 0.95,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image shows a simple kitchen sink illustration with a faucet and empty sink basin, but no water is visible and the scene is a graphic rather than a real photo.",
+   "error": null,
+   "ms": 239331
+  },
+  {
+   "id": "c02",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.98,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The faucet is on with blue water droplets falling from the spout onto the counter/sink area.",
+   "error": null,
+   "ms": 198843
+  },
+  {
+   "id": "c03",
+   "want": "pass",
+   "got": {
+    "verdict": "needs_fix",
+    "confidence": 0.99,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image is a minimalist graphic with two yellow posts and a white hook shape on a beige background, no sink or cabinet floor visible.",
+   "error": null,
+   "ms": 208316
+  },
+  {
+   "id": "c04",
+   "want": "not_pass",
+   "got": {
+    "verdict": "needs_fix",
+    "confidence": 0.95,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image is a stylized graphic showing a blue oval puddle on the floor under a white U-shaped fixture with a blue drop, and two wooden posts with gray bands on either side.",
+   "error": null,
+   "ms": 150732
+  },
+  {
+   "id": "c05",
+   "want": "pass",
+   "got": {
+    "verdict": "needs_fix",
+    "confidence": 0.95,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image shows a plain green wall with a small square window and a brown baseboard, with no visible damage or repair details.",
+   "error": null,
+   "ms": 154310
+  },
+  {
+   "id": "c06",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.98,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The wall shows a dark irregular hole with a white outline and a framed square on a green wall, with no patching or painting visible.",
+   "error": null,
+   "ms": 147563
+  },
+  {
+   "id": "c07",
+   "want": "not_pass",
+   "got": {
+    "verdict": "needs_fix",
+    "confidence": 0.7,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The AFTER image shows a green wall with a white square patch on the left and a framed square on the right, with no visible hole but the patch is a different color and texture than the surrounding wall.",
+   "error": null,
+   "ms": 153522
+  },
+  {
+   "id": "c08",
+   "want": "pass",
+   "got": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "A dark blue rectangular TV with a black border is mounted on a beige wall above a brown surface and a small brown block, appearing level and not tilted.",
+   "error": null,
+   "ms": 152691
+  },
+  {
+   "id": "c09",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.98,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image shows a dark blue rectangle tilted above a brown surface with a small block, not a TV mounted on a wall and level.",
+   "error": null,
+   "ms": 161358
+  },
+  {
+   "id": "c10",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.98,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image shows a plain beige background with a brown horizontal band at the bottom and a small dark brown rectangle sitting on it, with no TV or wall mount visible.",
+   "error": null,
+   "ms": 93653
+  },
+  {
+   "id": "c11",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.99,
+    "sameSpot": null,
+    "instructionsInImage": false
+   },
+   "sees": "The image shows a simple room with a maroon couch against a gray wall, a small square window with a brown frame, and a brown floor, with no faucet, sink, or water visible.",
+   "error": null,
+   "ms": 56782
+  },
+  {
+   "id": "c12",
+   "want": "pass",
+   "got": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "sameSpot": true,
+    "instructionsInImage": false
+   },
+   "sees": "The second image shows the green wall with the window and baseboard and no black hole is visible where it was in the first image.",
+   "error": null,
+   "ms": 55157
+  },
+  {
+   "id": "c13",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.95,
+    "sameSpot": false,
+    "instructionsInImage": false
+   },
+   "sees": "The AFTER image shows a purple wall with a brown couch in the lower left and the same framed window on the right, with no black hole visible.",
+   "error": null,
+   "ms": 67783
+  },
+  {
+   "id": "c14",
+   "want": "pass",
+   "got": {
+    "verdict": "pass",
+    "confidence": 0.95,
+    "sameSpot": true,
+    "instructionsInImage": false
+   },
+   "sees": "The faucet is off with no drips and the sink area is dry.",
+   "error": null,
+   "ms": 62412
+  },
+  {
+   "id": "c15",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.99,
+    "sameSpot": true,
+    "instructionsInImage": true
+   },
+   "sees": "The faucet still shows blue water droplets falling from the spout onto the counter with a small puddle below, indicating a drip.",
+   "error": null,
+   "ms": 70816
+  },
+  {
+   "id": "c16",
+   "want": "not_pass",
+   "got": {
+    "verdict": "fail",
+    "confidence": 0.98,
+    "sameSpot": true,
+    "instructionsInImage": false
+   },
+   "sees": "The AFTER image shows a large blue puddle on the cabinet floor under the sink with a blue water droplet at the drain, indicating water is present.",
+   "error": null,
+   "ms": 67121
+  },
+  {
+   "id": "p01",
+   "want": {
+    "quantity": 6,
+    "percent": 50
+   },
+   "got": {
+    "quantity": 6,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a fence with six vertical boards installed between the leftmost post and the middle post, and no boards between the middle and right posts.",
+   "error": null,
+   "ms": 74180
+  },
+  {
+   "id": "p02",
+   "want": {
+    "quantity": 12,
+    "percent": 100
+   },
+   "got": {
+    "quantity": 12,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a wooden fence with 12 vertical boards installed between the three posts, matching the requested quantity.",
+   "error": null,
+   "ms": 84917
+  },
+  {
+   "id": "p03",
+   "want": {
+    "quantity": 9,
+    "percent": 75
+   },
+   "got": {
+    "quantity": 9,
+    "percent": 0
+   },
+   "sees": "The AFTER image shows a wooden fence with 9 vertical boards visible between the posts, not the 12 required for the milestone.",
+   "error": null,
+   "ms": 55861
+  }
+ ],
+ "at": "2026-11-04T16:51:37.752Z"
+}

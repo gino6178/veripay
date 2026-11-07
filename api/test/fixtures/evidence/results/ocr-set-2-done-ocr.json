@@ -1,0 +1,240 @@
+{
+ "set": "ocr-set-2 (30 rendered receipts)",
+ "engine": "done-ocr (done-ocr det1+done2) + ocr.js rules",
+ "total": {
+  "k": 25,
+  "n": 30,
+  "rate": 0.833,
+  "ci95": [
+   0.664,
+   0.927
+  ]
+ },
+ "date": {
+  "k": 30,
+  "n": 30,
+  "rate": 1,
+  "ci95": [
+   0.886,
+   1
+  ]
+ },
+ "store": {
+  "k": 28,
+  "n": 30,
+  "rate": 0.933,
+  "ci95": [
+   0.787,
+   0.982
+  ]
+ },
+ "all_three": {
+  "k": 24,
+  "n": 30,
+  "rate": 0.8,
+  "ci95": [
+   0.627,
+   0.905
+  ]
+ },
+ "total_when_confidence_ge_0_6": {
+  "k": 21,
+  "n": 21,
+  "rate": 1,
+  "ci95": [
+   0.845,
+   1
+  ]
+ },
+ "coverage_confidence_ge_0_6": {
+  "k": 21,
+  "n": 30,
+  "rate": 0.7,
+  "ci95": [
+   0.521,
+   0.833
+  ]
+ },
+ "by_layout": {
+  "column": {
+   "k": 10,
+   "n": 15,
+   "rate": 0.667,
+   "ci95": [
+    0.417,
+    0.848
+   ]
+  },
+  "inline": {
+   "k": 15,
+   "n": 15,
+   "rate": 1,
+   "ci95": [
+    0.796,
+    1
+   ]
+  }
+ },
+ "by_font": {
+  "arial.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "tahoma.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "calibri.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "verdana.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "cour.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "lucon.ttf": {
+   "k": 3,
+   "n": 5,
+   "rate": 0.6,
+   "ci95": [
+    0.231,
+    0.882
+   ]
+  }
+ },
+ "ms_per_receipt": 2413,
+ "failures": [
+  {
+   "n": "r00.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5992,
+    "date": "2026-11-15",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "want": {
+    "total": 13019,
+    "date": "2026-11-15",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r05.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5909,
+    "date": "2026-11-04",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "want": {
+    "total": 11932,
+    "date": "2026-11-04",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r10.jpg",
+   "font": "cour.ttf",
+   "layout": "column",
+   "confidence": 0.4,
+   "got": {
+    "total": 29321,
+    "date": "2026-11-06",
+    "store": "EASTSIDE TOQL BARN (DEMO)"
+   },
+   "want": {
+    "total": 29321,
+    "date": "2026-11-06",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r17.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5996,
+    "date": "2026-11-17",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "want": {
+    "total": 13068,
+    "date": "2026-11-17",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r19.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 1689,
+    "date": "2026-11-12",
+    "store": "MOPAC BUILD & PAINT (DEMO))"
+   },
+   "want": {
+    "total": 22166,
+    "date": "2026-11-12",
+    "store": "MOPAC BUILD & PAINT (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r27.jpg",
+   "font": "verdana.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 16556,
+    "date": "2026-11-09",
+    "store": "MOPAC BUILD & PAINT (DEMO)"
+   },
+   "want": {
+    "total": 17922,
+    "date": "2026-11-09",
+    "store": "MOPAC BUILD & PAINT (DEMO)"
+   },
+   "error": null
+  }
+ ],
+ "at": "2026-11-05T00:06:09.663Z"
+}

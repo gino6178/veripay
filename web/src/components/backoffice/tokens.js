@@ -1,3 +1,3 @@
-// DESIGN.md's OKLCH tokens resolved to sRGB, for what draws on a canvas (AG Charts). Kept apart from theme.js so a
+// DESIGN.md's light tokens, for what draws on a canvas (AG Charts). Kept apart from theme.js so a
 // page can use the colours without loading AG Grid or AG Charts.
-export const C = { ground: "#110d0b", ground2: "#1b1614", ground3: "#26201e", ink: "#f6f3f1", ink2: "#cec9c7", ink3: "#a39d9a", signal: "#ff7333", ok: "#61da92", warn: "#f8c655", bad: "#fe6c66", agent: "#b1b7fd", line: "rgba(255,255,255,0.12)", lineStrong: "rgba(255,255,255,0.26)" };
+export const C = { ground: "#F5F7FA", ground2: "#FFFFFF", ground3: "#EEF2F7", ink: "#001C64", ink2: "#2E3F66", ink3: "#56657F", signal: "#0070E0", primary: "#003087", ok: "#17703A", warn: "#B87400", bad: "#B42318", agent: "#5531B8", paid: "#FFD140", line: "#DCE3EC", lineStrong: "#B7C3D3" };

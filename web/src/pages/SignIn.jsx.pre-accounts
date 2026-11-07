@@ -1,0 +1,55 @@
+// Demo sign-in: as a customer (a name is enough) or as one of the demo pros. No passwords in the demo.
+import { useEffect, useState } from "react";
+import { api, navigate } from "../api.jsx";
+import { useMe } from "../App.jsx";
+import { showPinOnce, PIN_WHY, PIN_WINDOW } from "../components/Pin.jsx";
+
+export default function SignIn() {
+  const { reload, toast, info } = useMe();
+  const q = new URLSearchParams(location.search), back = q.get("next") || "/post";
+  const [as, setAs] = useState(["pro", "inspector"].includes(q.get("as")) ? q.get("as") : "customer"), [name, setName] = useState(""), [pin, setPin] = useState(""), [demoLL, setDemoLL] = useState(false), [zip, setZip] = useState("78704"), [pros, setPros] = useState([]), [pro, setPro] = useState(""), [busy, setBusy] = useState(false);
+  useEffect(() => { api("/api/pros").then((p) => { setPros(p); setPro(p[0]?.id || ""); }).catch(() => {}); }, []);
+  const go = async (e) => {
+    e.preventDefault(); setBusy(true);
+    try {
+      const r = await api("/api/auth/demo", { method: "POST", body: as === "pro" ? { as: "pro", pro, pin } : as === "inspector" ? { as: "inspector", pin } : as === "landlord" ? (demoLL ? { as: "landlord", demo: true, pin } : { as: "landlord", name: name.trim() || undefined, ...(pin ? { pin } : {}) }) : { as: "customer", name: name.trim() || undefined, zip: /^\d{5}$/.test(zip) ? zip : undefined, ...(pin ? { pin } : {}) } });
+      if (r.pinOnce) await showPinOnce(r.pinOnce);
+      await reload(); navigate(as === "pro" ? "/pro" : as === "inspector" ? "/inspect" : as === "landlord" ? "/tenancy" : back.startsWith("/pro") || back.startsWith("/inspect") ? "/post" : back);
+    } catch (err) { toast(err.message, true); }
+    setBusy(false);
+  };
+  const sel = pros.find((p) => p.id === pro);
+  if (info && !info.demoSignin) return <div className="empty"><p>Demo sign-in is off on this server.</p></div>;
+  return (
+    <form className="panel marks stack" style={{ maxWidth: 520, margin: "32px auto" }} onSubmit={go}>
+      <h1 style={{ fontSize: "var(--fs-h2)" }}>Start or come back</h1>
+      <p className="small ink2">This makes a throwaway demo identity: no email and nothing real, just a short PIN that proves later actions are yours. It lives only on this demo server, and no real money moves.</p>
+      <div className="seg" role="radiogroup" aria-label="Sign in as">
+        <button type="button" role="radio" aria-checked={as === "customer"} className={as === "customer" ? "on" : ""} onClick={() => { setAs("customer"); setPin(""); }}>I need a job done</button>
+        <button type="button" role="radio" aria-checked={as === "pro"} className={as === "pro" ? "on" : ""} onClick={() => { setAs("pro"); setPin(""); }}>I'm a pro</button>
+        <button type="button" role="radio" aria-checked={as === "landlord"} className={as === "landlord" ? "on" : ""} onClick={() => { setAs("landlord"); setPin(""); }}>Landlord</button>
+        <button type="button" role="radio" aria-checked={as === "inspector"} className={as === "inspector" ? "on" : ""} onClick={() => { setAs("inspector"); setPin(""); }}>Inspector</button>
+      </div>
+      {as === "landlord" ? <>
+        <p className="small ink2">A landlord or property manager: your tenants post repairs, and you (or your agent, within your limits) hire, approve and pay with your own PayPal and PIN.</p>
+        <label className="check-row"><input type="checkbox" checked={demoLL} onChange={(e) => { setDemoLL(e.target.checked); setPin(""); }} /><span>Sign in as the demo landlord, Riverside Property Management (its PIN is 9753)</span></label>
+        {!demoLL && <div className="fields-3"><label className="field"><span>YOUR NAME OR COMPANY (OPTIONAL)</span><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></label>
+          <label className="field"><span>CHOOSE A PIN (4–6 DIGITS, OPTIONAL)</span><input className="input mono" type="password" inputMode="numeric" autoComplete="new-password" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} /></label></div>}
+        {demoLL && <label className="field"><span>THE DEMO LANDLORD'S PIN</span><input className="input mono pin-in" type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} /></label>}
+      </> : as === "inspector" ? <p className="small ink2">Capitol Home Inspections: a third-party inspector. Customers can name them on a job; milestones marked for inspection wait for their confirmation.</p> : as === "customer" ? <>
+        <p className="small ink2">Any name will do (or none). Continue makes a new demo customer in Austin, TX. (If you later connect an AI agent, it's limited to $500 a job and $1,500 a month until you change that.)</p>
+        <div className="fields-3"><label className="field"><span>YOUR NAME (OPTIONAL)</span><input className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Jordan" /></label>
+        <label className="field"><span>YOUR AUSTIN ZIP</span><input className="input" inputMode="numeric" maxLength={5} value={zip} onChange={(e) => setZip(e.target.value)} autoComplete="postal-code" /></label></div>
+        <label className="field"><span>CHOOSE A PIN (4–6 DIGITS, OPTIONAL)</span><input className="input mono" type="password" inputMode="numeric" autoComplete="new-password" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} aria-describedby="pin-help" />
+          <span id="pin-help" className="tiny muted" style={{ marginTop: 4 }}>You'll need it to come back as this customer and to pay, change limits or approve changes. Leave it empty and we'll make one and show it once. {PIN_WHY} {PIN_WINDOW}</span></label>
+      </> : <>
+        <p className="small ink2">Pick one of the fictional Austin pros. Their PayPal is already verified, so payouts can only go there.</p>
+        <label className="field"><span>DEMO PRO</span><select className="input" value={pro} onChange={(e) => setPro(e.target.value)}>{pros.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.trade}</option>)}</select></label>
+        {sel && <ul className="spec"><li><span className="lead">Owner</span><span className="val">{sel.owner}</span></li><li><span className="lead">Rating</span><span className="val">{sel.rating} · {sel.jobs} jobs</span></li><li><span className="lead">License</span><span className="val">{sel.license}</span></li><li><span className="lead">Call-out / hourly</span><span className="val">{sel.rules?.callout} / {sel.rules?.hourly}</span></li><li><span className="lead">Paid to</span><span className="val">{sel.payout?.to} {sel.payout?.verified ? "(verified)" : ""}</span></li></ul>}
+      </>}
+      {(as === "pro" || as === "inspector") && <label className="field"><span>{as === "pro" ? "THE PRO'S PIN" : "THE INSPECTOR'S PIN"}</span><input className="input mono pin-in" type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} aria-describedby="pin-help2" />
+        <span id="pin-help2" className="tiny muted" style={{ marginTop: 4 }}>{as === "pro" ? "Every demo pro's PIN is 8642." : "The demo inspector's PIN is 1357."} {PIN_WHY} A pro who onboarded signs in from their own link instead.</span></label>}
+      <button className={`btn accent ${busy ? "busy" : ""}`} disabled={busy || (as === "pro" && !pro) || (as === "customer" || (as === "landlord" && !demoLL) ? pin !== "" && !/^\d{4,6}$/.test(pin) : !/^\d{4,6}$/.test(pin))}>Continue</button>
+    </form>
+  );
+}

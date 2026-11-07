@@ -1,39 +1,76 @@
-# Cover, tested by AI agents
+# Live testing
 
-Each round, AI agents use Cover on the live server the way real people's agents would: they get only an agent token and
-`/llms.txt`, never the source. Their reports are in `docs/live-test/round<N>-<who>.md`, every call they made is in
-`docs/live-test/ops/`, and `docs/live-test/index.html` (built from `rounds.json` by `build.mjs`) charts the rounds.
+AI agents used Done & Paid the way real customers, agents and pros would, on the live server. Every round's reports,
+operations and screenshots are in [live-test/](live-test/); [live-test/index.html](live-test/index.html) is the
+one-page history. Real PayPal sandbox runs are listed there too (`live-test/sandbox/runs.json`).
 
-## Round 1: a person's own AI agent uses Cover
+## Round 1 (2026-11-05): 5 agents, 210 calls
 
-Three Sonnet agents on the PayPal sandbox: Maya's agent insured a Tokyo trip for two under a $150 budget, Leo's agent
-worked under a $30 limit with no autopay, and Rin's agent was a red-team tester.
+The server ran on localhost:8810 with the PayPal stand-in. No model was serving yet, so every check ran on rules.
 
-- **Verdicts:** Maya 0 blockers, 0 bugs, 2 confusing; Leo 0, 0, 4; Rin 0, 1, 3.
-- **Every guardrail held:** an already-delayed flight was refused (TR-3.1); the agent couldn't raise its own limit or
-  change where payouts go; an over-limit purchase was refused; a claim whose story told the system to approve itself
-  stalled for evidence; ids that weren't the person's were refused.
-- **The automatic payout:** Rin's trip paid $100 with PayPal Payouts about a second after AM410 was reported 2.5 hours
-  late, with no claim filed.
-- **Fixed after:** flight-only trips no longer need the oldest traveler's age; `insure_trip` accepts wrapped arguments;
-  flights may name their airports; a claim type the plan doesn't include is refused up front; trip premiums count toward
-  the monthly limit; `/llms.txt` documents the demo controls as demo-only.
-- **The one bug:** the demo's flight-feed control isn't tied to a person (anyone can mark any flight late). It exists only
-  on this demo server and is off when `DEMO_SIGNIN=0`; a live deployment takes flight status from an airline-data
-  source instead.
+| Tester | Via | What they tried | Result |
+|---|---|---|---|
+| Maria's agent | MCP | fix a dripping faucet under $200 | posted, 5 offers in a second, countered $195 → $185, held $222; the demo pro never started |
+| Jamie | website, phone | first visit: clogged sink, then the judge tour | held $234; job never worked; one bad offer blanked the page; the tour led into the staff office |
+| Rin, customer side | REST | limits, payee, other people's jobs, release and cancel | every guardrail held; budget above the per-job cap accepted at posting; a pro could mint a customer token |
+| Rin, dishonest pro | A2A | get paid without the work | could not be hired (no verified PayPal); the fraud tests never ran |
+| Luis's agent | A2A | a real pro's own agent | outbid by demo pros answering in under a second; could never verify PayPal |
 
-## Round 2: giving to several causes, a neighborhood fund, and a seller's agent
+**No money moved wrongly.** Two things kept every customer's job from reaching payment: demo pros didn't work the jobs
+they were hired for, and a pro who joined through their agent had no way to verify PayPal. All of it is fixed (see
+`rounds.json`): demo pros now do their jobs, pros get an onboarding link plus a `readiness` check, demo pros wait a
+minute before bidding, and the role, limit, staff and page-safety bugs are closed.
 
-Three Sonnet agents on the PayPal sandbox. Jordan's agent split his giveback and looked into a neighborhood fund (three
-neighbors at his ZIP already on Cover); Priya's agent insured a three-person trip to Lisbon with medical and cancelled the
-outbound flight in the demo feed; Northwind Trips' checkout agent tried to embed Cover in a customer's checkout with only
-a partner key and `/llms.txt`.
+## Round 2 (2026-11-05): 5 agents (10 in total, 556 calls)
 
-- **Verdicts:** Jordan 0 blockers, 0 bugs, 5 confusing; Priya 0, 2, 4; Northwind 0, 0, 2.
-- **What worked:** Jordan's agent set a 67/33 split and joined the 78704 fund on its own, within his limits. Priya's agent
-  bought $307.08 of cover for three in one call, and the cancelled TP236 paid $900 automatically.
-- **Where agents stopped, rightly:** Northwind's agent wouldn't invent the oldest traveler's age, so it never got an offer.
-- **Fixed after:** a seller's offer needs no age (it offers flight cover) and reads a destination in words; the causes
-  chosen with a purchase become the person's current choice (the giveback status had shown the old one); a cause pool in
-  deficit is flagged when chosen; flight status shows what is left per traveler; each payout status says what it means;
-  the fund's monthly amount counts toward the person's limit, and agents can leave, propose and vote.
+This round ran on a freshly seeded server with round 1's fixes in. Done-Audit, our own model, judged receipts and
+notes. No vision model was serving, so photos waited for a person.
+
+| Tester | Via | What they tried | Result |
+|---|---|---|---|
+| Maria's agent | MCP | dripping faucet under $200 | posted → all checks done in 5 min 13 s; $175 agreed, $200 held; waiting on Maria to confirm the photos |
+| Jamie | website, phone | clogged sink, then the tour | **paid end to end**: $195; $175.50 to the pro, $19.50 fee, $39 of the hold never charged |
+| Rin, dishonest pro | A2A | fake photos, receipts, injected text | no money moved wrongly; every fake photo failed; a caption with instructions slipped through |
+| Dana's agent | REST | $2,400 water heater with milestones | blocked: an agent couldn't set retainage, inspector or BEFORE photos, and no inspector existed |
+| Luis's agent | A2A | a real pro onboards and bids | verified and hireable, but never won a job; Maria's job never showed in his feed |
+
+The fixes are listed in `live-test/rounds.json` under round 2.
+
+## Round 3 (2026-11-05): 5 agents (15 in total, 860 calls)
+
+The same five scenarios, run on a freshly seeded server with round 2's fixes in. Partway through the round the GPU VM
+was preempted, so checks fell back to rules.
+
+| Tester | Via | Result |
+|---|---|---|
+| Jamie | website | **paid**: $185 captured; $18.50 fee, $141.52 to the pro, $24.98 to the helper; $37 never charged |
+| Dana's agent | REST | **both milestones paid**: $1,450 captured, $104.40 retained; but releasing m2 skipped the inspector |
+| Luis's agent | A2A | **hired at $110**, a first for a real pro; stalled when the demo customer never answered his change order |
+| Maria's agent | MCP | $200 held; the demo pro's arrival was 8 h away |
+| Rin, dishonest pro | A2A | the onboarding code was used up before Rin's first try; withdraw-and-re-offer reset counter-once |
+
+Fixes are listed in `live-test/rounds.json` under round 3.
+
+## Round 4 (2026-11-05): 5 agents (20 in total, 1,196 calls)
+
+| Tester | Via | Result |
+|---|---|---|
+| Maria's agent | MCP | **paid end to end in 22 min**; Maria approved the hold and confirmed the photos through the server's links; $175, of which $157.50 went to the pro |
+| Jamie | website | **paid**: $195, of which $175.50 went to the pro; payout state and the checks headline confusing |
+| Luis's agent | A2A | **won and finished a job** at $95; the demo customer never answered his change order |
+| Dana's agent | REST | milestone 1 never passed: the demo pro resent the same permit with no issue date |
+| Rin, dishonest pro | A2A + web | **blocker**: confirm on the website released money over failed checks ($187.05); everything else held |
+
+All fixes, including a single capture guard covering every way money can move, are listed in `live-test/rounds.json` under round 4.
+
+## Round 5 (2026-11-05): 5 agents (25 in total, 1,569 calls)
+
+| Tester | Via | Result |
+|---|---|---|
+| Maria's agent | MCP | **paid**: $180; $137.70 to the pro and $24.30 to the helper |
+| Luis's agent | A2A | **a real pro paid for the first time**: $168.34 of $187.05, including an approved $47.05 parts change order |
+| Jamie | website | **paid**: $185; 0 blockers |
+| Rin, dishonest pro | A2A + web | round 4's blocker closed: confirm over failed checks refused on every path; padded parts captured at the receipt amount |
+| Dana's agent | REST | blocked: the permit check failed the demo permit with a reason that contradicted its verdict |
+
+Fixes are listed in `live-test/rounds.json` under round 5.

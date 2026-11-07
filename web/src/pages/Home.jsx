@@ -1,165 +1,165 @@
-// The front page, around Cover's lead story: a person's own AI agent insures the trip it is planning, and when a flight
-// leaves late or is cancelled, Cover sees it and pays every traveler with PayPal before anyone files anything. Then the
-// premium measured into its parts, the agent's side of it, the cause pools, and the other kinds of cover.
-// Every number is counted by the server (stats, transparency); a stand-in is labelled as one.
-import { useEffect, useRef, useState } from "react";
-import { Link, useApi, useT, useLang, usd } from "../api.jsx";
+// The home page tells one story: a real job on this server from start to finish (scope, offers, hold, evidence, each
+// check, the PayPal ids), then how to start one yourself or hand it to your agent. Nothing waits on the network to
+// paint: the sheet fills in when /api/stats answers.
+import { useEffect, useState } from "react";
+import { Link, m, when, useApi } from "../api.jsx";
+import { useMe } from "../App.jsx";
+import { Src, Stamp, roundStory } from "../components/job.jsx";
+import { startTour } from "../components/Tour.jsx";
+import Icon from "../components/Icon.jsx";
+import PayLater from "../components/PayLater.jsx";
 
-export function useReveal() {
-  const ref = useRef(null);
-  useEffect(() => {
-    const root = ref.current;
-    if (!root || matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
-    const els = [...root.querySelectorAll(".reveal")].filter((el) => el.getBoundingClientRect().top > innerHeight);
-    els.forEach((el) => el.classList.add("pre"));
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" });
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-  return ref;
+// the latest paid demo job on this server, in full (/api/example-job: no names, street or emails), boiled down
+export function digest(ex) {
+  if (!ex) return ex;
+  const rounds = (ex.checks || []).filter((r) => r.kind !== "defect");
+  const latest = {};
+  for (const r of rounds) for (const c of r.checks) latest[c.id] = { ...c, checker: r.checker };
+  const checks = ex.scope.checks.map((c) => latest[c.id] ? { ...latest[c.id], what: c.what, evidence: c.evidence } : { id: c.id, what: c.what, evidence: c.evidence, verdict: null });
+  const story = rounds.length ? roundStory({ ...rounds.at(-1), checks: checks.filter((c) => c.verdict) }) : null;
+  const releases = ex.money?.releases || [];
+  const counter = ex.offers.find((o) => o.counter);
+  return { ex, number: ex.number, title: ex.scope.title, pro: ex.agreed?.proName, checks, checkers: [...new Set(rounds.map((r) => r.checker))], release: ex.money?.captured, releases,
+    story, captures: releases.map((r) => r.capture).filter(Boolean), payouts: releases.map((r) => r.payout).filter(Boolean), at: ex.paidAt, offers: ex.offers.length, counter, hold: ex.hold, evidence: ex.evidence.filter((e) => e.kind === "photo").length,
+    by: ex.timeline.at(-1)?.by?.kind === "platform" ? "the rules, the moment it passed" : "the customer, after looking", milestones: ex.milestones?.length || 1, payoutDone: ex.payoutState ? ex.payoutState.state === "paid" : ["SUCCESS", "paid_as_payee"].includes(String(ex.money?.payout?.status || "")) };
 }
 
-const CHECKS = { in_force: ["保單有效", "Policy in force"], listed: ["是保單上的航班", "An insured flight"], not_known: ["投保時還沒出事", "Not known before buying"], threshold: ["達到給付門檻", "Over the threshold"], cap: ["在本趟上限內", "Within the trip's cap"] };
-const SAMPLE = { flight: "UA857", from: "SFO", to: "FRA", status: "departed", delayMin: 151, amount: 20000, travelers: 2, seconds: 4, checks: [{ id: "in_force", clause: "TR-6.1" }, { id: "listed", clause: "TR-1.1" }, { id: "not_known", clause: "TR-3.1" }, { id: "threshold", clause: "TR-2.1" }, { id: "cap", clause: "TR-2.2" }], payout: null, sample: true };
-const hm = (m) => `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`;
-
-// The flight instrument: the departure board line turning late, Cover's checks lighting one by one, the payout
-function Instrument({ f }) {
-  const t = useT(), c = f || SAMPLE;
-  const total = c.checks.length + 2, still = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const [p, setP] = useState(still ? 1 : 0);
+function Sheet({ d }) {
+  const [n, setN] = useState(0);
+  // stamp the conditions one at a time (the text is there from the start; only the stamps land)
   useEffect(() => {
-    if (still) return;
-    let raf, start = performance.now(), off = false;
-    const run = 5200, hold = 4200;
-    const frame = (now) => { if (off) return; const e = (now - start) % (run + hold); setP(Math.min(1, e / run)); raf = requestAnimationFrame(frame); };
-    raf = requestAnimationFrame(frame);
-    return () => { off = true; cancelAnimationFrame(raf); };
-  }, [still]);
-  const k = p >= 1 ? total : Math.floor(p * total), late = k >= 1, done = k >= total;
+    if (!d) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(d.checks.length); return; }
+    setN(0); let i = 0; const t = setInterval(() => { i++; setN(i); if (i >= d.checks.length) clearInterval(t); }, 420);
+    return () => clearInterval(t);
+  }, [d?.number]);
+  if (d === undefined) return <div className="sheet marks" aria-hidden="true"><header><span>WORK ORDER</span></header><div style={{ padding: 16 }} className="stack-s">{[1, 2, 3, 4].map((i) => <div key={i} className="skel" style={{ height: 28 }} />)}</div></div>;
+  if (!d) return <div className="sheet marks"><header><span>WORK ORDER</span></header><div className="stack" style={{ padding: 16 }}><p className="small ink2">No job has been paid on this server yet. The judge tour runs one end to end in about a minute.</p><button className="btn accent" onClick={startTour}>Run the judge tour</button></div></div>;
+  const done = n >= d.checks.length;
   return (
-    <div className="instrument marks" role="img" aria-label={t(`航班 ${c.flight} 延誤 ${hm(c.delayMin)}，${c.travelers} 位旅客自動獲付 ${usd(c.amount)}`, `Flight ${c.flight} left ${hm(c.delayMin)} late; ${c.travelers} travelers were paid ${usd(c.amount)} automatically`)}>
-      <header><span className="live"><i />{c.sample ? t("示意 · 依 Cover 的條款", "ILLUSTRATION · COVER'S CLAUSES") : t("最近一次自動給付 · 真實紀錄", "LATEST AUTOMATIC PAYOUT · REAL RECORD")}</span><span>{t(`${c.travelers} 位旅客`, `${c.travelers} TRAVELERS`)}</span></header>
-      <div className="board">
-        <b>{c.flight}</b><span>{c.from} → {c.to}</span>
-        <em className={late ? (c.status === "cancelled" ? "bad" : "warn") : ""}>{late ? (c.status === "cancelled" ? t("取消", "CANCELLED") : `+${hm(c.delayMin)}`) : t("準時", "ON TIME")}</em>
-      </div>
-      <ol>{c.checks.map((x, i) => <li key={x.id} className={i + 1 < k ? "on" : i + 1 === k ? "now" : ""}><span className="tick" /><span>{t(...(CHECKS[x.id] || [x.id, x.id]))}</span><span className="part">{x.clause}</span></li>)}</ol>
+    <figure className="sheet marks" style={{ margin: 0 }} aria-label={`Work order ${d.number}, paid`}>
+      <header><span>WORK ORDER · AUSTIN, TX {d.ex.address?.zip}</span><span>A REAL RECORD ON THIS SERVER</span></header>
+      <div className="no"><b>{d.number}</b><span className="row" style={{ gap: 6 }}>{d.story && <><span className="src code">{d.ex?.lastCheck?.counts ? (d.ex.lastCheck.counts.notPassed ? `${d.ex.lastCheck.counts.notPassed} OF ${d.ex.lastCheck.counts.total} DIDN'T PASS` : `${d.ex.lastCheck.counts.passed} OF ${d.ex.lastCheck.counts.total} PASSED`) : d.story.bad ? `${d.story.bad} OF ${d.story.n} DIDN'T PASS` : d.story.person > 0 ? `${d.story.n} CONDITIONS · CODE FOUND NOTHING WRONG · A PERSON CONFIRMED ${d.story.person}` : `${d.story.n} CONDITIONS · ALL SETTLED BY CODE`}</span>{d.story.model > 0 && <span className="src model">{d.story.df ? `MODEL ${d.story.models.join(" + ")}` : `MODEL JUDGED ${d.story.model}`}</span>}</>}<span className="src code">MONEY BY CODE</span></span></div>
+      <div className="t">{d.title} <span className="muted">· {d.pro}{d.milestones > 1 ? ` · ${d.milestones} milestones` : ""}</span></div>
+      <ol>
+        {d.checks.map((c, i) => (
+          <li key={c.id} className={`${i < n && c.verdict === "pass" && !c.needsPerson ? "pass" : ""} ${i === n - 1 ? "landing" : ""} ${i < n ? "shown" : ""}`}>
+            <span className="box">{i < n && c.verdict === "pass" && !c.needsPerson && <Icon name="check" size={12} stroke={3.4} />}</span>
+            <span>{c.what}</span>
+            <Stamp c={c.verdict ? c : null} kind={c.evidence} />
+          </li>
+        ))}
+      </ol>
       <footer>
-        <span className="data">{done ? <>{t("沒有人申請理賠", "NO CLAIM FILED")}<br />PAYPAL PAYOUTS {c.payout || ""}</> : late ? t("檢查條款中…", "CHECKING THE CLAUSES…") : t("監看航班中…", "WATCHING THE FLIGHT…")}</span>
-        <b style={{ opacity: done ? 1 : 0.15, transition: "opacity .4s" }}>{usd(c.amount)}</b>
+        <div className="stack-s">
+          <span className="data">{done ? `${d.payoutDone ? "PAID" : "RELEASED, PAYOUT SENT"} ${when(d.at).toUpperCase()} · BY ${d.by.toUpperCase()}` : "CHECKING EACH CONDITION…"}</span>
+          <span className="mono tiny muted wrap-any">capture {d.captures.join(", ") || d.hold?.capture || "—"}<br />payout batch {d.payouts.join(", ") || "—"}</span>
+        </div>
+        <b style={{ opacity: done ? 1 : 0.25, transition: "opacity .4s" }}>{m(d.release)}</b>
       </footer>
-    </div>
+    </figure>
   );
 }
+
+const FLOW = [
+  ["Scope", "You say it in a sentence. Done writes the work order: what to do, and the done-conditions, each naming the photo, receipt or note that proves it.", "the contract"],
+  ["Offers", "Nearby pros' agents quote from their own price rules. Your agent counters once, inside the ceiling you set, and accepts.", "agent to agent (A2A)"],
+  ["Hold", "PayPal authorizes the price plus a buffer for change orders. Nothing is charged. Past 3 days it's reauthorized; it can't outlive 29.", "Orders v2 · AUTHORIZE"],
+  ["Evidence", "The pro photographs the work and the receipt. The phone's camera stamps the time and place; a change order (\"the valve is corroded too\") comes with a photo and its price.", "EXIF · dHash · OCR"],
+  ["Checks", "Each condition gets pass, fix or fail with a reason and a confidence, labelled model or rules. Code decides: all pass, it pays; a doubt goes to you.", "decided by code"],
+  ["Payout", "PayPal captures exactly what's due. One Payouts batch pays the pro and their helper, each their share. The unused hold is never charged.", "capture · Payouts batch"],
+];
 
 export default function Home() {
-  const t = useT(), { lang } = useLang(), ref = useReveal();
-  const { data: stats } = useApi("/api/stats");
-  const { data: products } = useApi(`/api/products?lang=${lang}`);
-  const { data: tr } = useApi("/api/transparency");
-  const [pick, setPick] = useState("travel");
-  const p = products?.find((x) => x.id === pick);
-  const origin = typeof location !== "undefined" ? location.origin : "";
+  const { info, me } = useMe(), stats = useApi("/api/stats"), exj = useApi("/api/example-job"), ms = useApi("/api/models/status?probe=1");
+  const d = exj.data ? digest(exj.data) : exj.error ? null : undefined, s = stats.data;
+  const start = me?.person?.role === "pro" ? "/pro" : "/post";
   return (
-    <div ref={ref}>
+    <>
       <section className="hero">
         <div>
-          <h1>{lang === "en" ? <>Your agent books the trip.<br /><em>Cover pays</em> when the flight doesn't go.</> : <span className="zh"><span className="line">你的 agent 訂行程，</span><span className="line">航班出事，<em>Cover 先付</em>。</span></span>}</h1>
-          <p className="lede">{t("你的 AI agent 規劃旅程時，透過 MCP 順手幫你買好旅行險。航班延誤 2 小時或取消，Cover 自己會知道，用 PayPal 幾分鐘內付給每位旅客，不用申請、不用等。我們只拿固定 20%，用不完的錢年底捐給公益。", "While your AI agent plans your trip, it buys the cover over MCP. If a flight leaves 2 hours late or is cancelled, Cover knows, and PayPal pays every traveler within minutes: nothing to file, nothing to wait for. We keep a flat 20%; what the claims pool doesn't need goes to a cause at the end of the year.")}</p>
+          <h1>Pay the pro <em>the second</em> it's done.</h1>
+          <p className="lede">Say what's wrong in a sentence, here on the site, or let your AI agent do it for you. Done writes down what “done” means, pros quote, and PayPal holds the money. The pro sends photos and a receipt, every condition is checked, and when they all pass PayPal pays the pro.</p>
           <div className="cta">
-            <Link to="/connect" className="btn accent">{t("連接你的 agent", "Connect your agent")} <span className="arrow">→</span></Link>
-            <Link to="/quote/travel" className="btn">{t("自己投保一趟旅程", "Cover a trip yourself")}</Link>
+            <Link className="btn accent" to={start}>{me?.person?.role === "pro" ? "See incoming jobs" : "Post a job yourself"} <span className="arrow">→</span></Link>
+            <Link className="btn" to="/connect">Or let your AI agent do it</Link>
           </div>
-          <p className="data" style={{ marginTop: 40 }}>{stats ? t(`自動給付 ${stats.autoPaid ?? 0} 次 · 已賠 ${stats.claimsPaid} 件 · 理賠池現有 ${usd(stats.poolsNow)}`, `${stats.autoPaid ?? 0} AUTOMATIC PAYOUTS · ${stats.claimsPaid} CLAIMS PAID · ${usd(stats.poolsNow)} IN THE POOLS`) : " "}</p>
+          <ModelBadge s={ms.data} />
+          <p className="small muted" style={{ marginTop: "var(--s4)" }}>Judging? <button className="link" onClick={startTour}>Take the 3-minute tour</button>: it runs one job from scope to payout on this server.</p>
         </div>
-        <Instrument f={stats?.lastFlight} />
+        <Sheet d={d} />
       </section>
-
-      <section className="band"><div className="band-in grid-2" style={{ alignItems: "center" }}>
-        <div className="stack reveal">
-          <h2>{t("讓 agent 幫你買", "Let your agent buy it")}</h2>
-          <p className="lede">{t("Cover 是為 agent 設計的：一個 MCP 工具就能報價加投保。它能花多少、能不能自己付款，由你在 Cover 上設定，agent 改不了。錢永遠只付到你自己的 PayPal。", "Cover is built for agents: one MCP tool prices and buys a trip. How much it may spend and whether it may pay on its own are set by you on Cover; the agent can't change them. Money only ever goes to your own PayPal.")}</p>
-          <ul className="spec">
-            <li><span className="lead">{t("給 agent 讀的說明", "What agents read first")}</span><a className="val" href="/llms.txt">/llms.txt</a></li>
-            <li><span className="lead">MCP</span><span className="val">{origin}/mcp</span></li>
-            <li><span className="lead">A2A</span><a className="val" href="/.well-known/agent-card.json">/.well-known/agent-card.json</a></li>
-          </ul>
-        </div>
-        <pre className="terminal reveal">{[
-          <span key="0" className="c">{t("# 你對 agent 說：", "# you tell your agent:")}</span>, "\n",
-          t("> 幫我訂 12/20 去法蘭克福，兩個人，順便保險\n\n", "> book Frankfurt on Dec 20 for two, and insure it\n\n"),
-          <span key="1" className="k">insure_trip</span>, ` { destination: "europe", travelers: 2, plan: "flight",\n              flights: [{ flight: "UA857", date: "2026-12-20" }] }\n`,
-          <span key="2" className="c">  → policy CV-TR-… · TR-2.1 TR-2.2 · paid with PayPal</span>, "\n\n",
-          <span key="3" className="k">wait_for_news</span>, "\n",
-          <span key="4" className="c">  → UA857 departed 2 h 31 min late. Cover filed claim CL-… for you.</span>, "\n",
-          <span key="5" className="c">  → paid $200.00 with PayPal Payouts, with no claim filed</span>,
-        ]}</pre>
-      </div></section>
+      <PayLater variant="banner" signedIn={false} />
 
       <section className="band"><div className="band-in">
-        <div className="band-head reveal">
-          <h2>{t("事實發生，錢就到", "The facts happen, the money arrives")}</h2>
-          <p className="lede">{t("旅行險的航班保障是「參數型」的：不看收據、不審核，只看航班實際起飛的時間。航班紀錄就是證據，會簽章記進透明帳本。", "Flight cover is parametric: no receipts, no review, only the time the flight actually left. The flight's record is the evidence, signed into the transparency log.")}</p>
-        </div>
-        <div className="steps reveal">
-          <div><span className="n">2 h</span><h3>{t("晚 2 小時起飛", "Leaves 2 hours late")}</h3><p>{t("每位旅客 $100，自動付款。", "$100 for each traveler, paid automatically.")}</p><p className="t">TR-2.1</p></div>
-          <div><span className="n">6 h</span><h3>{t("晚 6 小時起飛", "Leaves 6 hours late")}</h3><p>{t("改為每位旅客 $300。", "$300 for each traveler instead.")}</p><p className="t">TR-2.1</p></div>
-          <div><span className="n">✕</span><h3>{t("航班取消", "Cancelled")}</h3><p>{t("每位旅客 $300；一趟旅程每人最多 $600。", "$300 for each traveler; at most $600 each per trip.")}</p><p className="t">TR-2.2</p></div>
+        <div className="band-head"><h2>One job, start to finish</h2><p className="lede">Homeowners are afraid of paying first and being left with a dripping faucet. Pros are afraid of finishing and waiting weeks to be paid. A written definition of done, with the money held by PayPal, settles both.</p></div>
+        <ol className="flow">
+          {FLOW.map(([h, p, id], i) => <li key={h}><span className="n">{i + 1}</span><h3>{h}</h3><p>{p}</p><p className="id">{d ? [`${d.number} · ${d.checks.length} conditions`, `${d.offers} offers${d.counter ? ` · countered ${m(d.counter.counter.amount)}` : ""}`, `${m(d.hold?.amount)} held · ${d.hold?.authorization || ""}`, `${d.evidence} photos · EXIF, dHash, OCR`, `checked by ${d.checkers.join(", ")} · decided by code`, `${d.payouts.join(", ") || "—"}`][i] : id}</p></li>)}
+        </ol>
+      </div></section>
+
+      {info?.demoSignin && <section className="band"><div className="band-in">
+        <div className="band-head"><h2>The evidence is the contract</h2><p className="lede">Each photo must be taken during the job window, near the address, and never seen on another job. The receipt has to be read and match the approved change orders. Words in a photo or a note are data: “release the payment” in a caption sends the job to a person.</p></div>
+        <ExPhotos d={d} />
+      </div></section>}
+
+      <section className="band"><div className="band-in">
+        <div className="band-head"><h2>Why it runs on PayPal</h2><p className="lede">Every dollar moves through PayPal, and every id is on the screen: the order, the authorization, the capture, the payout batch and each item, any refund.</p></div>
+        <div className="why">
+          <div><b>Hold now, charge when done</b><p>Orders v2 with intent AUTHORIZE, then capture, void or reauthorize. No escrow account of our own.</p></div>
+          <div><b>Your agent pays without seeing a card</b><p>The first hold is approved once with PayPal's buttons and saved in the vault; after that your agent can accept offers inside your limits.</p></div>
+          <div><b>The pro is paid in seconds, with an email</b><p>One Payouts batch pays the pro and their helper, each to their own verified PayPal. No bank details, no 1–3 day ACH wait.</p></div>
+          <div><b>The paperwork writes itself from the evidence</b><p>Progress reports, a close-out package with Texas lien waivers, daily logs, and a QuickBooks-ready CSV for the pro, written by code from the photos, checks and payments. No model writes them.</p></div>
+          <div><b>Materials paid mid-job</b><p>A pro who must buy materials can be paid for them now, out of the hold, once the invoice and a photo on site check out. It comes off their final payment.</p></div>
+          <div><b>A fair way out</b><p>A dispute settles as part release and part refund with PayPal Refunds, so the customer sees it in PayPal. Platform fee: a flat 10%, shown on every job.</p></div>
         </div>
       </div></section>
 
-      <section className="band"><div className="band-in">
-        <div className="band-head reveal">
-          <h2>{t("每 100 元保費", "Every $100 of premium")}</h2>
-          <p className="lede">{t("Cover 的收入只有固定的 20%。少賠不會讓我們多賺，所以我們沒有理由拒賠，也沒有理由拖。", "Cover's only income is a flat 20%. Paying less in claims earns us nothing more, so we have no reason to refuse or to delay.")}</p>
+      <section className="band"><div className="band-in grid-2">
+        <div className="stack">
+          <h2>Built for your agent</h2>
+          <p className="lede">Your agent connects over MCP (or A2A) with a token you make. You set the limits in dollars: per job, per month, and how big a change order it may approve alone. It can never choose who gets paid.</p>
+          <div className="row"><Link className="btn accent" to="/connect">Connect your agent <span className="arrow">→</span></Link><a className="btn" href="/llms.txt">Read llms.txt</a></div>
+          {s && <p className="data">ON THIS SERVER: {s.jobs} JOBS · {s.paid} PAID · {s.paidToPros?.usd} TO PROS · {s.pros} PROS.</p>}
         </div>
-        <div className="reveal"><MoneySplit /></div>
-        <div className="legend-rows reveal">
-          <div><b>{t("74 · 理賠池", "74 · The claims pool")}</b><p>{t("付理賠。選同一個公益的人共用一個池子。", "Pays the claims. Everyone who picks the same cause shares one pool.")}</p></div>
-          <div><b>{t("6 · 再保險", "6 · Reinsurance")}</b><p>{t("一場颶風或一整天停飛同時打到很多人時，由再保公司扛超過的部分。", "When one hurricane or one day of grounded flights hits many people at once, a reinsurer carries what's over the limit.")}</p></div>
-          <div><b>{t("20 · Cover 的固定費用", "20 · Cover's flat fee")}</b><p>{t("我們的全部收入。", "All we earn.")}</p></div>
-        </div>
+        <pre className="terminal" aria-label="An agent's tool calls">
+<span className="c"># your agent, over MCP (an example run)</span>{"\n"}<span className="k">post_job</span>   {"{"} text: "faucet drips, this week, $200 max", zip: "78704" {"}"}{"\n"}<span className="c">  → DP-1036 · 5 done-conditions · 5 offers</span>{"\n"}<span className="k">counter_offer</span> {"{"} offer: "ofr_…", amount: 170 {"}"}{"\n"}<span className="c">  → pro's agent: "we can meet you at $185"</span>{"\n"}<span className="k">accept_offer</span>  {"{"} offer: "ofr_…" {"}"}{"\n"}<span className="c">  → held $222.00 · PayPal authorization</span>{"\n"}<span className="k">approve_change</span> {"{"} change: "chg_…" {"}"}  <span className="c"># +$45 ≤ your $75 limit</span>{"\n"}<span className="k">wait_for_news</span>{"\n"}<span className="c">  → all conditions passed · captured $230.00</span>{"\n"}<span className="c">  → Payouts batch: $207.00 to the pro</span>
+        </pre>
       </div></section>
-
-      <section className="band"><div className="band-in">
-        <div className="band-head reveal"><h2>{t("用不完的錢，捐出去", "What isn't needed, given away")}</h2><p className="lede">{t("年底每個公益池剩下的錢，用 PayPal Payouts 直接捐給那個公益，收據記進透明帳本，任何人都能查。下面是即時的帳。", "At the end of the year, what is left in each cause's pool is given to that cause with PayPal Payouts, and the receipt goes into the transparency log for anyone to check. Live, below.")}</p></div>
-        <table className="ledger reveal"><tbody>
-          {(tr?.pools || []).map((x) => <tr key={x.cause}><td>{x.name[lang]}</td><td className="r">{t(`${x.policies} 張保單 · 已賠 ${x.claims}`, `${x.policies} POLICIES · ${x.claims} PAID`)}</td><td className="amt" style={{ color: x.balance.startsWith("$-") ? "var(--bad)" : undefined }}>{x.balance}</td></tr>)}
-        </tbody></table>
-        <div style={{ marginTop: 32 }}><Link to="/transparency" className="link">{t("完整帳本", "The full ledger")}</Link></div>
-      </div></section>
-
-      <section className="band"><div className="band-in">
-        <div className="band-head reveal">
-          <h2>{t("條款就是零件", "The clauses are parts")}</h2>
-          <p className="lede">{t("除了旅行，Cover 也保租屋、房屋、寵物、壽險和汽機車。每一項保障都有編號，判斷理賠時引用的就是這些編號。", "Beyond travel, Cover insures renters, homes, pets, lives and vehicles. Every cover has a number, and every claim decision cites them.")}</p>
-        </div>
-        <div className="tabs reveal" role="tablist">{(products || []).map((x) => <button key={x.id} role="tab" aria-selected={pick === x.id} className={pick === x.id ? "on" : ""} onClick={() => setPick(x.id)}>{x.name}</button>)}</div>
-        {p && <div className="parts">
-          <div className="stack">
-            <p className="lede" style={{ fontSize: 18 }}>{p.for}</p>
-            <p className="data">{t(`${p.questions.length} 個問題 · ${p.covers.length} 項保障 · ${p.claims.length} 種理賠`, `${p.questions.length} QUESTIONS · ${p.covers.length} COVERS · ${p.claims.length} KINDS OF CLAIM`)}</p>
-            <div><Link to={`/quote/${p.id}`} className="btn accent">{t(`報價：${p.name}`, `Price ${p.name}`)} <span className="arrow">→</span></Link></div>
-          </div>
-          <ol className="partlist">
-            {p.covers.map((c) => <li key={c.id}><span className="part">{c.clause}</span><span>{c.what}</span><span className="lim" /></li>)}
-            {p.addons.map((c) => <li key={c.id}><span className="part">{c.clause}</span><span>{c.what}</span><span className="lim">{t("加購", "ADD-ON")}</span></li>)}
-          </ol>
-        </div>}
-      </div></section>
-    </div>
+    </>
   );
 }
 
-export function MoneySplit() {
-  const t = useT();
+// an honest badge: is a model answering on this server right now, or do the rules answer (and why)
+export function ModelBadge({ s, tech }) {
+  if (!s) return null;
+  // what the last check on this server actually used (the backend's lastCheck), not what is configured
+  const lc = s.lastCheck, vlm = lc?.vlm === "model", model = lc?.model && lc.model !== "none";
   return (
-    <div className="measure">
-      <div className="dim" style={{ left: 0, width: "74%" }}><span>74</span></div>
-      <div className="dim" style={{ left: "74%", width: "6%" }}><span style={{ fontSize: 18 }}>6</span></div>
-      <div className="dim" style={{ left: "80%", width: "20%" }}><span>20</span></div>
-      <div className="bar"><div className="pool" style={{ width: "74%" }}>{t("理賠池", "CLAIMS POOL")}</div><div className="re" style={{ width: "6%" }} /><div className="fee" style={{ width: "20%" }}>{t("COVER 費用", "COVER'S FEE")}</div></div>
+    <p className="row" style={{ marginTop: "var(--s5)", gap: 6 }}>
+      <span className="src code">CODE CHECKS TIME, PLACE, REUSE, RECEIPTS</span>
+      {lc ? <>
+        <span className={`src ${vlm ? "model" : "person"}`}>PHOTOS: {vlm ? "A VISION MODEL JUDGED" : "A PERSON CONFIRMS"}</span>
+        <span className={`src ${model ? "model" : "rules"}`}>NOTES: {model ? `MODEL ${lc.model}` : "RULES"}</span>
+      </> : <span className="src rules">NO CHECK RUN YET</span>}
+      <span className="tiny muted">{lc ? `Last check (${lc.job}): ${lc.label}.` : ""} Money moves only by code. {tech ? [["Done-Chat", s], ["Done-Audit", s.audit], ["Done-VLM", s.vlm]].filter(([, x]) => x).map(([n, x]) => `${n}: ${x.live ? "served" : "off"}`).join(" · ") : <Link to="/models">How the checks work</Link>}</span>
+    </p>
+  );
+}
+
+// the example job's own photos (a BEFORE and AFTER of the same spot when there is one); else the synthetic demo set
+function ExPhotos({ d }) {
+  const ev = d?.ex?.evidence?.filter((e) => e.kind === "photo" && e.url) || [];
+  const pairCheck = ev.find((e) => e.phase === "before" && ev.some((x) => x.checkId === e.checkId && (!x.phase || x.phase === "after")))?.checkId;
+  const pick = pairCheck ? [ev.find((e) => e.checkId === pairCheck && e.phase === "before"), ev.find((e) => e.checkId === pairCheck && (!e.phase || e.phase === "after")), ev.find((e) => e.checkId !== pairCheck && (!e.phase || e.phase === "after"))].filter(Boolean) : ev.filter((e) => !e.phase || e.phase === "after").slice(0, 3);
+  if (pick.length >= 2) return (
+    <div className="photos">{pick.map((e) => <figure key={e.id}><img src={e.url} alt={`${(e.phase || "after").toUpperCase()} photo for ${e.checkId} on ${d.number}`} loading="lazy" width="640" height="480" /><figcaption>{d.number} · {e.checkId} · {(e.phase || "after").toUpperCase()}{e.exif?.taken ? " · camera time" : ""}{e.exif?.lat != null ? " · GPS" : ""}</figcaption></figure>)}</div>
+  );
+  return (
+    <div className="photos">
+      <figure><img src="/api/demo/assets/faucet-installed.jpg" alt="A new faucet cartridge installed under a kitchen sink" loading="lazy" width="640" height="480" /><figcaption>new_part · AFTER</figcaption></figure>
+      <figure><img src="/api/demo/assets/sink-dry.jpg" alt="The cabinet under the sink, dry after ten minutes with the water on" loading="lazy" width="640" height="480" /><figcaption>no_drip · AFTER</figcaption></figure>
+      <figure><img src="/api/demo/assets/receipt.jpg" alt="A parts receipt from a plumbing supply store, total $47.05" loading="lazy" width="640" height="480" /><figcaption>receipt · read on the CPU</figcaption></figure>
     </div>
   );
 }

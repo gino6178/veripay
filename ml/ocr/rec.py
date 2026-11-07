@@ -99,11 +99,22 @@ def recognise(model, chars, ims, dev, bs=256):
 def train(a):
     dev = "cuda"; random.seed(0); torch.manual_seed(0)
     tr = read_tsv(a.data, "train"); te = read_tsv(a.data, "test")
-    chars = sorted({c for _, t in tr for c in t}); cid = {c: i + 1 for i, c in enumerate(chars)}
+    chars = sorted({c for _, t in tr for c in t})
+    init = None
+    if a.init:  # fine-tune from an earlier run: keep its characters (and their head rows), add any new ones
+        im = json.load(open(os.path.join(a.init, "meta.json"), encoding="utf8")); init = (im["chars"], torch.load(os.path.join(a.init, "model.pt"), map_location="cpu"))
+        chars = im["chars"] + sorted(set(chars) - set(im["chars"]))
+    cid = {c: i + 1 for i, c in enumerate(chars)}
     print(f"{len(tr)} training lines, {len(chars)} characters", flush=True)
     t0 = time.time(); ims = [load_img(p) for p, _ in tr]; print(f"loaded in {time.time() - t0:.0f} s", flush=True)
     vi = [load_img(p) for p, _ in te[:2000]]; vt = [t for _, t in te[:2000]]
     model = SVTRTiny(len(chars) + 1).to(dev)
+    if init:
+        old, sd = init; own = model.state_dict()
+        for k, v in sd.items():
+            if k in own and own[k].shape == v.shape: own[k] = v
+            elif k.startswith("head.2."): own[k][: v.shape[0]] = v  # the classes it already had (blank first, then its characters in order)
+        model.load_state_dict(own); print(f"initialised from {a.init} ({len(old)} characters, {len(chars) - len(old)} new)", flush=True)
     print("parameters", sum(p.numel() for p in model.parameters()), flush=True)
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=0.05)
     steps = a.epochs * math.ceil(len(tr) / a.bs); warm = 500
@@ -149,7 +160,7 @@ def evaluate(a):
     by = {}
     for (did, k, _, _), p in zip(crops, pred): by.setdefault(did, {})[k] = p
     keys = ["date", "amount", "merchant", "taxId", "reportNo", "items"]
-    right = {k: 0 for k in keys}; allr = 0; ceil = {k: 0 for k in keys}; ceil_all = 0; kinds = {}; fails = []
+    right = {k: 0 for k in keys}; allr = 0; ceil = {k: 0 for k in keys}; ceil_all = 0; kinds = {}; styles = {}; fails = []
     for d in docs:
         text = "\n".join(by[d["id"]][k] for k in sorted(by[d["id"]]))
         f, g, t = parse_fields(text), parse_fields(d["text"]), d["fields"]
@@ -157,11 +168,12 @@ def evaluate(a):
         for k in keys: right[k] += ok[k]; ceil[k] += okg[k]
         allr += all(ok.values()); ceil_all += all(okg.values())
         kk = kinds.setdefault(d["kind"], [0, 0]); kk[0] += all(ok.values()); kk[1] += 1
+        ss = styles.setdefault(d.get("style", "plain"), [0, 0]); ss[0] += all(ok.values()); ss[1] += 1
         if not all(ok.values()) and len(fails) < 12: fails.append({"id": d["id"], "kind": d["kind"], "wrong": {k: {"want": t[k], "got": f[k]} for k in keys if not ok[k]}})
     n = len(docs)
     res = {"split": a.split, "documents": n, "lines": len(crops), "cer": round(E / N, 4), "line_exact": round(sum(p == c[3] for p, c in zip(pred, crops)) / len(crops), 4),
            "line_exact_ci95": wilson(sum(p == c[3] for p, c in zip(pred, crops)), len(crops)), "chars_not_in_training": unseen, "ms_per_line_gpu_batched": round(ms, 2),
-           "fields_exact": {k: round(right[k] / n, 4) for k in keys}, "all_fields": round(allr / n, 4), "all_fields_ci95": wilson(allr, n), "by_kind_all_fields": {k: f"{v[0]}/{v[1]}" for k, v in kinds.items()},
+           "fields_exact": {k: round(right[k] / n, 4) for k in keys}, "all_fields": round(allr / n, 4), "all_fields_ci95": wilson(allr, n), "by_kind_all_fields": {k: f"{v[0]}/{v[1]}" for k, v in kinds.items()}, "by_style_all_fields": {k: f"{v[0]}/{v[1]}" for k, v in styles.items()},
            "rules_on_true_text": {"fields_exact": {k: round(ceil[k] / n, 4) for k in keys}, "all_fields": round(ceil_all / n, 4)}, "failures": fails,
            "examples": [{"want": c[3], "got": p} for p, c in list(zip(pred, crops)) if p != c[3]][:15]}
     json.dump(res, open(os.path.join(a.run, f"eval_{a.split}.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
@@ -169,6 +181,6 @@ def evaluate(a):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("cmd"); ap.add_argument("--data", required=True); ap.add_argument("--out"); ap.add_argument("--run"); ap.add_argument("--split", default="test")
-    ap.add_argument("--epochs", type=int, default=30); ap.add_argument("--bs", type=int, default=128); ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--epochs", type=int, default=30); ap.add_argument("--bs", type=int, default=128); ap.add_argument("--lr", type=float, default=1e-3); ap.add_argument("--init", default="")
     a = ap.parse_args()
     train(a) if a.cmd == "train" else evaluate(a)

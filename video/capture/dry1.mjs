@@ -1,0 +1,26 @@
+// Dry run (layout discovery): Maria signs in, the Post page, a tour job from the same sentence, its page.
+import path from "node:path";
+import fs from "node:fs";
+import { launch, prep, settle, api, B, HERE } from "./lib.mjs";
+const T = JSON.parse(fs.readFileSync(path.join(HERE, "film-test-values.json"), "utf8"));
+const OUTP = path.join(HERE, "probe"); fs.mkdirSync(OUTP, { recursive: true });
+const SENT = "My kitchen faucet keeps dripping. Get it fixed this week, under $200.";
+const b = await launch(); const pg = await b.newPage(); await prep(pg);
+await pg.setViewport({ width: 1920, height: 1080 });
+await pg.goto(B + "/", { waitUntil: "networkidle0" });
+const si = await api(pg, "/api/auth/demo", { as: "customer", name: T.customerName, zip: T.zip, pin: T.customerPin });
+console.log("signin", si.status, si.body?.person?.name);
+await pg.goto(B + "/post", { waitUntil: "networkidle0" }); await settle(pg);
+await pg.type("#say", SENT, { delay: 10 });
+await pg.screenshot({ path: path.join(OUTP, "post-typed.png") });
+await pg.keyboard.press("Enter");
+await pg.waitForFunction(() => document.querySelectorAll(".say.done").length > 1 && !document.querySelector(".chat .skel"), { timeout: 120000 });
+await settle(pg, 1500);
+await pg.screenshot({ path: path.join(OUTP, "post-wo.png"), fullPage: true });
+const r = await api(pg, "/api/demo/tour", { step: "start", text: SENT });
+console.log("tour", r.status, r.body?.number, r.body?.status, (r.body?.offers || []).length);
+fs.writeFileSync(path.join(OUTP, "dry-job.json"), JSON.stringify({ id: r.body?.id }));
+await new Promise((x) => setTimeout(x, 5000));
+await pg.goto(B + "/jobs/" + r.body.id, { waitUntil: "networkidle0" }); await settle(pg, 2500);
+await pg.screenshot({ path: path.join(OUTP, "job-offered.png"), fullPage: true });
+await b.close();

@@ -1,100 +1,56 @@
-// Cover-Risk in quotes: the exported LightGBM trees (ml/risk/out/risk_<product>.json, from ml/risk/fit.py), evaluated
-// by ml/risk/risk.mjs, installed into quote.js with useRiskModel() when the files exist.
-//
-// A product is priced by its trees only when they fit the product as it is now. The trees were fitted on one set of
-// answers and zone levels; if the product's questions or the zone table change (a new market, new units), the trees
-// would be reading answers they never saw, so that product keeps its own factor table, and /api/models says why.
-// The checks, per product, at start:
-//   - every answer the trees read is still one of the product's questions;
-//   - every choice the product offers is a choice the trees know;
-//   - the product still prices every zone level the trees read;
-//   - the numbers in the export's own check policies (check_<product>.json) still lie in the product's ranges and
-//     choices (a change of units, square metres to square feet say, moves the range and fails this).
-// And per quote: the zone must give every level the trees read, as a number; otherwise the quote is priced by factors.
-//
-// Level: the trees' total on their own training portfolio is not the portfolio's actual total (ml/RESULTS.md). Home
-// is the one RESULTS.md says to correct before pricing with it: on the 200,000 training policies, regenerated from
-// fit.py's seeds (claims 6,706, $1,239.84 a policy-year, as RESULTS.md), the trees predict 92.64% of the actual loss,
-// so home's estimate is multiplied by 1.0795 (actual / predicted, training). The other products are left as fitted;
-// their training ratios are 0.9640 renters, 0.9973 pet, 0.9677 car (predicted / actual), reported, not applied.
-// Life is not modelled: it stays on its mortality table.
+// Done-Risk in the app: the probability a job ends in a dispute, and that it runs over its agreed price (a change
+// order), from the LightGBM trees in ml/risk/out (ml/risk/risk.mjs evaluates them; dispute AUC 0.776, overrun AUC 0.780
+// on held-out synthetic jobs, calibrated; see ml/RESULTS.md). Used to size the hold's buffer within the ceiling and
+// shown on the job and in the back office, labelled "model: done-risk". When the files aren't there, a small rules
+// version gives the same shape, labelled "rules". It never decides money by itself: it sizes a buffer within limits.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PRODUCTS } from "./products/index.js";
-import { useRiskModel } from "./quote.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-export const RISK_DIR = process.env.RISK_DIR || path.join(HERE, "../../ml/risk/out");
-// actual / predicted on the training portfolio; see above
-export const LEVEL = { home: { times: 1.0795, why: "recalibrated to the training total: the trees predict 92.64% of the 200,000 training policies' actual loss" } };
-
-let state = { live: false, dir: RISK_DIR, products: {}, reason: "not loaded" };
-export const riskState = () => state;
-
-// does this export fit the product as it is now? [] when it does, else the reasons it doesn't
-export function fits(spec, p, checks = []) {
-  const why = [], qs = Object.fromEntries((p.questions || []).map((q) => [q.id, q]));
-  for (const f of spec.features) {
-    if (f.startsWith("z_")) { if (!p.price?.zone?.[f.slice(2)]) why.push(`the product no longer prices zone level "${f.slice(2)}"`); continue; }
-    const q = qs[f];
-    if (!q) { why.push(`no question "${f}"`); continue; }
-    const e = spec.encode[f] || {};
-    if (e.choice) {
-      if (q.type !== "choice") { why.push(`"${f}" is no longer a choice`); continue; }
-      const unknown = q.options.map((o) => o.v).filter((v) => !e.choice.includes(String(v)));
-      if (unknown.length) why.push(`"${f}" offers ${unknown.join(", ")}, which the trees never saw`);
-    } else if (q.type === "choice" && !q.options.every((o) => Number.isFinite(Number(o.v)))) why.push(`"${f}" is now a choice of words, the trees read a number`);
-  }
-  // the check policies' answers against today's ranges and choices
-  const off = {};
-  for (const c of checks.slice(0, 50)) for (const [k, v] of Object.entries(c.answers || {})) {
-    const q = qs[k];
-    if (!q || !spec.features.includes(k)) continue;
-    const bad = q.type === "number" ? typeof v !== "number" || v < q.min || v > q.max : q.type === "choice" ? !q.options.some((o) => String(o.v) === String(v)) : false;
-    if (bad) (off[k] ||= { n: 0, q, vals: new Set() }).n++, off[k].vals.add(v);
-  }
-  for (const [k, { n, q, vals }] of Object.entries(off)) {
-    const seen = [...vals].slice(0, 3).join(", ");
-    why.push(q.type === "number" ? `"${k}": ${n} of the export's check policies (${seen}, ...) are outside today's range ${q.min}–${q.max} (new units?)` : `"${k}": the export's check policies use ${seen}, not one of today's choices`);
-  }
-  return [...new Set(why)];
+const DIR = process.env.DONE_RISK_DIR || path.join(HERE, "../../ml/risk/out");
+let model = undefined, why = null;
+async function loadModel() {
+  if (model !== undefined) return model;
+  try {
+    if (!fs.existsSync(path.join(DIR, "done_risk_dispute.json")) || !fs.existsSync(path.join(DIR, "done_risk_overrun.json"))) throw new Error(`no Done-Risk trees in ${DIR}`);
+    const m = await import(pathToFileURL(path.join(HERE, "../../ml/risk/risk.mjs")).href);
+    model = m.load(DIR);
+  } catch (e) { model = null; why = String(e?.message || e).slice(0, 160); }
+  return model;
 }
+export const riskStatus = async () => { const m = await loadModel(); return m ? { live: true, source: "model: done-risk", version: Object.values(m.specs).map((s) => s.version).join(",") } : { live: false, source: "rules", why }; };
 
-// Load the trees and install them. Safe to call when the files are missing or don't fit: quotes keep the factors.
-export async function installRisk({ dir = RISK_DIR } = {}) {
-  state = { live: false, dir, products: {}, reason: null };
-  if (!fs.existsSync(dir) || !fs.readdirSync(dir).some((f) => /^risk_\w+\.json$/.test(f))) { state.reason = `no exported trees in ${path.relative(path.join(HERE, "../.."), dir) || dir}`; useRiskModel(null); return state; }
-  let m;
-  try { m = (await import(pathToFileURL(path.join(HERE, "../../ml/risk/risk.mjs")).href)).load(dir); }
-  catch (e) { state.reason = `could not load the trees: ${String(e.message || e).slice(0, 120)}`; useRiskModel(null); return state; }
-  const ok = new Set();
-  for (const [id, spec] of Object.entries(m.specs)) {
-    const p = PRODUCTS[id];
-    if (!p) { state.products[id] = { live: false, version: spec.version, why: ["no such product"] }; continue; }
-    if (p.price?.model === "mortality") { state.products[id] = { live: false, version: spec.version, why: ["priced from its mortality table"] }; continue; }
-    let checks = [];
-    try { checks = JSON.parse(fs.readFileSync(path.join(dir, `check_${id}.json`), "utf8")); } catch { /* no check file: the key checks only */ }
-    const why = fits(spec, p, checks);
-    state.products[id] = { live: !why.length, version: spec.version, trees: spec.trees.length, features: spec.features, ...(LEVEL[id] ? { level: LEVEL[id].times } : {}), ...(why.length ? { why } : {}) };
-    if (!why.length) ok.add(id);
-  }
-  for (const p of Object.values(PRODUCTS)) if (!state.products[p.id]) state.products[p.id] = { live: false, why: [p.price?.model === "mortality" ? "priced from its mortality table" : "no exported trees"] };
-  if (!ok.size) { state.reason = "the exported trees don't fit today's products' answers; every product is priced by its factor table"; useRiskModel(null); return state; }
-  useRiskModel({
-    estimate(p, answers, zone) {
-      const id = p?.id || p;
-      if (!ok.has(id)) return null;
-      const spec = m.specs[id];
-      // every zone level the trees read must be there, as a number
-      for (const f of spec.features) if (f.startsWith("z_") && !Number.isFinite(Number(zone?.[f.slice(2)]))) return null;
-      const e = m.estimate(id, answers, zone || {});
-      if (!e || !Number.isFinite(e.claims) || e.claims <= 0) return null;
-      const lv = LEVEL[id], why = e.why.map((w) => ({ ...w, by: "Cover-Risk" }));
-      if (lv) why.push({ factor: "level", value: lv.why, times: lv.times, by: "Cover-Risk" });
-      return { claims: Math.round(e.claims * (lv?.times || 1)), why, version: e.version };
-    },
-  });
-  state.live = true; state.reason = null;
-  return state;
+// the model's inputs, from a job (money in dollars, as the model was trained)
+export function inputsOf(j, { price = null, pro = null, history = [] } = {}) {
+  const cents = price ?? j.agreed?.price ?? null, ceiling = j.scope?.priceCeiling || j.budget || cents;
+  const w = j.scope?.window, days = w?.from && w?.to ? Math.max(0.5, (Date.parse(w.to) - Date.parse(w.from)) / 864e5) : 7;
+  const allowance = (j.agreed?.parts ?? j.scope?.estimate?.parts ?? 0) / 100, estimate = (j.scope?.estimate?.parts ?? j.agreed?.parts ?? 0) / 100;
+  const past = history.filter((x) => x.id !== j.id && x.agreed);
+  return { trade: j.scope?.trade || "handyman", price: (cents || 0) / 100, ceiling: (ceiling || cents || 1) / 100, partsAllowance: allowance, partEstimate: estimate || allowance,
+    checks: j.scope?.checks?.length || 0, gaps: j.scopeReview?.gaps?.length ?? 0, windowDays: +days.toFixed(1),
+    proJobs: pro?.jobs ?? 0, proRating: pro?.rating ?? 4.5, proLicensed: !!pro?.verification?.license?.valid, licensedTrade: (j.scope?.trade || "") === "plumbing",
+    firstTimeHirer: past.length === 0, hirerPastDisputes: past.filter((x) => x.dispute || (x.pastDisputes || []).length).length, problemPhoto: (j.evidence || []).some((e) => e.phase === "reference") };
 }
+// the rules' stand-in: the same direction as the model (gaps, a first-time hirer and past disputes raise dispute risk;
+// a price near the ceiling and parts below the estimate raise overrun risk)
+function rules(x) {
+  const lg = (z) => 1 / (1 + Math.exp(-z));
+  const d = lg(-2.0 + 0.35 * x.gaps + 0.5 * (x.firstTimeHirer ? 1 : 0) + 0.6 * x.hirerPastDisputes + 1.2 * Math.max(0, x.price / x.ceiling - 0.85) - 0.15 * Math.min(10, x.proJobs / 20));
+  const o = lg(-2.1 + 0.3 * x.gaps + 0.8 * Math.max(0, 1 - (x.partEstimate > 0 ? x.partsAllowance / x.partEstimate : 1)) + 0.002 * Math.min(1000, x.price) - (x.problemPhoto ? 0.3 : 0));
+  return { dispute: { p: +d.toFixed(4), why: [] }, overrun: { p: +o.toFixed(4), why: [] } };
+}
+// each factor in words: what it is, its value, which way it pushed (factors at 0 / false, or with no effect, are left out)
+const SAY = { trade: (v) => `a ${v} job`, price: (v) => `the price ($${Math.round(v)})`, price_to_ceiling: (v) => `the price is ${Math.round(v * 100)}% of the ceiling`, parts_allowance: (v) => `$${Math.round(v)} of parts in the price`,
+  allowance_to_parts: (v) => `the parts allowance is ${Math.round(v * 100)}% of the part estimate`, checks: (v) => `${v} done-conditions`, gaps: (v) => `${v} gap${v === 1 ? "" : "s"} in the scope review`, window_days: (v) => `a ${v}-day window`,
+  pro_jobs: (v) => `the pro has ${v} jobs done`, pro_rating: (v) => `the pro is rated ${v}`, pro_licensed: () => "the pro is licensed", licensed_trade: () => "a licensed trade", first_time_hirer: () => "a first-time hirer",
+  hirer_past_disputes: (v) => `${v} past dispute${v === 1 ? "" : "s"} for this customer`, problem_photo: () => "the customer posted a photo of the problem" };
+const words = (why, what) => (why || []).filter((w) => w.value !== 0 && w.value !== false && w.value != null && Math.abs(w.logOdds) >= 0.05).map((w) => ({ factor: w.factor, says: `${(SAY[w.factor] || ((v) => `${w.factor.replace(/_/g, " ")} ${v}`))(w.value)} ${w.logOdds > 0 ? "raises" : "lowers"} the ${what} risk`, effect: w.logOdds > 0 ? "raises" : "lowers", logOdds: w.logOdds }));
+export async function riskOf(j, opts = {}) {
+  const x = inputsOf(j, opts), m = await loadModel();
+  if (m) { try { const r = m.predict(x); return { dispute: { p: r.dispute.p, why: words(r.dispute.why, "dispute") }, overrun: { p: r.overrun.p, why: words(r.overrun.why, "overrun") }, source: "model: done-risk", version: r.version, inputs: x, at: new Date().toISOString() }; } catch (e) { why = String(e?.message || e).slice(0, 160); } }
+  return { ...rules(x), source: "rules", why: why || "the Done-Risk files aren't loaded", inputs: x, at: new Date().toISOString() };
+}
+// the buffer: the person's buffer % at least, more when overrun is likely (10% + 60% of the overrun probability, at
+// most 40%); the hold never exceeds the ceiling (startHold caps it)
+export const riskBufferPct = (overrunP, minPct) => Math.max(minPct, Math.min(40, Math.round(10 + 60 * (overrunP || 0))));

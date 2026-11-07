@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "fast whoosh",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:19307",
+      "title": "hi speed electronic whoosh 1.wav",
+      "author": "martian",
+      "duration_seconds": 0.926485,
+      "preview_url": "https://cdn.freesound.org/previews/19/19307_84709-hq.mp3",
+      "downloads": 4890,
+      "page_url": "https://freesound.org/people/martian/sounds/19307/",
+      "license_label": "Creative Commons 0",
+      "description": "cartoon fast electronic whoosh",
+      "rating": 4.3,
+      "rating_count": 72
+    },
+    {
+      "id": "fs:449996",
+      "title": "whoosh_short_mid.wav",
+      "author": "DJT4NN3R",
+      "duration_seconds": 2.67857,
+      "preview_url": "https://cdn.freesound.org/previews/449/449996_3217484-hq.mp3",
+      "downloads": 3985,
+      "page_url": "https://freesound.org/people/DJT4NN3R/sounds/449996/",
+      "license_label": "Creative Commons 0",
+      "description": "A simple whoosh effect. Short and middle-pitched.",
+      "rating": 4.7,
+      "rating_count": 69
+    },
+    {
+      "id": "fs:683101",
+      "title": "quick woosh",
+      "author": "florianreichelt",
+      "duration_seconds": 2.05298,
+      "preview_url": "https://cdn.freesound.org/previews/683/683101_6253486-hq.mp3",
+      "downloads": 23830,
+      "page_url": "https://freesound.org/people/florianreichelt/sounds/683101/",
+      "license_label": "Creative Commons 0",
+      "description": "If you want to support me and my work or acknowledge that I provide my soundeffects for free - how about signing up to Epidemic Sound via the following link: http://share.epidemicsound.com/flo Epidemic Sound offers a massive library of sound effects and music and by using my link you not only get the first 30 DAYS FOR FREE but you can also CANCEL ANYTIME! Thus, if you only have one project right now you can literally get their entire Sound Library for free and then decide whether it suits your needs further. Alternatively, consider subscribing to my Youtube Channel: https://www.youtube.com/@florianreichelt Either way, I hope you have a good time with my sounds and can make your project work! All the best, Florian! Keywords: Woosh, Whoosh, Swish, Fast, Quick, Air, Sound effect, Movement, Pass, Fly, Rush, Speed, Transition, Wind, Swoosh, Whooshing, Blade, Jet, Motion, Sleek, Zip, Smooth, Streamlined, Rushing, Flying, Racing, Noise, Powerful, Dynamic, Energy",
+      "rating": 4.7,
+      "rating_count": 550
+    },
+    {
+      "id": "fs:812680",
+      "title": "Sound Design Elements Whoosh SFX 043",
+      "author": "AudioPapkin",
+      "duration_seconds": 2.4252,
+      "preview_url": "https://cdn.freesound.org/previews/812/812680_8698658-hq.mp3",
+      "downloads": 191,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812680/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Whoosh SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": 4.4,
+      "rating_count": 7
+    },
+    {
+      "id": "fs:812640",
+      "title": "Sound Design Elements Whoosh SFX 005",
+      "author": "AudioPapkin",
+      "duration_seconds": 5.43127,
+      "preview_url": "https://cdn.freesound.org/previews/812/812640_8698658-hq.mp3",
+      "downloads": 109,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812640/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Whoosh SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": 5.0,
+      "rating_count": 4
+    },
+    {
+      "id": "fs:812660",
+      "title": "Sound Design Elements Whoosh SFX 025",
+      "author": "AudioPapkin",
+      "duration_seconds": 2.41871,
+      "preview_url": "https://cdn.freesound.org/previews/812/812660_8698658-hq.mp3",
+      "downloads": 130,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812660/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Whoosh SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": null,
+      "rating_count": null
+    }
+  ]
+}

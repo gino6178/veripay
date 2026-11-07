@@ -1,630 +1,204 @@
 {
- "renters": {
-  "policies_train": 200000,
-  "policies_test": 50000,
-  "claims_train": 8945,
-  "loss_per_year_train_usd": 210.39,
-  "trees": 75,
-  "gini": {
-   "lightgbm": 0.3181,
-   "glm": 0.3172,
-   "product_tables": 0.3203,
-   "true_premium": 0.3315
+ "dispute": {
+  "jobs_train": 200000,
+  "jobs_test": 50000,
+  "base_rate_test": 0.1434,
+  "trees": 193,
+  "auc": {
+   "lightgbm": 0.7761,
+   "logistic": 0.765,
+   "true_probability": 0.7783
   },
-  "rmse_to_true_premium_usd": {
-   "lightgbm": 47.44,
-   "glm": 47.45,
-   "product_tables": 50.31
+  "auc_ci95": {
+   "lightgbm": [
+    0.7712,
+    0.7821
+   ],
+   "logistic": [
+    0.7602,
+    0.7707
+   ],
+   "diff": [
+    0.0087,
+    0.013
+   ]
+  },
+  "brier": {
+   "lightgbm": 0.10376,
+   "logistic": 0.10559,
+   "true_probability": 0.1034
   },
   "calibration_lightgbm": [
    {
     "decile": 1,
-    "predicted": 4968.8,
-    "actual": 5286.1
+    "predicted": 0.022,
+    "actual": 0.0204
    },
    {
     "decile": 2,
-    "predicted": 8484.2,
-    "actual": 8978.4
+    "predicted": 0.036,
+    "actual": 0.0332
    },
    {
     "decile": 3,
-    "predicted": 11032.3,
-    "actual": 13129.4
+    "predicted": 0.0494,
+    "actual": 0.0524
    },
    {
     "decile": 4,
-    "predicted": 13658.5,
-    "actual": 14612.1
+    "predicted": 0.0647,
+    "actual": 0.0662
    },
    {
     "decile": 5,
-    "predicted": 16400.3,
-    "actual": 19582.8
+    "predicted": 0.0839,
+    "actual": 0.086
    },
    {
     "decile": 6,
-    "predicted": 19345.0,
-    "actual": 19232.4
+    "predicted": 0.1094,
+    "actual": 0.1038
    },
    {
     "decile": 7,
-    "predicted": 22761.1,
-    "actual": 20701.5
+    "predicted": 0.1435,
+    "actual": 0.1348
    },
    {
     "decile": 8,
-    "predicted": 26607.3,
-    "actual": 23156.8
+    "predicted": 0.1926,
+    "actual": 0.1934
    },
    {
     "decile": 9,
-    "predicted": 31981.2,
-    "actual": 32885.7
+    "predicted": 0.275,
+    "actual": 0.274
    },
    {
     "decile": 10,
-    "predicted": 47486.9,
-    "actual": 48044.5
+    "predicted": 0.4776,
+    "actual": 0.4694
    }
   ],
-  "calibration_glm": [
-   {
-    "decile": 1,
-    "predicted": 6725.9,
-    "actual": 5834.6
-   },
-   {
-    "decile": 2,
-    "predicted": 9182.0,
-    "actual": 10706.5
-   },
-   {
-    "decile": 3,
-    "predicted": 11162.5,
-    "actual": 11930.1
-   },
-   {
-    "decile": 4,
-    "predicted": 13228.8,
-    "actual": 13160.9
-   },
-   {
-    "decile": 5,
-    "predicted": 15539.3,
-    "actual": 19987.7
-   },
-   {
-    "decile": 6,
-    "predicted": 18211.7,
-    "actual": 16741.2
-   },
-   {
-    "decile": 7,
-    "predicted": 21633.9,
-    "actual": 21431.3
-   },
-   {
-    "decile": 8,
-    "predicted": 26309.5,
-    "actual": 25874.0
-   },
-   {
-    "decile": 9,
-    "predicted": 33766.9,
-    "actual": 29943.5
-   },
-   {
-    "decile": 10,
-    "predicted": 55627.4,
-    "actual": 49995.2
-   }
-  ],
-  "predicted_over_actual_total": {
-   "lightgbm": 0.986,
-   "glm": 1.0281
-  },
   "shap_mean_abs": {
-   "contents": 0.4403,
-   "claims3y": 0.2176,
-   "floor": 0.1071,
-   "z_quake": 0.0911,
-   "z_flood": 0.0872,
-   "building": 0.0804,
-   "deductible": 0.0747,
-   "z_theft": 0.0388,
-   "valuables": 0.0386,
-   "size": 0.026
+   "gaps": 0.5987,
+   "price_to_ceiling": 0.3419,
+   "hirer_past_disputes": 0.3027,
+   "first_time_hirer": 0.2797,
+   "pro_jobs": 0.2251,
+   "pro_rating": 0.1894,
+   "pro_licensed": 0.1793,
+   "checks": 0.1737,
+   "problem_photo": 0.1284,
+   "window_days": 0.1073,
+   "trade": 0.079,
+   "licensed_trade": 0.0528,
+   "allowance_to_parts": 0.0133,
+   "parts_allowance": 0.012,
+   "price": 0.0117
   },
   "monotone_violations": 0,
-  "generator": {
-   "freq": 0.07,
-   "shape": 1.2,
-   "hidden": "contents scale as (contents/8000)^0.8 not linearly; theft level 3 x walk-up apartment on the ground floor x1.6; first-time claimants (claims3y 0) x0.85"
-  },
-  "gini_ci95": {
-   "lightgbm": [
-    0.2843,
-    0.3442
-   ],
-   "glm": [
-    0.2834,
-    0.3456
-   ]
-  },
-  "gini_lightgbm_minus_glm_ci95": [
-   -0.008,
-   0.0084
-  ]
+  "generator": "logit = -3.2 + 0.55 gaps + 0.35 (gaps>=2) + 0.6 first_time_hirer + 0.5 past_disputes + 0.9 (price/ceiling > 0.95) - 0.25 log1p(pro_jobs) - 0.8 (rating-4.5) - 0.4 licensed_if_needed + 0.5 unlicensed_in_licensed_trade - 0.3 problem_photo + 0.25 (window_days<=1) + 0.15 checks + trade (cleaning +0.3, electrical +0.2); hidden: rating below 4.2 x first-time hirer +0.5"
  },
- "home": {
-  "policies_train": 200000,
-  "policies_test": 50000,
-  "claims_train": 6706,
-  "loss_per_year_train_usd": 1239.84,
-  "trees": 102,
-  "gini": {
-   "lightgbm": 0.4011,
-   "glm": 0.4071,
-   "product_tables": 0.4065,
-   "true_premium": 0.4173
+ "overrun": {
+  "jobs_train": 200000,
+  "jobs_test": 50000,
+  "base_rate_test": 0.1395,
+  "trees": 108,
+  "auc": {
+   "lightgbm": 0.7798,
+   "logistic": 0.7661,
+   "true_probability": 0.7828
   },
-  "rmse_to_true_premium_usd": {
-   "lightgbm": 499.9,
-   "glm": 465.71,
-   "product_tables": 574.59
+  "auc_ci95": {
+   "lightgbm": [
+    0.7741,
+    0.7855
+   ],
+   "logistic": [
+    0.7601,
+    0.7714
+   ],
+   "diff": [
+    0.0115,
+    0.0162
+   ]
+  },
+  "brier": {
+   "lightgbm": 0.09882,
+   "logistic": 0.10094,
+   "true_probability": 0.09814
   },
   "calibration_lightgbm": [
    {
     "decile": 1,
-    "predicted": 24193.1,
-    "actual": 27443.1
+    "predicted": 0.0271,
+    "actual": 0.0264
    },
    {
     "decile": 2,
-    "predicted": 41793.3,
-    "actual": 43871.9
+    "predicted": 0.0389,
+    "actual": 0.0338
    },
    {
     "decile": 3,
-    "predicted": 54948.1,
-    "actual": 52825.7
+    "predicted": 0.0502,
+    "actual": 0.0518
    },
    {
     "decile": 4,
-    "predicted": 67523.4,
-    "actual": 67566.2
+    "predicted": 0.062,
+    "actual": 0.0654
    },
    {
     "decile": 5,
-    "predicted": 81090.2,
-    "actual": 92748.5
+    "predicted": 0.0756,
+    "actual": 0.0752
    },
    {
     "decile": 6,
-    "predicted": 96490.2,
-    "actual": 120985.8
+    "predicted": 0.0938,
+    "actual": 0.0954
    },
    {
     "decile": 7,
-    "predicted": 115627.8,
-    "actual": 120315.5
+    "predicted": 0.1199,
+    "actual": 0.129
    },
    {
     "decile": 8,
-    "predicted": 141713.0,
-    "actual": 158599.4
+    "predicted": 0.163,
+    "actual": 0.1694
    },
    {
     "decile": 9,
-    "predicted": 184946.2,
-    "actual": 182480.9
+    "predicted": 0.2502,
+    "actual": 0.2438
    },
    {
     "decile": 10,
-    "predicted": 350696.0,
-    "actual": 378174.4
+    "predicted": 0.5028,
+    "actual": 0.505
    }
   ],
-  "calibration_glm": [
-   {
-    "decile": 1,
-    "predicted": 28887.4,
-    "actual": 22415.7
-   },
-   {
-    "decile": 2,
-    "predicted": 44551.3,
-    "actual": 45109.9
-   },
-   {
-    "decile": 3,
-    "predicted": 57228.0,
-    "actual": 67836.2
-   },
-   {
-    "decile": 4,
-    "predicted": 70033.2,
-    "actual": 65663.0
-   },
-   {
-    "decile": 5,
-    "predicted": 84635.1,
-    "actual": 91517.1
-   },
-   {
-    "decile": 6,
-    "predicted": 101860.3,
-    "actual": 106558.2
-   },
-   {
-    "decile": 7,
-    "predicted": 123822.4,
-    "actual": 115029.9
-   },
-   {
-    "decile": 8,
-    "predicted": 154297.5,
-    "actual": 135791.3
-   },
-   {
-    "decile": 9,
-    "predicted": 205987.8,
-    "actual": 236924.8
-   },
-   {
-    "decile": 10,
-    "predicted": 378084.9,
-    "actual": 358194.0
-   }
-  ],
-  "predicted_over_actual_total": {
-   "lightgbm": 0.9311,
-   "glm": 1.0032
-  },
   "shap_mean_abs": {
-   "contents": 0.2845,
-   "rebuild": 0.279,
-   "z_typhoon": 0.1932,
-   "claims3y": 0.1895,
-   "age": 0.1742,
-   "structure": 0.1733,
-   "floor": 0.1648,
-   "z_flood": 0.1307,
-   "deductible": 0.1153,
-   "z_quake": 0.0911,
-   "size": 0.0336
+   "price": 0.3775,
+   "gaps": 0.3232,
+   "allowance_to_parts": 0.2989,
+   "trade": 0.228,
+   "pro_jobs": 0.163,
+   "problem_photo": 0.1545,
+   "window_days": 0.0953,
+   "parts_allowance": 0.082,
+   "licensed_trade": 0.0738,
+   "pro_rating": 0.0105,
+   "price_to_ceiling": 0.0099,
+   "checks": 0.0055,
+   "pro_licensed": 0.0033,
+   "first_time_hirer": 0.0012,
+   "hirer_past_disputes": 0.0011
   },
   "monotone_violations": 0,
-  "generator": {
-   "freq": 0.05,
-   "shape": 0.9,
-   "hidden": "age curve exp(0.012 x age); brick x age over 40 x1.3; flood level 3 x ground floor x1.8; typhoon level 3 x1.15 more"
-  },
-  "gini_ci95": {
-   "lightgbm": [
-    0.3642,
-    0.4415
-   ],
-   "glm": [
-    0.3709,
-    0.4488
-   ]
-  },
-  "gini_lightgbm_minus_glm_ci95": [
-   -0.0166,
-   0.0038
-  ]
- },
- "pet": {
-  "policies_train": 200000,
-  "policies_test": 50000,
-  "claims_train": 58353,
-  "loss_per_year_train_usd": 284.26,
-  "trees": 99,
-  "gini": {
-   "lightgbm": 0.3114,
-   "glm": 0.3108,
-   "product_tables": 0.3054,
-   "true_premium": 0.3131
-  },
-  "rmse_to_true_premium_usd": {
-   "lightgbm": 21.55,
-   "glm": 19.58,
-   "product_tables": 34.3
-  },
-  "calibration_lightgbm": [
-   {
-    "decile": 1,
-    "predicted": 12164.6,
-    "actual": 11760.2
-   },
-   {
-    "decile": 2,
-    "predicted": 15782.9,
-    "actual": 15353.7
-   },
-   {
-    "decile": 3,
-    "predicted": 18431.1,
-    "actual": 18591.2
-   },
-   {
-    "decile": 4,
-    "predicted": 20999.4,
-    "actual": 20582.3
-   },
-   {
-    "decile": 5,
-    "predicted": 23643.4,
-    "actual": 24266.6
-   },
-   {
-    "decile": 6,
-    "predicted": 26576.6,
-    "actual": 25651.1
-   },
-   {
-    "decile": 7,
-    "predicted": 30012.6,
-    "actual": 31042.7
-   },
-   {
-    "decile": 8,
-    "predicted": 34282.7,
-    "actual": 36315.1
-   },
-   {
-    "decile": 9,
-    "predicted": 40792.7,
-    "actual": 41477.7
-   },
-   {
-    "decile": 10,
-    "predicted": 60072.5,
-    "actual": 60298.8
-   }
-  ],
-  "calibration_glm": [
-   {
-    "decile": 1,
-    "predicted": 11957.6,
-    "actual": 11921.4
-   },
-   {
-    "decile": 2,
-    "predicted": 15669.7,
-    "actual": 15480.0
-   },
-   {
-    "decile": 3,
-    "predicted": 18404.4,
-    "actual": 18321.6
-   },
-   {
-    "decile": 4,
-    "predicted": 20983.3,
-    "actual": 19837.3
-   },
-   {
-    "decile": 5,
-    "predicted": 23703.8,
-    "actual": 24401.9
-   },
-   {
-    "decile": 6,
-    "predicted": 26756.9,
-    "actual": 28428.7
-   },
-   {
-    "decile": 7,
-    "predicted": 30297.4,
-    "actual": 28763.3
-   },
-   {
-    "decile": 8,
-    "predicted": 34849.9,
-    "actual": 37349.7
-   },
-   {
-    "decile": 9,
-    "predicted": 41594.3,
-    "actual": 40596.0
-   },
-   {
-    "decile": 10,
-    "predicted": 58920.6,
-    "actual": 60240.6
-   }
-  ],
-  "predicted_over_actual_total": {
-   "lightgbm": 0.9909,
-   "glm": 0.9922
-  },
-  "shap_mean_abs": {
-   "ageYears": 0.2332,
-   "breedSize": 0.1933,
-   "species": 0.1751,
-   "limit": 0.148,
-   "copay": 0.1016,
-   "chipped": 0.0251
-  },
-  "monotone_violations": 0,
-  "generator": {
-   "freq": 0.45,
-   "shape": 1.5,
-   "hidden": "age curve exp(0.09 x ageYears) in place of the age bands; flat-faced breeds x1.2 more over age 6; chipped x0.95"
-  },
-  "gini_ci95": {
-   "lightgbm": [
-    0.2974,
-    0.3226
-   ],
-   "glm": [
-    0.297,
-    0.3231
-   ]
-  },
-  "gini_lightgbm_minus_glm_ci95": [
-   -0.0017,
-   0.003
-  ]
- },
- "car": {
-  "policies_train": 200000,
-  "policies_test": 50000,
-  "claims_train": 17542,
-  "loss_per_year_train_usd": 655.41,
-  "trees": 114,
-  "gini": {
-   "lightgbm": 0.621,
-   "glm": 0.615,
-   "product_tables": 0.6002,
-   "true_premium": 0.6237
-  },
-  "rmse_to_true_premium_usd": {
-   "lightgbm": 211.39,
-   "glm": 303.03,
-   "product_tables": 377.62
-  },
-  "calibration_lightgbm": [
-   {
-    "decile": 1,
-    "predicted": 4911.4,
-    "actual": 5411.1
-   },
-   {
-    "decile": 2,
-    "predicted": 9214.3,
-    "actual": 12157.7
-   },
-   {
-    "decile": 3,
-    "predicted": 13593.6,
-    "actual": 13852.5
-   },
-   {
-    "decile": 4,
-    "predicted": 18577.7,
-    "actual": 19220.2
-   },
-   {
-    "decile": 5,
-    "predicted": 25096.5,
-    "actual": 23209.8
-   },
-   {
-    "decile": 6,
-    "predicted": 33930.4,
-    "actual": 36179.2
-   },
-   {
-    "decile": 7,
-    "predicted": 48228.4,
-    "actual": 49243.2
-   },
-   {
-    "decile": 8,
-    "predicted": 73130.0,
-    "actual": 74454.6
-   },
-   {
-    "decile": 9,
-    "predicted": 122098.2,
-    "actual": 125181.7
-   },
-   {
-    "decile": 10,
-    "predicted": 288177.4,
-    "actual": 294102.2
-   }
-  ],
-  "calibration_glm": [
-   {
-    "decile": 1,
-    "predicted": 5737.4,
-    "actual": 5164.2
-   },
-   {
-    "decile": 2,
-    "predicted": 9867.9,
-    "actual": 12809.8
-   },
-   {
-    "decile": 3,
-    "predicted": 13919.2,
-    "actual": 13454.0
-   },
-   {
-    "decile": 4,
-    "predicted": 18852.6,
-    "actual": 20409.1
-   },
-   {
-    "decile": 5,
-    "predicted": 25453.8,
-    "actual": 25901.0
-   },
-   {
-    "decile": 6,
-    "predicted": 35156.0,
-    "actual": 34799.2
-   },
-   {
-    "decile": 7,
-    "predicted": 50417.6,
-    "actual": 47612.0
-   },
-   {
-    "decile": 8,
-    "predicted": 76106.3,
-    "actual": 73212.3
-   },
-   {
-    "decile": 9,
-    "predicted": 125054.0,
-    "actual": 128164.1
-   },
-   {
-    "decile": 10,
-    "predicted": 303484.4,
-    "actual": 291834.1
-   }
-  ],
-  "predicted_over_actual_total": {
-   "lightgbm": 0.9754,
-   "glm": 1.0164
-  },
-  "shap_mean_abs": {
-   "vehicle": 0.7724,
-   "kmMonth": 0.4614,
-   "level": 0.3661,
-   "accidents3y": 0.2422,
-   "years": 0.1365,
-   "value": 0.1013,
-   "parking": 0.0847,
-   "telematics": 0.0779,
-   "z_theft": 0.0767
-  },
-  "monotone_violations": 0,
-  "generator": {
-   "freq": 0.12,
-   "shape": 1.1,
-   "hidden": "experience curve 1 + 0.6 x exp(-years/3); kmMonth^0.5 scale; telematics x0.85; street parking x theft level 3 x1.4"
-  },
-  "gini_ci95": {
-   "lightgbm": [
-    0.5993,
-    0.6411
-   ],
-   "glm": [
-    0.5918,
-    0.6353
-   ]
-  },
-  "gini_lightgbm_minus_glm_ci95": [
-   0.0025,
-   0.0096
-  ]
+  "generator": "logit = -2.6 + 0.4 gaps + 1.1 (parts_allowance/part_estimate < 0.8) + 0.002 (price-200) cap 1.5 - 0.2 log1p(pro_jobs) - 0.35 problem_photo + trade (plumbing +0.4 for water_heater +0.6, cleaning -0.5) + 0.3 (window_days<=1); hidden: an old-home flag (age>40, unseen to the hirer's scope) +0.5 on plumbing"
  }
 }

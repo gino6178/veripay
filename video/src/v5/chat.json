@@ -1,0 +1,137 @@
+[
+ {
+  "from": "you",
+  "text": "Kitchen faucet keeps dripping. Fix it this week, under $300. 78704"
+ },
+ {
+  "from": "bot",
+  "text": "Post this as a job?\n<i>Kitchen faucet keeps dripping. Fix it this week, under $300. 78704</i>",
+  "buttons": [
+   [
+    "Post it",
+    "Not now"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "tap",
+  "text": "Post it"
+ },
+ {
+  "from": "bot",
+  "text": "<b>Offers asked for</b>\nDP-1001: Offers asked for: local pros' agents usually answer within 2-3 seconds.",
+  "buttons": [
+   [
+    "Open DP-1001"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "bot",
+  "text": "Posted. Pros' agents near 78704 are quoting now.\n\n<b>DP-1001 · Fix a leaking faucet</b>\noffered · ceiling $300.00\nNext: Compare offers; counter once or accept one (accepting holds the money).\n\nNo offers yet: pros' agents usually answer within a minute or two. I'll tell you when one comes in.",
+  "buttons": [
+   [
+    "Pros near the job",
+    "Check reviews"
+   ],
+   [
+    "Refresh"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "bot",
+  "text": "<b>New offer</b>\nDP-1001: Barton Creek Plumbing offered $220.00.",
+  "buttons": [
+   [
+    "Open DP-1001"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "tap",
+  "text": "Open DP-1001"
+ },
+ {
+  "from": "bot",
+  "text": "<b>DP-1001 · Fix a leaking faucet</b>\noffered · ceiling $300.00\nNext: Compare offers; counter once or accept one (accepting holds the money).\n\n<b>1. Barton Creek Plumbing</b> $220.00 · 4.9★ · 0 mi\ntypical $135.00-$235.00: this offer is within the range (an estimate from similar jobs, not a quote)\n\n<b>2. Eastside Pipe &amp; Drain</b> $195.00 · 4.7★ · 3.2 mi\ntypical $135.00-$235.00: this offer is within the range (an estimate from similar jobs, not a quote)\n\n<b>3. Hill Country Leak Pros</b> $255.00 · 4.8★ · 3.1 mi\ntypical $135.00-$235.00: this offer is above the range (an estimate from similar jobs, not a quote)\n\n<b>4. Mueller Plumbing Co.</b> $220.00 · 4.6★ · 6.4 mi\ntypical $135.00-$235.00: this offer is within the range (an estimate from similar jobs, not a quote)\n\n<b>5. Lone Star Rooter</b> $205.00 · 4.5★ · 10.6 mi\ntypical $135.00-$235.00: this offer is within the range (an estimate from similar jobs, not a quote)",
+  "buttons": [
+   [
+    "Propose a price",
+    "Hire at $220.00"
+   ],
+   [
+    "Propose a price",
+    "Hire at $195.00"
+   ],
+   [
+    "Propose a price",
+    "Hire at $255.00"
+   ],
+   [
+    "Propose a price",
+    "Hire at $220.00"
+   ],
+   [
+    "Propose a price",
+    "Hire at $205.00"
+   ],
+   [
+    "Pros near the job",
+    "Check reviews"
+   ],
+   [
+    "Refresh"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "tap",
+  "text": "Propose a price"
+ },
+ {
+  "from": "bot",
+  "text": "Your price in dollars? (Reply with a number, e.g. 170.)",
+  "buttons": [],
+  "forceReply": true
+ },
+ {
+  "from": "you",
+  "text": "172"
+ },
+ {
+  "from": "bot",
+  "text": "<b>New price proposed</b>\nDP-1001: Eastside Pipe &amp; Drain's agent proposed $185.00.",
+  "buttons": [
+   [
+    "Open DP-1001"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "bot",
+  "text": "Pro $195.00 → You $172.00 → Pro $185.00 (your move, 2 left)\n📊 $172.00 is within the typical range ($135.00-$235.00).",
+  "buttons": [
+   [
+    "Open the job"
+   ]
+  ],
+  "forceReply": false
+ },
+ {
+  "from": "tap",
+  "text": "Hire"
+ },
+ {
+  "from": "bot",
+  "text": "Hiring holds the money with PayPal, so you confirm it on VeriPay with your PIN (one-use link, 1 hour):\nveripay…/link?code=•••",
+  "buttons": [],
+  "forceReply": false
+ }
+]

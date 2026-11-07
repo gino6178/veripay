@@ -1,0 +1,346 @@
+{
+ "set": "ocr-set (30 rendered receipts, held out)",
+ "engine": "windows-ocr (zh-Hant-TW) + ocr.js rules",
+ "total": {
+  "k": 21,
+  "n": 30,
+  "rate": 0.7,
+  "ci95": [
+   0.521,
+   0.833
+  ]
+ },
+ "date": {
+  "k": 30,
+  "n": 30,
+  "rate": 1,
+  "ci95": [
+   0.886,
+   1
+  ]
+ },
+ "store": {
+  "k": 22,
+  "n": 30,
+  "rate": 0.733,
+  "ci95": [
+   0.556,
+   0.858
+  ]
+ },
+ "all_three": {
+  "k": 17,
+  "n": 30,
+  "rate": 0.567,
+  "ci95": [
+   0.392,
+   0.726
+  ]
+ },
+ "total_when_confidence_ge_0_6": {
+  "k": 18,
+  "n": 22,
+  "rate": 0.818,
+  "ci95": [
+   0.615,
+   0.927
+  ]
+ },
+ "coverage_confidence_ge_0_6": {
+  "k": 22,
+  "n": 30,
+  "rate": 0.733,
+  "ci95": [
+   0.556,
+   0.858
+  ]
+ },
+ "by_layout": {
+  "column": {
+   "k": 13,
+   "n": 20,
+   "rate": 0.65,
+   "ci95": [
+    0.433,
+    0.819
+   ]
+  },
+  "inline": {
+   "k": 8,
+   "n": 10,
+   "rate": 0.8,
+   "ci95": [
+    0.49,
+    0.943
+   ]
+  }
+ },
+ "by_font": {
+  "arial.ttf": {
+   "k": 3,
+   "n": 5,
+   "rate": 0.6,
+   "ci95": [
+    0.231,
+    0.882
+   ]
+  },
+  "tahoma.ttf": {
+   "k": 1,
+   "n": 5,
+   "rate": 0.2,
+   "ci95": [
+    0.036,
+    0.624
+   ]
+  },
+  "calibri.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "verdana.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "cour.ttf": {
+   "k": 3,
+   "n": 5,
+   "rate": 0.6,
+   "ci95": [
+    0.231,
+    0.882
+   ]
+  },
+  "lucon.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  }
+ },
+ "ms_per_receipt": 465,
+ "failures": [
+  {
+   "n": "r01.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "got": {
+    "total": 1618,
+    "date": "2026-11-07",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "want": {
+    "total": 9464,
+    "date": "2026-11-07",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r07.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "got": {
+    "total": 8301,
+    "date": "2026-11-01",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "want": {
+    "total": 22924,
+    "date": "2026-11-01",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r09.jpg",
+   "font": "verdana.ttf",
+   "layout": "inline",
+   "got": {
+    "total": 21269,
+    "date": "2026-11-10",
+    "store": "CEDAR PARK HARDWARE ( DEM 0 )"
+   },
+   "want": {
+    "total": 21269,
+    "date": "2026-11-10",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r12.jpg",
+   "font": "arial.ttf",
+   "layout": "inline",
+   "got": {
+    "total": null,
+    "date": "2026-11-11",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "want": {
+    "total": 5766,
+    "date": "2026-11-11",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r13.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "got": {
+    "total": null,
+    "date": "2026-11-11",
+    "store": "MOPAC BUILD & PAINT (DEMO)"
+   },
+   "want": {
+    "total": 7550,
+    "date": "2026-11-11",
+    "store": "MOPAC BUILD & PAINT (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r16.jpg",
+   "font": "cour.ttf",
+   "layout": "column",
+   "got": {
+    "total": 8498,
+    "date": "2026-11-08",
+    "store": "EASTSIDE 00 乙 BARN (DEMO)"
+   },
+   "want": {
+    "total": 23111,
+    "date": "2026-11-08",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r17.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "got": {
+    "total": 6772,
+    "date": "2026-11-02",
+    "store": "P—trap kit"
+   },
+   "want": {
+    "total": 6772,
+    "date": "2026-11-02",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r18.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "got": {
+    "total": 1863,
+    "date": "2026-11-17",
+    "store": "BARTON PLUMBING PARTS (DEMO)"
+   },
+   "want": {
+    "total": 10463,
+    "date": "2026-11-17",
+    "store": "BARTON PLUMBING PARTS (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r19.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "got": {
+    "total": 693,
+    "date": "2026-11-14",
+    "store": "SOUTH CONGRFSS DIY (DEMO)"
+   },
+   "want": {
+    "total": 9088,
+    "date": "2026-11-14",
+    "store": "SOUTH CONGRESS DIY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r22.jpg",
+   "font": "cour.ttf",
+   "layout": "column",
+   "got": {
+    "total": 1378,
+    "date": "2026-11-18",
+    "store": "BARTON PLUMB 工 NG PARTS (DEMO)"
+   },
+   "want": {
+    "total": 7259,
+    "date": "2026-11-18",
+    "store": "BARTON PLUMBING PARTS (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r23.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "got": {
+    "total": 9878,
+    "date": "2026-11-14",
+    "store": "TAX 8.25 %"
+   },
+   "want": {
+    "total": 9878,
+    "date": "2026-11-14",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r28.jpg",
+   "font": "cour.ttf",
+   "layout": "inline",
+   "got": {
+    "total": 5133,
+    "date": "2026-11-05",
+    "store": "BARTON PLUMB 工 NG PARTS (DEMO)"
+   },
+   "want": {
+    "total": 5133,
+    "date": "2026-11-05",
+    "store": "BARTON PLUMBING PARTS (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r29.jpg",
+   "font": "lucon.ttf",
+   "layout": "inline",
+   "got": {
+    "total": null,
+    "date": "2026-11-18",
+    "store": "SOUTH CONGRESS 01Y ( DE 卜 )"
+   },
+   "want": {
+    "total": 10212,
+    "date": "2026-11-18",
+    "store": "SOUTH CONGRESS DIY (DEMO)"
+   },
+   "error": null
+  }
+ ],
+ "at": "2026-11-04T14:49:47.315Z"
+}

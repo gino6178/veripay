@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "soft whoosh",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:521052",
+      "title": "Whoosh_StutterMuted_ER_SFX_14.wav",
+      "author": "Alex_hears_things",
+      "duration_seconds": 4.45823,
+      "preview_url": "https://cdn.freesound.org/previews/521/521052_2309965-hq.mp3",
+      "downloads": 389,
+      "page_url": "https://freesound.org/people/Alex_hears_things/sounds/521052/",
+      "license_label": "Creative Commons 0",
+      "description": "A whoosh",
+      "rating": 4.2,
+      "rating_count": 5
+    },
+    {
+      "id": "fs:620399",
+      "title": "A simple voice saying Whoosh",
+      "author": "LadyImperatrix",
+      "duration_seconds": 3.99383,
+      "preview_url": "https://cdn.freesound.org/previews/620/620399_10089976-hq.mp3",
+      "downloads": 163,
+      "page_url": "https://freesound.org/people/LadyImperatrix/sounds/620399/",
+      "license_label": "Creative Commons 0",
+      "description": "just a simple recording of a voice saying \"whooshhhhhh\" nice for cartoon effect and the like.",
+      "rating": 4.3,
+      "rating_count": 6
+    },
+    {
+      "id": "fs:843665",
+      "title": "StuffedCreatureFur6",
+      "author": "Huglex",
+      "duration_seconds": 0.712063,
+      "preview_url": "https://cdn.freesound.org/previews/843/843665_12419669-hq.mp3",
+      "downloads": 158,
+      "page_url": "https://freesound.org/people/Huglex/sounds/843665/",
+      "license_label": "Creative Commons 0",
+      "description": "The sound of my hand rubbing agaisnt the fur of a stuffed creature. I'm going to be posting new sounds every week for the foreseeable future, so feel free to come back next week for more random sound!",
+      "rating": 4.6,
+      "rating_count": 7
+    },
+    {
+      "id": "fs:71852",
+      "title": "digital_whoosh_soft.wav",
+      "author": "ludvique",
+      "duration_seconds": 0.95254,
+      "preview_url": "https://cdn.freesound.org/previews/71/71852_1062668-hq.mp3",
+      "downloads": 7706,
+      "page_url": "https://freesound.org/people/ludvique/sounds/71852/",
+      "license_label": "Creative Commons 0",
+      "description": "The sound of a soft digital/electrical whoosh or buzz",
+      "rating": 4.5,
+      "rating_count": 61
+    },
+    {
+      "id": "fs:260555",
+      "title": "Basic Fire Whoosh 2",
+      "author": "LookIMadeAThing",
+      "duration_seconds": 4.89297,
+      "preview_url": "https://cdn.freesound.org/previews/260/260555_3968707-hq.mp3",
+      "downloads": 5182,
+      "page_url": "https://freesound.org/people/LookIMadeAThing/sounds/260555/",
+      "license_label": "Creative Commons 0",
+      "description": "The same as my other Fire Whoosh sound, but I used a hi-pass EQ at the 50hz mark to take out some of the \"mud.\" -- This is a quick fire sound I made using Qubodup's \"Swing 25\" Public Domain/CC0 upload on this site. It's a bamboo stick swinging, which I layered and toyed with to get the results here. For those curious, here are the steps. * I took the file into Reaper, and slowed the file's playback rate to 31% of the original. * I then duplicated the file three times, for a total of 4 tracks. * TRACK 1 (lowish gas-burner sound): - Reverb (drum-room impulse response, a medium-sounding reverb with a slight deadness to it. In free impulse loader Reverberate LE, stretched impulse to 150% and set attack time to 0.218s). - EQ (-8db bandpass near 200hz, rising back to 0 by the 1K mark. Low-pass applied at 5.8khz). * TRACK 2 (lowest of sounds, like a bassy gas-burner): - Chorus effect. That's it. (Specifically Acon Digital Multiply, a free plugin, set to the \"romantic\" preset). * TRACK 3 (not as low as track 2, but closer to track 2 than 1) - Reverb (a large …",
+      "rating": 4.1,
+      "rating_count": 48
+    },
+    {
+      "id": "fs:701104",
+      "title": "Whoosh stereo light (transition)",
+      "author": "xkeril",
+      "duration_seconds": 2.31663,
+      "preview_url": "https://cdn.freesound.org/previews/701/701104_13504080-hq.mp3",
+      "downloads": 3217,
+      "page_url": "https://freesound.org/people/xkeril/sounds/701104/",
+      "license_label": "Creative Commons 0",
+      "description": "An air woosh perfect for transition from left to right, like youtube video. Light soft and natural whoosh. It was made with a pump and some reverb, recorded in real stereo with a zoom h5n.",
+      "rating": 4.6,
+      "rating_count": 58
+    }
+  ]
+}

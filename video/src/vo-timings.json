@@ -1,0 +1,176 @@
+[
+ [
+  {
+   "text": "Homeowners like Maria hate paying before a leak is fixed.",
+   "start": 0.0,
+   "end": 3.073
+  },
+  {
+   "text": "Plumbers like Luis hate waiting 45 days to get paid.",
+   "start": 3.413,
+   "end": 6.872
+  },
+  {
+   "text": "In home repair, trust is broken on both sides.",
+   "start": 7.212,
+   "end": 9.892
+  }
+ ],
+ [
+  {
+   "text": "VeriPay fixes this.",
+   "start": 0.0,
+   "end": 1.548
+  },
+  {
+   "text": "PayPal holds the money, AI checks the work, and the pro is paid the moment every condition passes.",
+   "start": 1.888,
+   "end": 7.667
+  }
+ ],
+ [
+  {
+   "text": "Maria tells her agent what's wrong, in one sentence.",
+   "start": 0.0,
+   "end": 2.979
+  },
+  {
+   "text": "Our model writes a definition of done:",
+   "start": 3.319,
+   "end": 5.159
+  },
+  {
+   "text": "what to fix, and the photo or note that proves it, priced against similar jobs.",
+   "start": 5.399,
+   "end": 9.831
+  }
+ ],
+ [
+  {
+   "text": "Five pros' agents bid.",
+   "start": 0.0,
+   "end": 1.459
+  },
+  {
+   "text": "Maria's agent counters at $170, the pro comes back at $185, and her agent hires inside a signed mandate capped at $200.",
+   "start": 1.799,
+   "end": 11.657
+  },
+  {
+   "text": "A mandate capped lower, or sent twice, is refused.",
+   "start": 11.997,
+   "end": 14.989
+  }
+ ],
+ [
+  {
+   "text": "PayPal authorizes and holds $200.",
+   "start": 0.0,
+   "end": 2.921
+  },
+  {
+   "text": "Nothing is charged.",
+   "start": 3.26,
+   "end": 4.469
+  },
+  {
+   "text": "The plumber knows the money is there before he drives out.",
+   "start": 4.809,
+   "end": 7.78
+  }
+ ],
+ [
+  {
+   "text": "On site, the pro finds a corroded valve and asks for $47.05 more.",
+   "start": 0.0,
+   "end": 4.751
+  },
+  {
+   "text": "That's over her agent's limit, so only Maria can approve it, with her PIN.",
+   "start": 5.091,
+   "end": 9.006
+  },
+  {
+   "text": "PayPal re-holds $247.05.",
+   "start": 9.346,
+   "end": 11.868
+  }
+ ],
+ [
+  {
+   "text": "The plumber sends his photos and the parts receipt from his phone.",
+   "start": 0.0,
+   "end": 3.348
+  }
+ ],
+ [
+  {
+   "text": "Our models read the photos and the receipt.",
+   "start": 0.0,
+   "end": 2.095
+  },
+  {
+   "text": "Code checks when and where each photo was taken.",
+   "start": 2.435,
+   "end": 5.051
+  },
+  {
+   "text": "And when someone hides an instruction in a note, it's flagged, and the money waits for a person.",
+   "start": 5.391,
+   "end": 10.306
+  }
+ ],
+ [
+  {
+   "text": "Every check passed, so code captures exactly $232.05, releases the rest, and one PayPal Payouts batch pays the pro.",
+   "start": 0.0,
+   "end": 8.65
+  },
+  {
+   "text": "Nobody pressed a button.",
+   "start": 8.99,
+   "end": 10.279
+  }
+ ],
+ [
+  {
+   "text": "It scales past one faucet:",
+   "start": 0.0,
+   "end": 1.601
+  },
+  {
+   "text": "materials change orders, Pay Later, landlords and tenants, and neighbors booking together.",
+   "start": 1.841,
+   "end": 6.984
+  }
+ ],
+ [
+  {
+   "text": "Operators see every hold, payout and dispute in AG Grid, reconciled against PayPal by an agent.",
+   "start": 0.0,
+   "end": 6.299
+  },
+  {
+   "text": "We attacked it for 11 rounds with 45 AI agents, as customers, pros and attackers.",
+   "start": 6.639,
+   "end": 12.327
+  },
+  {
+   "text": "Every blocker they found was fixed.",
+   "start": 12.667,
+   "end": 14.432
+  }
+ ],
+ [
+  {
+   "text": "VeriPay.",
+   "start": 0.0,
+   "end": 0.801
+  },
+  {
+   "text": "The money waits for the proof.",
+   "start": 1.141,
+   "end": 2.448
+  }
+ ]
+]

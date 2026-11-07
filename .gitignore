@@ -16,3 +16,19 @@ ml/ocr/runs/
 ml/ocr/out/
 ml/**/out/
 api/data/
+# video renders, recordings and storyboard exports (large binaries; the scripts and specs stay)
+video/out/
+video/public/
+video/vo/
+video/in/
+video/storyboard*/
+video/**/*.mp4
+video/**/*.wav
+video/**/*.mp3
+video/**/*.pdf
+# the L4 model server's certificate and any local secrets
+api/certs/
+**/secrets/
+# the risk model the app loads at runtime (small JSON trees)
+!ml/risk/out/
+video/capture/v3/vm-ip.txt

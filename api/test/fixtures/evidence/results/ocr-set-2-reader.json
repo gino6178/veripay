@@ -1,0 +1,189 @@
+{
+ "set": "ocr-set-2 (30 rendered receipts)",
+ "engine": "done-ocr (done-ocr det1+done2) + ocr.js rules",
+ "total": {
+  "k": 29,
+  "n": 30,
+  "rate": 0.967,
+  "ci95": [
+   0.833,
+   0.994
+  ]
+ },
+ "date": {
+  "k": 30,
+  "n": 30,
+  "rate": 1,
+  "ci95": [
+   0.886,
+   1
+  ]
+ },
+ "store": {
+  "k": 28,
+  "n": 30,
+  "rate": 0.933,
+  "ci95": [
+   0.787,
+   0.982
+  ]
+ },
+ "all_three": {
+  "k": 27,
+  "n": 30,
+  "rate": 0.9,
+  "ci95": [
+   0.744,
+   0.965
+  ]
+ },
+ "total_when_confidence_ge_0_6": {
+  "k": 28,
+  "n": 28,
+  "rate": 1,
+  "ci95": [
+   0.879,
+   1
+  ]
+ },
+ "coverage_confidence_ge_0_6": {
+  "k": 28,
+  "n": 30,
+  "rate": 0.933,
+  "ci95": [
+   0.787,
+   0.982
+  ]
+ },
+ "by_layout": {
+  "column": {
+   "k": 14,
+   "n": 15,
+   "rate": 0.933,
+   "ci95": [
+    0.702,
+    0.988
+   ]
+  },
+  "inline": {
+   "k": 15,
+   "n": 15,
+   "rate": 1,
+   "ci95": [
+    0.796,
+    1
+   ]
+  }
+ },
+ "by_font": {
+  "arial.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "tahoma.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "calibri.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "verdana.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "cour.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "lucon.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  }
+ },
+ "ms_per_receipt": 2365,
+ "failures": [
+  {
+   "n": "r00.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5992,
+    "date": "2026-11-15",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "want": {
+    "total": 13019,
+    "date": "2026-11-15",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r05.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 11932,
+    "date": "2026-11-04",
+    "store": "lnterior paint qt"
+   },
+   "want": {
+    "total": 11932,
+    "date": "2026-11-04",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r10.jpg",
+   "font": "cour.ttf",
+   "layout": "column",
+   "confidence": 0.4,
+   "got": {
+    "total": 29321,
+    "date": "2026-11-06",
+    "store": "EASTSIDE TOQL BARN (DEMO)"
+   },
+   "want": {
+    "total": 29321,
+    "date": "2026-11-06",
+    "store": "EASTSIDE TOOL BARN (DEMO)"
+   },
+   "error": null
+  }
+ ],
+ "at": "2026-11-05T00:11:37.134Z"
+}

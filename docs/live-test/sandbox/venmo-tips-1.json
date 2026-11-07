@@ -1,0 +1,85 @@
+{
+ "run": "vt-405d3e4f",
+ "at": "2026-11-05T08:28:47.097Z",
+ "phone": "+1408•••1234",
+ "steps": [
+  {
+   "name": "payouts: $1.00 to a Venmo phone (recipient_wallet VENMO)",
+   "ok": false,
+   "ms": 3360,
+   "error": "PayPal POST /v1/payments/payouts: 400 VALIDATION_ERROR Recipient wallet not supported in sandbox.",
+   "issue": "Recipient wallet not supported in sandbox.",
+   "debugId": "f629405a6c18d"
+  },
+  {
+   "name": "tip: $5.00 order, intent CAPTURE, captured at once (sandbox test card)",
+   "ok": true,
+   "ms": 4216,
+   "r": {
+    "id": "1KS10972UF1372944",
+    "status": "COMPLETED",
+    "approveUrl": null,
+    "capture": {
+     "id": "3SW55366FF5947900",
+     "status": "COMPLETED",
+     "amount": 500,
+     "fee": null,
+     "net": 500,
+     "final": true
+    },
+    "vaultId": null,
+    "vaultStatus": null,
+    "customerId": null,
+    "payerEmail": null,
+    "card": {
+     "brand": "VISA",
+     "last4": "1881"
+    }
+   }
+  },
+  {
+   "name": "payouts: the whole $5.00 tip to the pro's PayPal (no platform fee)",
+   "ok": true,
+   "ms": 1057,
+   "r": {
+    "batchId": "FSUBRBWBA9XF8",
+    "status": "PENDING"
+   }
+  },
+  {
+   "name": "tip batch read back",
+   "ok": true,
+   "ms": 872,
+   "r": {
+    "batchId": "FSUBRBWBA9XF8",
+    "status": "PROCESSING",
+    "items": [
+     {
+      "id": "vt-405d3e4f-tip-pro",
+      "itemId": "KRHGQ36VLCY4W",
+      "transactionId": null,
+      "status": "PENDING",
+      "receiver": "sb-947lhe53714721@personal.example.com",
+      "wallet": "PAYPAL",
+      "error": null,
+      "amount": 500,
+      "fee": 25
+     }
+    ]
+   }
+  },
+  {
+   "name": "tip capture detail",
+   "ok": true,
+   "ms": 874,
+   "r": {
+    "id": "3SW55366FF5947900",
+    "status": "COMPLETED",
+    "amount": 500,
+    "fee": null,
+    "net": 500,
+    "final": true
+   }
+  }
+ ]
+}

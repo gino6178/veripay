@@ -1,62 +1,431 @@
 {
- "about": "Every Cover test agent's operations, one file each (from extract-ops.mjs).",
- "agents": 6,
- "calls": 59,
- "screenshots": 0,
+ "about": "Every Done & Paid test agent's operations, one file each (from extract-ops.mjs).",
+ "agents": 47,
+ "calls": 3000,
+ "screenshots": 303,
  "list": [
   {
-   "file": "round01-maya-s-agent-insures-a-trip-aed9f4.json",
+   "file": "round01-maria-s-agent-hires-a-plumber-a8e235.json",
    "round": 1,
-   "title": "Cover round 1: Maya's agent insures a trip",
+   "title": "Done round 1: Maria's agent hires a plumber",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T11:58:53.921Z",
-   "calls": 8,
+   "startedAt": "2026-11-04T17:16:18.019Z",
+   "calls": 25,
    "screenshots": 0
   },
   {
-   "file": "round01-leo-s-agent-within-tight-limits-a41743.json",
+   "file": "round01-luis-s-own-pro-agent-abbc6c.json",
    "round": 1,
-   "title": "Cover round 1: Leo's agent within tight limits",
+   "title": "Done round 1: Luis's own pro agent",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T11:58:59.310Z",
-   "calls": 8,
+   "startedAt": "2026-11-04T17:16:26.075Z",
+   "calls": 31,
    "screenshots": 0
   },
   {
-   "file": "round01-rin-s-agent-tests-the-guardrails-a9c1e9.json",
+   "file": "round01-red-team-agent-a2f27e.json",
    "round": 1,
-   "title": "Cover round 1: Rin's agent tests the guardrails",
+   "title": "Done round 1: red-team agent",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T11:59:07.762Z",
-   "calls": 20,
+   "startedAt": "2026-11-04T17:16:34.068Z",
+   "calls": 19,
    "screenshots": 0
   },
   {
-   "file": "round02-jordan-s-agent-and-the-neighborhood-aea81a.json",
-   "round": 2,
-   "title": "Cover round 2: Jordan's agent and the neighborhood",
+   "file": "round01-first-time-customer-on-the-website-a06b3f.json",
+   "round": 1,
+   "title": "Done round 1: first-time customer on the website",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T12:48:56.796Z",
-   "calls": 8,
+   "startedAt": "2026-11-04T17:16:41.244Z",
+   "calls": 122,
+   "screenshots": 19
+  },
+  {
+   "file": "round01-red-team-pro-side-fraud-a2cb32.json",
+   "round": 1,
+   "title": "Done round 1: red team, pro-side fraud",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T17:21:43.483Z",
+   "calls": 13,
    "screenshots": 0
   },
   {
-   "file": "round02-priya-s-agent-and-a-group-trip-a04256.json",
+   "file": "round02-maria-s-agent-hires-a-plumber-a1a82f.json",
    "round": 2,
-   "title": "Cover round 2: Priya's agent and a group trip",
+   "title": "Done round 2: Maria's agent hires a plumber",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T12:49:02.656Z",
-   "calls": 10,
+   "startedAt": "2026-11-04T17:49:37.229Z",
+   "calls": 22,
    "screenshots": 0
   },
   {
-   "file": "round02-a-seller-s-agent-sells-cover-at-checkout-a09813.json",
+   "file": "round02-luis-s-own-pro-agent-a55ca3.json",
    "round": 2,
-   "title": "Cover round 2: a seller's agent sells Cover at checkout",
+   "title": "Done round 2: Luis's own pro agent",
    "model": "Sonnet 5.5",
-   "startedAt": "2026-11-04T12:49:10.349Z",
-   "calls": 5,
+   "startedAt": "2026-11-04T17:49:44.593Z",
+   "calls": 47,
    "screenshots": 0
+  },
+  {
+   "file": "round02-red-team-dishonest-pro-a7e20d.json",
+   "round": 2,
+   "title": "Done round 2: red team, dishonest pro",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T17:49:51.442Z",
+   "calls": 87,
+   "screenshots": 5
+  },
+  {
+   "file": "round02-water-heater-with-milestones-abb1f5.json",
+   "round": 2,
+   "title": "Done round 2: water heater with milestones",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T17:49:58.753Z",
+   "calls": 23,
+   "screenshots": 0
+  },
+  {
+   "file": "round02-first-time-visitor-on-the-website-af0430.json",
+   "round": 2,
+   "title": "Done round 2: first-time visitor on the website",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T17:50:03.973Z",
+   "calls": 167,
+   "screenshots": 34
+  },
+  {
+   "file": "round03-maria-s-agent-hires-a-plumber-a67831.json",
+   "round": 3,
+   "title": "Done round 3: Maria's agent hires a plumber",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:01:30.985Z",
+   "calls": 25,
+   "screenshots": 0
+  },
+  {
+   "file": "round03-water-heater-with-milestones-a6be97.json",
+   "round": 3,
+   "title": "Done round 3: water heater with milestones",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:01:37.167Z",
+   "calls": 60,
+   "screenshots": 9
+  },
+  {
+   "file": "round03-luis-s-own-pro-agent-a035fc.json",
+   "round": 3,
+   "title": "Done round 3: Luis's own pro agent",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:01:44.864Z",
+   "calls": 27,
+   "screenshots": 0
+  },
+  {
+   "file": "round03-red-team-dishonest-pro-a2a578.json",
+   "round": 3,
+   "title": "Done round 3: red team, dishonest pro",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:01:52.941Z",
+   "calls": 73,
+   "screenshots": 6
+  },
+  {
+   "file": "round03-first-time-visitor-on-the-website-a80fb1.json",
+   "round": 3,
+   "title": "Done round 3: first-time visitor on the website",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:04:41.056Z",
+   "calls": 119,
+   "screenshots": 6
+  },
+  {
+   "file": "round04-maria-s-agent-hires-a-plumber-ae0d42.json",
+   "round": 4,
+   "title": "Done round 4: Maria's agent hires a plumber",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:52:05.533Z",
+   "calls": 58,
+   "screenshots": 4
+  },
+  {
+   "file": "round04-water-heater-with-milestones-a01891.json",
+   "round": 4,
+   "title": "Done round 4: water heater with milestones",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:52:10.816Z",
+   "calls": 43,
+   "screenshots": 3
+  },
+  {
+   "file": "round04-luis-s-own-pro-agent-a431b4.json",
+   "round": 4,
+   "title": "Done round 4: Luis's own pro agent",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:52:17.322Z",
+   "calls": 44,
+   "screenshots": 0
+  },
+  {
+   "file": "round04-red-team-dishonest-pro-a404fc.json",
+   "round": 4,
+   "title": "Done round 4: red team, dishonest pro",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:52:24.775Z",
+   "calls": 47,
+   "screenshots": 1
+  },
+  {
+   "file": "round04-first-time-visitor-and-judge-a25f02.json",
+   "round": 4,
+   "title": "Done round 4: first-time visitor and judge",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T19:52:30.085Z",
+   "calls": 144,
+   "screenshots": 18
+  },
+  {
+   "file": "round05-maria-s-agent-hires-a-plumber-a9ce67.json",
+   "round": 5,
+   "title": "Done round 5: Maria's agent hires a plumber",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T20:46:25.879Z",
+   "calls": 53,
+   "screenshots": 5
+  },
+  {
+   "file": "round05-water-heater-with-milestones-aa378c.json",
+   "round": 5,
+   "title": "Done round 5: water heater with milestones",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T20:46:30.982Z",
+   "calls": 96,
+   "screenshots": 8
+  },
+  {
+   "file": "round05-luis-s-own-pro-agent-a4a2d7.json",
+   "round": 5,
+   "title": "Done round 5: Luis's own pro agent",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T20:46:37.696Z",
+   "calls": 30,
+   "screenshots": 0
+  },
+  {
+   "file": "round05-red-team-dishonest-pro-a411a9.json",
+   "round": 5,
+   "title": "Done round 5: red team, dishonest pro",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T20:46:45.582Z",
+   "calls": 40,
+   "screenshots": 0
+  },
+  {
+   "file": "round05-first-time-visitor-and-judge-a24ee2.json",
+   "round": 5,
+   "title": "Done round 5: first-time visitor and judge",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-04T20:46:51.616Z",
+   "calls": 154,
+   "screenshots": 18
+  },
+  {
+   "file": "round06-maria-s-agent-hires-a-plumber-acbd40.json",
+   "round": 6,
+   "title": "Done round 6: Maria's agent hires a plumber",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:09:33.605Z",
+   "calls": 108,
+   "screenshots": 13
+  },
+  {
+   "file": "round06-water-heater-with-milestones-ac8a7a.json",
+   "round": 6,
+   "title": "Done round 6: water heater with milestones",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:09:38.909Z",
+   "calls": 91,
+   "screenshots": 8
+  },
+  {
+   "file": "round06-luis-s-own-pro-agent-a69a01.json",
+   "round": 6,
+   "title": "Done round 6: Luis's own pro agent",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:09:46.108Z",
+   "calls": 44,
+   "screenshots": 0
+  },
+  {
+   "file": "round06-red-team-consent-and-fraud-aa9fd4.json",
+   "round": 6,
+   "title": "Done round 6: red team, consent and fraud",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:09:53.941Z",
+   "calls": 0,
+   "screenshots": 0
+  },
+  {
+   "file": "round06-first-time-visitor-and-judge-a9086e.json",
+   "round": 6,
+   "title": "Done round 6: first-time visitor and judge",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:09:59.439Z",
+   "calls": 214,
+   "screenshots": 23
+  },
+  {
+   "file": "round06-consent-and-fraud-checks-a124f1.json",
+   "round": 6,
+   "title": "Done round 6: consent and fraud checks",
+   "model": "Sonnet 5.5",
+   "startedAt": "2026-11-05T01:10:22.375Z",
+   "calls": 11,
+   "screenshots": 0
+  },
+  {
+   "file": "round06-consent-and-evidence-checks-a3e8c5.json",
+   "round": 6,
+   "title": "Done round 6: consent and evidence checks",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T01:12:55.206Z",
+   "calls": 18,
+   "screenshots": 0
+  },
+  {
+   "file": "round07-customer-agent-basic-flow-a40580.json",
+   "round": 7,
+   "title": "Done round 7: customer agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T02:52:59.719Z",
+   "calls": 54,
+   "screenshots": 10
+  },
+  {
+   "file": "round07-pro-agent-basic-flow-a13165.json",
+   "round": 7,
+   "title": "Done round 7: pro agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T02:53:05.469Z",
+   "calls": 31,
+   "screenshots": 0
+  },
+  {
+   "file": "round07-website-and-tour-basic-flow-af6203.json",
+   "round": 7,
+   "title": "Done round 7: website and tour, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T02:53:11.225Z",
+   "calls": 45,
+   "screenshots": 4
+  },
+  {
+   "file": "round08-customer-agent-basic-flow-a54524.json",
+   "round": 8,
+   "title": "Done round 8: customer agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T06:15:19.021Z",
+   "calls": 26,
+   "screenshots": 0
+  },
+  {
+   "file": "round08-pro-agent-basic-flow-ab2348.json",
+   "round": 8,
+   "title": "Done round 8: pro agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T06:15:24.911Z",
+   "calls": 34,
+   "screenshots": 0
+  },
+  {
+   "file": "round08-website-and-tour-basic-flow-ab4669.json",
+   "round": 8,
+   "title": "Done round 8: website and tour, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T06:15:30.446Z",
+   "calls": 127,
+   "screenshots": 36
+  },
+  {
+   "file": "round09-customer-agent-basic-flow-a08284.json",
+   "round": 9,
+   "title": "Done round 9: customer agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:05:11.034Z",
+   "calls": 33,
+   "screenshots": 6
+  },
+  {
+   "file": "round09-pro-agent-basic-flow-af0a42.json",
+   "round": 9,
+   "title": "Done round 9: pro agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:05:17.547Z",
+   "calls": 49,
+   "screenshots": 0
+  },
+  {
+   "file": "round09-website-and-tour-basic-flow-ae5497.json",
+   "round": 9,
+   "title": "Done round 9: website and tour, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:05:22.681Z",
+   "calls": 144,
+   "screenshots": 31
+  },
+  {
+   "file": "round10-customer-agent-basic-flow-ab9c34.json",
+   "round": 10,
+   "title": "Done round 10: customer agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:51:34.795Z",
+   "calls": 54,
+   "screenshots": 9
+  },
+  {
+   "file": "round10-pro-agent-basic-flow-a79e64.json",
+   "round": 10,
+   "title": "Done round 10: pro agent, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:51:41.105Z",
+   "calls": 43,
+   "screenshots": 0
+  },
+  {
+   "file": "round10-website-and-tour-basic-flow-add31e.json",
+   "round": 10,
+   "title": "Done round 10: website and tour, basic flow",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T07:51:45.900Z",
+   "calls": 120,
+   "screenshots": 22
+  },
+  {
+   "file": "round11-customer-agent-flows-new-tools-a0d3dd.json",
+   "round": 11,
+   "title": "Done round 11: customer agent, flows + new tools",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T10:16:08.951Z",
+   "calls": 37,
+   "screenshots": 3
+  },
+  {
+   "file": "round11-pro-agent-flows-new-tools-ad51e4.json",
+   "round": 11,
+   "title": "Done round 11: pro agent, flows + new tools",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T10:16:19.748Z",
+   "calls": 36,
+   "screenshots": 0
+  },
+  {
+   "file": "round11-website-tour-and-new-pages-a3eb6f.json",
+   "round": 11,
+   "title": "Done round 11: website, tour and new pages",
+   "model": "Haiku 5.5",
+   "startedAt": "2026-11-05T10:16:21.649Z",
+   "calls": 112,
+   "screenshots": 2
   }
  ]
 }

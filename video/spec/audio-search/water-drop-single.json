@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "water drop single",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:68328",
+      "title": "w_c_oo_08.wav",
+      "author": "sandome",
+      "duration_seconds": 1.25948,
+      "preview_url": "https://cdn.freesound.org/previews/68/68328_973966-hq.mp3",
+      "downloads": 135,
+      "page_url": "https://freesound.org/people/sandome/sounds/68328/",
+      "license_label": "Creative Commons 0",
+      "description": "Single drop",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:166325",
+      "title": "Water_drop_9.wav",
+      "author": "deleted_user_2104797",
+      "duration_seconds": 0.682562,
+      "preview_url": "https://cdn.freesound.org/previews/166/166325_2104797-hq.mp3",
+      "downloads": 6186,
+      "page_url": "https://freesound.org/people/deleted_user_2104797/sounds/166325/",
+      "license_label": "Creative Commons 0",
+      "description": "A single water drop, studio recording. It's actually that thing where you flick your cheek and push your tongue up.",
+      "rating": 4.8,
+      "rating_count": 34
+    },
+    {
+      "id": "fs:842164",
+      "title": "Water Drip Free",
+      "author": "AardsReal",
+      "duration_seconds": 0.712381,
+      "preview_url": "https://cdn.freesound.org/previews/842/842164_13307919-hq.mp3",
+      "downloads": 190,
+      "page_url": "https://freesound.org/people/AardsReal/sounds/842164/",
+      "license_label": "Creative Commons 0",
+      "description": "This is a free sample of a larger pack that can be downloaded for cheap on https://aards.itch.io/aards-sfx-packs. A single drop of water falling. This sample is public domian can be used for anything by anyone for free without need to credit.",
+      "rating": 4.0,
+      "rating_count": 4
+    },
+    {
+      "id": "fs:533146",
+      "title": "Drop - Water",
+      "author": "mattfinarelli",
+      "duration_seconds": 0.626939,
+      "preview_url": "https://cdn.freesound.org/previews/533/533146_7566729-hq.mp3",
+      "downloads": 2951,
+      "page_url": "https://freesound.org/people/mattfinarelli/sounds/533146/",
+      "license_label": "Creative Commons 0",
+      "description": "Sound of a single droplet. The standard sound for like a leaky faucet or a drop hitting a puddle or bucket of water. I actually made this sound with my mouth and tapping my cheek at the same time, but it is a very convincing drop sound, which can easily be looped at the speed you want for that \"continuous drop\" sound in the background.",
+      "rating": 4.7,
+      "rating_count": 46
+    },
+    {
+      "id": "fs:558850",
+      "title": "waterdrop.m4a",
+      "author": "DigPro120",
+      "duration_seconds": 4.8341,
+      "preview_url": "https://cdn.freesound.org/previews/558/558850_7414526-hq.mp3",
+      "downloads": 115,
+      "page_url": "https://freesound.org/people/DigPro120/sounds/558850/",
+      "license_label": "Creative Commons 0",
+      "description": "Single water drop. Sound effect made by using mouth. A Zoom H2n Handy recorder was used to capture the sound. Created by Hunter M.",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:22438",
+      "title": "Drip.wav",
+      "author": "Lunardrive",
+      "duration_seconds": 2.15692,
+      "preview_url": "https://cdn.freesound.org/previews/22/22438_120830-hq.mp3",
+      "downloads": 1556,
+      "page_url": "https://freesound.org/people/Lunardrive/sounds/22438/",
+      "license_label": "Creative Commons 0",
+      "description": "Single drop of liquid with slight reverb",
+      "rating": 3.8,
+      "rating_count": 42
+    }
+  ]
+}

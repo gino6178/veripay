@@ -1,0 +1,300 @@
+{
+ "set": "ocr-set-4 (30 rendered receipts)",
+ "engine": "done-ocr (done-ocr det1+done2) + ocr.js rules",
+ "total": {
+  "k": 22,
+  "n": 30,
+  "rate": 0.733,
+  "ci95": [
+   0.556,
+   0.858
+  ]
+ },
+ "date": {
+  "k": 30,
+  "n": 30,
+  "rate": 1,
+  "ci95": [
+   0.886,
+   1
+  ]
+ },
+ "store": {
+  "k": 28,
+  "n": 30,
+  "rate": 0.933,
+  "ci95": [
+   0.787,
+   0.982
+  ]
+ },
+ "all_three": {
+  "k": 21,
+  "n": 30,
+  "rate": 0.7,
+  "ci95": [
+   0.521,
+   0.833
+  ]
+ },
+ "total_when_confidence_ge_0_6": {
+  "k": 15,
+  "n": 15,
+  "rate": 1,
+  "ci95": [
+   0.796,
+   1
+  ]
+ },
+ "coverage_confidence_ge_0_6": {
+  "k": 15,
+  "n": 30,
+  "rate": 0.5,
+  "ci95": [
+   0.332,
+   0.668
+  ]
+ },
+ "by_layout": {
+  "column": {
+   "k": 16,
+   "n": 24,
+   "rate": 0.667,
+   "ci95": [
+    0.467,
+    0.82
+   ]
+  },
+  "inline": {
+   "k": 6,
+   "n": 6,
+   "rate": 1,
+   "ci95": [
+    0.61,
+    1
+   ]
+  }
+ },
+ "by_font": {
+  "arial.ttf": {
+   "k": 3,
+   "n": 5,
+   "rate": 0.6,
+   "ci95": [
+    0.231,
+    0.882
+   ]
+  },
+  "tahoma.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "calibri.ttf": {
+   "k": 3,
+   "n": 4,
+   "rate": 0.75,
+   "ci95": [
+    0.301,
+    0.954
+   ]
+  },
+  "verdana.ttf": {
+   "k": 3,
+   "n": 4,
+   "rate": 0.75,
+   "ci95": [
+    0.301,
+    0.954
+   ]
+  },
+  "cour.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  },
+  "lucon.ttf": {
+   "k": 3,
+   "n": 4,
+   "rate": 0.75,
+   "ci95": [
+    0.301,
+    0.954
+   ]
+  },
+  "consola.ttf": {
+   "k": 2,
+   "n": 4,
+   "rate": 0.5,
+   "ci95": [
+    0.15,
+    0.85
+   ]
+  }
+ },
+ "ms_per_receipt": 2287,
+ "failures": [
+  {
+   "n": "r00.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 52394,
+    "date": "2026-11-16",
+    "store": "SOUTH CONGRESS DIY (DEMO)"
+   },
+   "want": {
+    "total": 12158,
+    "date": "2026-11-16",
+    "store": "SOUTH CONGRESS DIY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r01.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 59196,
+    "date": "2026-11-01",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "want": {
+    "total": 9196,
+    "date": "2026-11-01",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r12.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 57489,
+    "date": "2026-11-01",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "want": {
+    "total": 13503,
+    "date": "2026-11-01",
+    "store": "LONGHORN HOME CENTER (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r13.jpg",
+   "font": "consola.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5936,
+    "date": "2026-11-01",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "want": {
+    "total": 6426,
+    "date": "2026-11-01",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r16.jpg",
+   "font": "calibri.ttf",
+   "layout": "column",
+   "confidence": 0.4,
+   "got": {
+    "total": 19583,
+    "date": "2026-11-06",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "want": {
+    "total": 21199,
+    "date": "2026-11-06",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r17.jpg",
+   "font": "verdana.ttf",
+   "layout": "column",
+   "confidence": 0.4,
+   "got": {
+    "total": 91825,
+    "date": "2026-11-20",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "want": {
+    "total": 16238,
+    "date": "2026-11-20",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r21.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 5892,
+    "date": "2026-11-12",
+    "store": "SQOUTH CONGRESS DIY (DEMO)"
+   },
+   "want": {
+    "total": 11710,
+    "date": "2026-11-12",
+    "store": "SOUTH CONGRESS DIY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r23.jpg",
+   "font": "calibri.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 11311,
+    "date": "2026-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO))"
+   },
+   "want": {
+    "total": 11311,
+    "date": "2026-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r27.jpg",
+   "font": "consola.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 17302,
+    "date": "2026-11-10",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "want": {
+    "total": 18729,
+    "date": "2026-11-10",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  }
+ ],
+ "at": "2026-11-05T00:04:54.804Z"
+}

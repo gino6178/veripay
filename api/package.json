@@ -1,18 +1,23 @@
 {
-  "name": "cover-api",
-  "description": "Cover's server: quotes, policies, claims and giveback, settled with PayPal. Cover holds no AI key; its models are its own, served on its own machines.",
+  "name": "done-paid-api",
+  "description": "Done & Paid: your agent hires a local pro, holds the money with a PayPal authorization, checks the evidence against a definition of done, and pays the pro with PayPal Payouts the moment it passes. No hosted AI keys: models are our own, served via Ollama.",
   "type": "module",
   "private": true,
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test \"test/**/*.test.js\"",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "sandbox-check": "node scripts/sandbox-check.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@paypal/agent-toolkit": "^1.11.0",
+    "compression": "^1.8.2",
     "express": "^5.3.0",
+    "qrcode": "^1.5.4",
     "zod": "^4.6.7"
   }
 }

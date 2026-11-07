@@ -1,0 +1,221 @@
+{
+ "set": "labels-set-2 (20 rendered rating plates)",
+ "engine": "windows-ocr + labels.js rules",
+ "brand": {
+  "k": 20,
+  "n": 20,
+  "rate": 1,
+  "ci95": [
+   0.839,
+   1
+  ]
+ },
+ "model": {
+  "k": 16,
+  "n": 20,
+  "rate": 0.8,
+  "ci95": [
+   0.584,
+   0.919
+  ]
+ },
+ "serial": {
+  "k": 15,
+  "n": 20,
+  "rate": 0.75,
+  "ci95": [
+   0.531,
+   0.888
+  ]
+ },
+ "capacity": {
+  "k": 18,
+  "n": 20,
+  "rate": 0.9,
+  "ci95": [
+   0.699,
+   0.972
+  ]
+ },
+ "rating": {
+  "k": 18,
+  "n": 20,
+  "rate": 0.9,
+  "ci95": [
+   0.699,
+   0.972
+  ]
+ },
+ "note": "model and serial compared after folding O/0, I/L/1, S/5, B/8, Z/2",
+ "failures": [
+  {
+   "n": "plate04.jpg",
+   "got": {
+    "brand": "A.O. Smith",
+    "model": null,
+    "serial": "PC50630316",
+    "capacityGal": 50,
+    "btu": 36000,
+    "volts": null
+   },
+   "want": {
+    "brand": "A.O. Smith",
+    "model": "XG50S062",
+    "serial": "PC50630316",
+    "capacityGal": 50,
+    "btu": 36000,
+    "volts": null,
+    "watts": null,
+    "font": "verdana.ttf"
+   }
+  },
+  {
+   "n": "plate05.jpg",
+   "got": {
+    "brand": "State",
+    "model": null,
+    "serial": "cB46977124",
+    "capacityGal": null,
+    "btu": null,
+    "volts": null
+   },
+   "want": {
+    "brand": "State",
+    "model": "G30T066",
+    "serial": "GB46977124",
+    "capacityGal": 30,
+    "btu": null,
+    "volts": 240,
+    "watts": 4500,
+    "font": "arialbd.ttf"
+   }
+  },
+  {
+   "n": "plate06.jpg",
+   "got": {
+    "brand": "Demo Heat",
+    "model": null,
+    "serial": "GP12987108",
+    "capacityGal": 75,
+    "btu": null,
+    "volts": 240
+   },
+   "want": {
+    "brand": "Demo Heat",
+    "model": "G75H409",
+    "serial": "GP12987108",
+    "capacityGal": 75,
+    "btu": null,
+    "volts": 240,
+    "watts": 4500,
+    "font": "arial.ttf"
+   }
+  },
+  {
+   "n": "plate07.jpg",
+   "got": {
+    "brand": "DemoFlow",
+    "model": "EX50T066",
+    "serial": "MB38732630",
+    "capacityGal": null,
+    "btu": null,
+    "volts": 240
+   },
+   "want": {
+    "brand": "DemoFlow",
+    "model": "EX50T066",
+    "serial": "MB38732630",
+    "capacityGal": 50,
+    "btu": null,
+    "volts": 240,
+    "watts": 4500,
+    "font": "arial.ttf"
+   }
+  },
+  {
+   "n": "plate10.jpg",
+   "got": {
+    "brand": "A.O. Smith",
+    "model": "Ex75s069",
+    "serial": null,
+    "capacityGal": 75,
+    "btu": null,
+    "volts": 240
+   },
+   "want": {
+    "brand": "A.O. Smith",
+    "model": "EX75S069",
+    "serial": "PA39956409",
+    "capacityGal": 75,
+    "btu": null,
+    "volts": 240,
+    "watts": 4500,
+    "font": "arialbd.ttf"
+   }
+  },
+  {
+   "n": "plate13.jpg",
+   "got": {
+    "brand": "DemoFlow",
+    "model": "XG30",
+    "serial": "KR3792",
+    "capacityGal": 30,
+    "btu": null,
+    "volts": null
+   },
+   "want": {
+    "brand": "DemoFlow",
+    "model": "XG30S068",
+    "serial": "KR35479662",
+    "capacityGal": 30,
+    "btu": null,
+    "volts": 240,
+    "watts": 5500,
+    "font": "tahoma.ttf"
+   }
+  },
+  {
+   "n": "plate17.jpg",
+   "got": {
+    "brand": "State",
+    "model": "xG30S069",
+    "serial": "TCIO3365",
+    "capacityGal": 30,
+    "btu": 36000,
+    "volts": null
+   },
+   "want": {
+    "brand": "State",
+    "model": "XG30S069",
+    "serial": "TC10343365",
+    "capacityGal": 30,
+    "btu": 36000,
+    "volts": null,
+    "watts": null,
+    "font": "arial.ttf"
+   }
+  },
+  {
+   "n": "plate19.jpg",
+   "got": {
+    "brand": "DemoFlow",
+    "model": "xG50s062",
+    "serial": "G030452611",
+    "capacityGal": 50,
+    "btu": null,
+    "volts": 240
+   },
+   "want": {
+    "brand": "DemoFlow",
+    "model": "XG50S062",
+    "serial": "GD30452611",
+    "capacityGal": 50,
+    "btu": null,
+    "volts": 240,
+    "watts": 5500,
+    "font": "arialbd.ttf"
+   }
+  }
+ ],
+ "at": "2026-11-04T16:11:46.873Z"
+}

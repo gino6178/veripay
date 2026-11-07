@@ -1,0 +1,266 @@
+{
+ "set": "ocr-set-4 (30 rendered receipts)",
+ "engine": "done-ocr (done-ocr det1+done2) + ocr.js rules",
+ "total": {
+  "k": 29,
+  "n": 30,
+  "rate": 0.967,
+  "ci95": [
+   0.833,
+   0.994
+  ]
+ },
+ "date": {
+  "k": 27,
+  "n": 30,
+  "rate": 0.9,
+  "ci95": [
+   0.744,
+   0.965
+  ]
+ },
+ "store": {
+  "k": 26,
+  "n": 30,
+  "rate": 0.867,
+  "ci95": [
+   0.703,
+   0.947
+  ]
+ },
+ "all_three": {
+  "k": 23,
+  "n": 30,
+  "rate": 0.767,
+  "ci95": [
+   0.591,
+   0.882
+  ]
+ },
+ "total_when_confidence_ge_0_6": {
+  "k": 25,
+  "n": 25,
+  "rate": 1,
+  "ci95": [
+   0.867,
+   1
+  ]
+ },
+ "coverage_confidence_ge_0_6": {
+  "k": 25,
+  "n": 30,
+  "rate": 0.833,
+  "ci95": [
+   0.664,
+   0.927
+  ]
+ },
+ "by_layout": {
+  "column": {
+   "k": 23,
+   "n": 24,
+   "rate": 0.958,
+   "ci95": [
+    0.798,
+    0.993
+   ]
+  },
+  "inline": {
+   "k": 6,
+   "n": 6,
+   "rate": 1,
+   "ci95": [
+    0.61,
+    1
+   ]
+  }
+ },
+ "by_font": {
+  "arial.ttf": {
+   "k": 5,
+   "n": 5,
+   "rate": 1,
+   "ci95": [
+    0.566,
+    1
+   ]
+  },
+  "tahoma.ttf": {
+   "k": 4,
+   "n": 5,
+   "rate": 0.8,
+   "ci95": [
+    0.376,
+    0.964
+   ]
+  },
+  "calibri.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  },
+  "verdana.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  },
+  "cour.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  },
+  "lucon.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  },
+  "consola.ttf": {
+   "k": 4,
+   "n": 4,
+   "rate": 1,
+   "ci95": [
+    0.51,
+    1
+   ]
+  }
+ },
+ "ms_per_receipt": 2220,
+ "failures": [
+  {
+   "n": "r01.jpg",
+   "font": "tahoma.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 59196,
+    "date": "2026-11-01",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "want": {
+    "total": 9196,
+    "date": "2026-11-01",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r05.jpg",
+   "font": "lucon.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 13028,
+    "date": "2026-11-16",
+    "store": "Reg1 ster 3"
+   },
+   "want": {
+    "total": 13028,
+    "date": "2026-11-16",
+    "store": "RIVERSIDE TRUE FIX (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r13.jpg",
+   "font": "consola.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 6426,
+    "date": null,
+    "store": "PECAN STREET SUPPLY ( D ℃ )"
+   },
+   "want": {
+    "total": 6426,
+    "date": "2026-11-01",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r14.jpg",
+   "font": "arial.ttf",
+   "layout": "column",
+   "confidence": 0.5,
+   "got": {
+    "total": 9389,
+    "date": "2020-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "want": {
+    "total": 9389,
+    "date": "2026-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r16.jpg",
+   "font": "calibri.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 21199,
+    "date": "2026-11-06",
+    "store": "PECAN STREET SI_JPPLY (DEMO)"
+   },
+   "want": {
+    "total": 21199,
+    "date": "2026-11-06",
+    "store": "PECAN STREET SUPPLY (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r23.jpg",
+   "font": "calibri.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 11311,
+    "date": "2026-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO))"
+   },
+   "want": {
+    "total": 11311,
+    "date": "2026-11-07",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  },
+  {
+   "n": "r27.jpg",
+   "font": "consola.ttf",
+   "layout": "column",
+   "confidence": 0.8,
+   "got": {
+    "total": 18729,
+    "date": null,
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "want": {
+    "total": 18729,
+    "date": "2026-11-10",
+    "store": "CEDAR PARK HARDWARE (DEMO)"
+   },
+   "error": null
+  }
+ ],
+ "at": "2026-11-05T00:10:03.964Z"
+}

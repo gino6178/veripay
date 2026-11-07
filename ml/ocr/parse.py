@@ -29,6 +29,20 @@ def fields(text):
     T = "\n".join(L)
     kind = "police" if re.search(r"INCIDENT REPORT", T) else "invoice" if re.search(r"^INVOICE$", T, re.M) else "receipt"
     f = {"date": None, "amount": None, "currency": None, "merchant": L[0] if L else None, "taxId": None, "reportNo": None, "items": []}
+    if re.search(r"^SERIAL NO\.", T, re.M):  # a rating / serial plate: brand, model, serial
+        m = re.search(r"MODEL NO\.\s*(\S+)", T); s2 = re.search(r"SERIAL NO\.\s*(\S+)", T)
+        f["items"] = [m.group(1)] if m else []; f["reportNo"] = s2.group(1) if s2 else None; return f
+    if re.search(r"BUILDING PERMIT", T):
+        m = re.search(r"Permit No:\s*(.+)", T); f["reportNo"] = m.group(1).strip() if m else None
+        m = re.search(r"Issued:\s*(\S+)", T); f["date"] = _date(m.group(1)) if m else None
+        m = re.search(r"Fee Paid:\s*(\S+)", T); f["amount"] = _money(m.group(1)) if m else None; f["currency"] = "USD" if f["amount"] is not None else None
+        m = re.search(r"Work:\s*(.+)", T); f["items"] = [m.group(1).strip()] if m else []
+        f["merchant"] = " ".join(L[:2]) if len(L) >= 2 else f["merchant"]; return f
+    if re.search(r"WAIVER AND RELEASE", T):
+        m = re.search(r"Claimant:\s*(.+)", T); f["merchant"] = m.group(1).strip() if m else None
+        m = re.search(r"Payment amount:\s*(\S+)", T); f["amount"] = _money(m.group(1)) if m else None; f["currency"] = "USD" if f["amount"] is not None else None
+        m = re.search(r"^Date:\s*(\S+)", T, re.M); f["date"] = _date(m.group(1)) if m else None
+        f["items"] = ["Conditional Waiver and Release on Final Payment"]; return f
     for l in L:
         d = _date(l)
         if d: f["date"] = d; break
@@ -41,14 +55,11 @@ def fields(text):
     tot = [l for l in L if re.match(TOTAL, l)]
     if tot: f["amount"] = _money(tot[-1])
     if f["amount"] is not None: f["currency"] = "USD"
-    if kind == "invoice":
-        i0 = next((i for i, l in enumerate(L) if l.startswith("Description")), None)
-        body = L[i0 + 1:] if i0 is not None else []
-    else:
-        i0 = next((i for i, l in enumerate(L) if re.match(r"\d{1,2}/\d{1,2}/\d{2,4}", l)), None)
-        body = L[i0 + 1:] if i0 is not None else []
-    for l in body:
+    # items: the priced lines before the subtotal or total (after "Description" on an invoice). Not anchored on the
+    # date line, so one misread header line doesn't lose every item.
+    i0 = next((i for i, l in enumerate(L) if l.startswith("Description")), -1) if kind == "invoice" else 0
+    for l in L[i0 + 1:]:
         if re.match(r"(SUBTOTAL|Subtotal|Tax|SALES TAX)\b", l) or re.match(TOTAL, l): break
         n = _name(l)
-        if n and re.search(PRICE, l): f["items"].append(n)
+        if n and re.search(PRICE + r"\s*$", l) and not re.match(r"(Invoice|Date|Customer|Client|Patient|Unit)\b", l): f["items"].append(n)
     return f

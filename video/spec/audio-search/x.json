@@ -1,0 +1,73 @@
+{
+  "provider": "freesound",
+  "query": "chime short",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:9243",
+      "title": "chime-rhythm.wav",
+      "author": "burnttoys",
+      "duration_seconds": 0.148231,
+      "preview_url": "https://cdn.freesound.org/previews/9/9243_24197-hq.mp3",
+      "downloads": 431,
+      "page_url": "https://freesound.org/people/burnttoys/sounds/9243/",
+      "license_label": "Creative Commons 0",
+      "description": "a short burst of what was once a wind chime. loop it, pitch and play a riff.",
+      "rating": 2.6,
+      "rating_count": 4
+    },
+    {
+      "id": "fs:333696",
+      "title": "Thin bell ding 1",
+      "author": "Khrinx",
+      "duration_seconds": 2.07819,
+      "preview_url": "https://cdn.freesound.org/previews/333/333696_1187042-hq.mp3",
+      "downloads": 610,
+      "page_url": "https://freesound.org/people/Khrinx/sounds/333696/",
+      "license_label": "Creative Commons 0",
+      "description": "A short, thin bell chiming.",
+      "rating": 4.4,
+      "rating_count": 5
+    },
+    {
+      "id": "fs:396287",
+      "title": "gluckG.wav",
+      "author": "mamamucodes",
+      "duration_seconds": 1.05029,
+      "preview_url": "https://cdn.freesound.org/previews/396/396287_7506135-hq.mp3",
+      "downloads": 264,
+      "page_url": "https://freesound.org/people/mamamucodes/sounds/396287/",
+      "license_label": "Creative Commons 0",
+      "description": "shortened a glockenspiel chime by Angstrom (https://freesound.org/people/angstrom/packs/583/) to approx 1 second duration for use in a coding exercise/game.",
+      "rating": 5.0,
+      "rating_count": 3
+    },
+    {
+      "id": "fs:370180",
+      "title": "3-tone chime UP",
+      "author": "mpaol2023",
+      "duration_seconds": 4.0,
+      "preview_url": "https://cdn.freesound.org/previews/370/370180_6430986-hq.mp3",
+      "downloads": 685,
+      "page_url": "https://freesound.org/people/mpaol2023/sounds/370180/",
+      "license_label": "Creative Commons 0",
+      "description": "A simple and short 3-tone chime going up.",
+      "rating": 4.8,
+      "rating_count": 12
+    },
+    {
+      "id": "fs:720565",
+      "title": "GO Transit Station PA chime",
+      "author": "chungus43A",
+      "duration_seconds": 1.16771,
+      "preview_url": "https://cdn.freesound.org/previews/720/720565_12024110-hq.mp3",
+      "downloads": 127,
+      "page_url": "https://freesound.org/people/chungus43A/sounds/720565/",
+      "license_label": "Creative Commons 0",
+      "description": "The chime that plays before announcements on some GO Transit commuter train stations in Toronto, ON. This was recreated in Audacity. \"A train is arriving shortly as scheduled. For everyone's safety and to keep our trains on time, spread out along the platform and use all doors to board the train.\"",
+      "rating": 4.3,
+      "rating_count": 4
+    }
+  ]
+}

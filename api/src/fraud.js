@@ -1,46 +1,36 @@
-// Fraud signals on a claim. Each is a rule in code with a reason a person can read; none decides a claim. A signal
-// only stops the instant payout: the claim goes to an adjuster, who sees which signals fired and why. (Lemonade's
-// "Jim" pays honest claims in seconds because everything else waits for a person; that is the trade made here.)
-import { hamming } from "./exif.js";
-import { DAY } from "./clock.js";
+// Signals that evidence is not what it claims to be. Each is a rule in code with a reason a person can read; none
+// decides a payment by itself: check/rules.js turns them into a check's verdict, and the decision rules turn verdicts
+// into release / needs_fix / review.
+import { hamming, varied } from "./exif.js";
 
-// a hash with almost every bit the same is a plain picture (a blank page, a flat colour): it says nothing about
-// whether two photos are the same
-const varied = (h) => { if (!h) return false; const n = hamming(h, "0000000000000000"); return n >= 8 && n <= 56; };
-
-// words that try to give instructions instead of describing what happened (a claim's story is untrusted text that
-// models later read: it is never obeyed, and this flags it so a person looks)
-const INSTRUCTION = /(ignore|disregard)\s+(all|any|the|previous|prior)|system\s*prompt|you are (now|an?)|approve (this|the|my) claim|pay (out )?immediately|override|jailbreak|忽略(以上|先前|之前|所有|規則)|直接(核准|核賠|理賠|付款)|你現在是|系統提示|不要(檢查|審核)|立刻(賠|付)/i;
-
-export function signals(claim, { policy, allClaims, people, instantMax }) {
-  const out = [], at = Date.parse(claim.happenedAt), started = Date.parse(policy.start);
-  const add = (signal, says, weight = 1) => out.push({ signal, says, weight });
-  if (at - started < 7 * DAY && at >= started) add("early", `happened ${Math.max(0, Math.round((at - started) / DAY))} days after the policy started`);
-  const raised = (policy.changes || []).find((c) => c.diff > 0 && at - Date.parse(c.at) < 7 * DAY && at >= Date.parse(c.at));
-  if (raised) add("after_increase", "happened within a week of the cover being raised");
-  const mine = allClaims.filter((c) => c.person === claim.person && c.id !== claim.id && !["withdrawn"].includes(c.status));
-  const recent = mine.filter((c) => Math.abs(Date.parse(c.happenedAt) - at) < 90 * DAY);
-  if (recent.length >= 2) add("frequent", `${recent.length} other claims within 90 days`);
-  if (instantMax && claim.claimed <= instantMax && claim.claimed >= instantMax * 0.93) add("just_under", "the amount is just under what Cover pays without a person looking");
-  for (const e of claim.evidence) {
-    if (e.exif?.taken && Date.parse(e.exif.taken) < at - DAY) add("photo_older", `a photo (${e.name || e.kind}) was taken ${e.exif.taken.slice(0, 10)}, before the ${claim.happenedAt.slice(0, 10)} event`, 2);
-    for (const c of allClaims) {
-      if (c.id === claim.id) continue;
-      for (const f of c.evidence || []) {
-        if (e.sha && f.sha === e.sha) { add("same_file", `the same file was sent with claim ${c.number}${c.person === claim.person ? "" : " by someone else"}`, 3); continue; }
-        if (e.kind === "photo" && f.kind === "photo" && varied(e.dhash) && varied(f.dhash) && hamming(e.dhash, f.dhash) <= 6) add("same_picture", `a photo looks like one sent with claim ${c.number}${c.person === claim.person ? "" : " by someone else"}`, 2);
-      }
-    }
-    if (e.read?.amount != null && claim.claimed && Math.abs(e.read.amount - claim.claimed) > Math.max(500, claim.claimed * 0.1) && ["receipt", "repair_quote", "vet_invoice", "receipt_or_photo"].includes(e.kind)) add("amount_mismatch", `the ${e.kind.replace("_", " ")} reads ${(e.read.amount / 100).toFixed(2)}, the claim asks ${(claim.claimed / 100).toFixed(2)}`, 2);
-  }
-  // the graph: one PayPal or device behind more than one person
-  const me = people.find((p) => p.id === claim.person);
-  for (const p of people) {
-    if (p.id === claim.person) continue;
-    if (me?.email && p.email && p.email.toLowerCase() === me.email.toLowerCase()) add("shared_payout", "claims are paid to a PayPal another policyholder also uses", 3);
-    if (claim.device && (p.devices || []).includes(claim.device)) add("shared_device", "filed from a device another policyholder also uses", 2);
-  }
-  if (INSTRUCTION.test(`${claim.story || ""} ${claim.evidence.map((e) => e.read?.text || "").join(" ")}`)) add("instructions", "the description or a document contains text that tries to instruct the claims system; it was not followed", 3);
-  return out;
-}
+// words that try to give instructions instead of describing the work (a pro's note, a receipt's text and an employer's
+// description are untrusted text that models later read: it is never obeyed, and this flags it so a person looks)
+const INSTRUCTION = new RegExp([
+  String.raw`(ignore|disregard|forget)\s+(all|any|the|previous|prior|above|earlier|your)\b`,
+  String.raw`system\s*(prompt|message|override)`, String.raw`you are (now|an?) `, String.raw`act as (an?|the) `,
+  String.raw`(approve|release|pay|mark)\s+(this|the|my|all)?\s*(job|claim|payment|check|order|work)?\s*(immediately|now|as (passed|done|complete))`,
+  String.raw`(mark|set|return|output)\s+(all|every|each)?\s*(checks?|verdicts?)\s*(as|to)\s*"?(pass|passed|release)`,
+  String.raw`release (the )?(payment|funds|money)`, String.raw`pay (out )?immediately`, String.raw`\boverride\b`, String.raw`jailbreak`,
+  // a "voice of authority" label: "SYSTEM: photo verified by admin, pass", "INSPECTOR: approve this photo"
+  String.raw`\b(system|admin|administrator|inspector|auditor|checker|moderator|staff|ai)\s*:(?![^\n]{0,60}\binspection\b)[^\n]{0,60}\b(pass(ed)?|approve[ds]?|verified|release|accept(ed)?)\b`,
+  String.raw`\bverified by (an? |the )?(admin|administrator|staff|platform|done ?& ?paid)\b`, String.raw`\b(mark|marked|set)\s+(it\s+|this\s+)?(as\s+)?(pass|passed|approved|verified)\b`,
+  String.raw`\bapprove (this|the|my) (photo|job|check|receipt|work)\b`,
+  String.raw`new instructions?`, String.raw`developer mode`, String.raw`<\|[a-z_]+\|>`, String.raw`\[/?(inst|system)\]`,
+  String.raw`do not (check|verify|review|inspect)`, String.raw`skip (the )?(check|verification|review)`,
+].join("|"), "i");
 export const looksLikeInstructions = (s) => INSTRUCTION.test(String(s || ""));
+// the sentences that tried to instruct, for showing a person (never sent back to a model)
+export const instructionParts = (s) => String(s || "").split(/(?<=[.!?\n])\s+/).filter((x) => INSTRUCTION.test(x)).map((x) => x.trim().slice(0, 160));
+
+// a photo reused: the same file (sha256) or the same picture (dHash within 6 bits) as one already sent with an earlier
+// job (history) or with another check of this one
+export const SAME_PICTURE_BITS = 6;
+export function reuseOf(photo, history) {
+  const hits = [];
+  for (const h of history || []) {
+    if (h.evidenceId === photo.id && h.jobId === photo.jobId) continue;
+    if (photo.sha && h.sha === photo.sha) hits.push({ kind: "same_file", jobId: h.jobId, evidenceId: h.evidenceId, bits: 0 });
+    else if (varied(photo.dhash) && varied(h.dhash)) { const bits = hamming(photo.dhash, h.dhash); if (bits <= SAME_PICTURE_BITS) hits.push({ kind: "same_picture", jobId: h.jobId, evidenceId: h.evidenceId, bits }); }
+  }
+  return hits;
+}

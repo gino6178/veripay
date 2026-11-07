@@ -1,0 +1,5 @@
+{ "port": 11480, "backendPort": 18001, "llamaServer": "/home/Gino/llama.cpp/build/bin/llama-server", "ctx": 8192, "maxWaitMs": 15000, "ocrPort": 11490,
+  "models": {
+    "done-audit": { "gguf": "/home/Gino/export/done-audit-qwen06/done-audit-qwen06-Q4_K_M.gguf", "cpus": "0,1,6,7", "threads": 4 },
+    "done-vlm": { "gguf": "/home/Gino/models/vlm/smolvlm2-500m/SmolVLM2-500M-Video-Instruct-Q8_0.gguf", "mmproj": "/home/Gino/models/vlm/smolvlm2-500m/mmproj-SmolVLM2-500M-Video-Instruct-Q8_0.gguf", "cpus": "4,5,10,11", "threads": 4 },
+    "done-chat": { "gguf": "/home/Gino/export/done-chat-qwen06/done-chat-qwen06-Q4_K_M.gguf", "cpus": "2,3,8,9", "threads": 4 } } }

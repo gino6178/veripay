@@ -1,0 +1,439 @@
+{
+ "r00.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-06",
+  "total": 9484,
+  "subtotal": 8761,
+  "tax": 723,
+  "items": [
+   "Joint compound",
+   "Drain snake 25ft",
+   "Fill valve"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": -0.19
+ },
+ "r01.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-03",
+  "total": 10422,
+  "subtotal": 9628,
+  "tax": 794,
+  "items": [
+   "Interior paint qt",
+   "Sanding sponge"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -0.13
+ },
+ "r02.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-06",
+  "total": 18668,
+  "subtotal": 17245,
+  "tax": 1423,
+  "items": [
+   "Wood screws #8",
+   "Caulk white",
+   "Supply line 16in",
+   "Plumber tape"
+  ],
+  "font": "calibri.ttf",
+  "layout": "inline",
+  "tilt": 2.91
+ },
+ "r03.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-02",
+  "total": 9579,
+  "subtotal": 8849,
+  "tax": 730,
+  "items": [
+   "P-trap kit",
+   "Plumber tape"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -0.99
+ },
+ "r04.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-09",
+  "total": 1082,
+  "subtotal": 1000,
+  "tax": 82,
+  "items": [
+   "Supply line 16in",
+   "TV wall anchor set"
+  ],
+  "font": "cour.ttf",
+  "layout": "inline",
+  "tilt": 3.95
+ },
+ "r05.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-06",
+  "total": 17827,
+  "subtotal": 16468,
+  "tax": 1359,
+  "items": [
+   "Interior paint qt",
+   "Faucet cartridge",
+   "TV wall anchor set"
+  ],
+  "font": "lucon.ttf",
+  "layout": "inline",
+  "tilt": 0.11
+ },
+ "r06.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-19",
+  "total": 23490,
+  "subtotal": 21700,
+  "tax": 1790,
+  "items": [
+   "Shutoff valve 1/4 turn",
+   "Stud finder",
+   "Drywall patch kit"
+  ],
+  "font": "consola.ttf",
+  "layout": "inline",
+  "tilt": 2.2
+ },
+ "r07.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-14",
+  "total": 10746,
+  "subtotal": 9927,
+  "tax": 819,
+  "items": [
+   "TV wall anchor set",
+   "Furniture strap",
+   "Teflon washer",
+   "Interior paint qt"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": -3.29
+ },
+ "r08.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-15",
+  "total": 18212,
+  "subtotal": 16824,
+  "tax": 1388,
+  "items": [
+   "Wood screws #8",
+   "P-trap kit",
+   "Sanding sponge"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": 1.64
+ },
+ "r09.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-05",
+  "total": 7699,
+  "subtotal": 7112,
+  "tax": 587,
+  "items": [
+   "Teflon washer",
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 2.11
+ },
+ "r10.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-09",
+  "total": 27290,
+  "subtotal": 25210,
+  "tax": 2080,
+  "items": [
+   "Wax ring",
+   "Wood screws #8",
+   "O-ring assortment",
+   "Plumber tape"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -2.15
+ },
+ "r11.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-04",
+  "total": 1891,
+  "subtotal": 1747,
+  "tax": 144,
+  "items": [
+   "Furniture strap"
+  ],
+  "font": "cour.ttf",
+  "layout": "inline",
+  "tilt": 3.76
+ },
+ "r12.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-17",
+  "total": 26051,
+  "subtotal": 24066,
+  "tax": 1985,
+  "items": [
+   "Stud finder",
+   "Shutoff valve 1/4 turn",
+   "Toilet flapper",
+   "Wax ring"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": 1.02
+ },
+ "r13.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-07",
+  "total": 28008,
+  "subtotal": 25873,
+  "tax": 2135,
+  "items": [
+   "Drain snake 25ft",
+   "Wood screws #8",
+   "Caulk white",
+   "Sanding sponge"
+  ],
+  "font": "consola.ttf",
+  "layout": "inline",
+  "tilt": -2.44
+ },
+ "r14.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-15",
+  "total": 6835,
+  "subtotal": 6314,
+  "tax": 521,
+  "items": [
+   "TV wall anchor set"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": 2.18
+ },
+ "r15.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-20",
+  "total": 8885,
+  "subtotal": 8208,
+  "tax": 677,
+  "items": [
+   "Teflon washer",
+   "Supply line 16in"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": 0.87
+ },
+ "r16.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-04",
+  "total": 20767,
+  "subtotal": 19184,
+  "tax": 1583,
+  "items": [
+   "Drywall patch kit",
+   "Teflon washer",
+   "Fill valve"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": -2.76
+ },
+ "r17.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-05",
+  "total": 11673,
+  "subtotal": 10783,
+  "tax": 890,
+  "items": [
+   "P-trap kit",
+   "Caulk white",
+   "Interior paint qt",
+   "Wax ring"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -1.55
+ },
+ "r18.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-14",
+  "total": 17821,
+  "subtotal": 16463,
+  "tax": 1358,
+  "items": [
+   "Wood screws #8",
+   "Joint compound",
+   "Supply line 16in"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": -1.92
+ },
+ "r19.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-20",
+  "total": 7881,
+  "subtotal": 7280,
+  "tax": 601,
+  "items": [
+   "Interior paint qt",
+   "Caulk white"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -1.04
+ },
+ "r20.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-01",
+  "total": 13540,
+  "subtotal": 12508,
+  "tax": 1032,
+  "items": [
+   "Faucet cartridge",
+   "Wax ring",
+   "Wood screws #8"
+  ],
+  "font": "consola.ttf",
+  "layout": "column",
+  "tilt": 2.64
+ },
+ "r21.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-16",
+  "total": 6010,
+  "subtotal": 5552,
+  "tax": 458,
+  "items": [
+   "TV wall anchor set"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": 2.6
+ },
+ "r22.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-08",
+  "total": 8381,
+  "subtotal": 7742,
+  "tax": 639,
+  "items": [
+   "Toilet flapper",
+   "Furniture strap"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": 2.76
+ },
+ "r23.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-09",
+  "total": 27440,
+  "subtotal": 25349,
+  "tax": 2091,
+  "items": [
+   "Furniture strap",
+   "Sanding sponge",
+   "Toilet flapper",
+   "TV wall anchor set"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": -1.53
+ },
+ "r24.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-10",
+  "total": 4768,
+  "subtotal": 4405,
+  "tax": 363,
+  "items": [
+   "Fill valve"
+  ],
+  "font": "verdana.ttf",
+  "layout": "inline",
+  "tilt": -0.53
+ },
+ "r25.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-17",
+  "total": 10095,
+  "subtotal": 9326,
+  "tax": 769,
+  "items": [
+   "Stud finder",
+   "Interior paint qt"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": -2.68
+ },
+ "r26.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-02",
+  "total": 16386,
+  "subtotal": 15137,
+  "tax": 1249,
+  "items": [
+   "Interior paint qt",
+   "P-trap kit"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -1.87
+ },
+ "r27.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-14",
+  "total": 15811,
+  "subtotal": 14606,
+  "tax": 1205,
+  "items": [
+   "Shutoff valve 1/4 turn",
+   "Fill valve",
+   "Joint compound"
+  ],
+  "font": "consola.ttf",
+  "layout": "column",
+  "tilt": -1.09
+ },
+ "r28.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-14",
+  "total": 5518,
+  "subtotal": 5097,
+  "tax": 421,
+  "items": [
+   "Drywall patch kit"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": 2.07
+ },
+ "r29.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-19",
+  "total": 12126,
+  "subtotal": 11202,
+  "tax": 924,
+  "items": [
+   "Toilet flapper",
+   "Wax ring"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -0.5
+ }
+}

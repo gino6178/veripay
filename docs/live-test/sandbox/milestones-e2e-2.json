@@ -1,0 +1,346 @@
+{
+ "at": "2026-11-04T23:04:22.895Z",
+ "paypal": "sandbox",
+ "runs": [
+  {
+   "label": "A: two milestones, after the final capture",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "m1d1:pass"
+     ]
+    },
+    {
+     "milestone": "m2",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "c3:pass",
+      "c4:pass",
+      "c5:pass",
+      "m2d1:pass"
+     ]
+    }
+   ],
+   "number": "DP-1001",
+   "status": "released",
+   "hold": {
+    "authorization": "05W0213230263031H",
+    "status": "captured",
+    "amount": "$1,885.95",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Permit, removal and the new heater on site",
+     "status": "released",
+     "due": "$594.00",
+     "captures": [
+      "78C31409W8528462P"
+     ],
+     "release": {
+      "release": "$594.00",
+      "fee": "$59.40",
+      "pro": "$408.97",
+      "retained": "$45.44"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    },
+    {
+     "id": "m2",
+     "title": "Installed and inspected",
+     "status": "released",
+     "due": "$891.00",
+     "captures": [
+      "76D90376HL0725837"
+     ],
+     "release": {
+      "release": "$891.00",
+      "fee": "$89.10",
+      "pro": "$613.45",
+      "retained": "$68.16"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "open",
+    "open": "$113.60",
+    "paid": null
+   },
+   "money": {
+    "captured": "$1,485.00",
+    "refunded": "$0.00",
+    "retained": "$113.60",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $1,885.95 05W0213230263031H",
+     "capture $594.00 78C31409W8528462P",
+     "platform_fee $59.40",
+     "pro_payout $408.97",
+     "helper_payout $80.19",
+     "retainage_held $45.44",
+     "capture $891.00 76D90376HL0725837",
+     "buffer_released $400.95 05W0213230263031H",
+     "platform_fee $89.10",
+     "pro_payout $613.45",
+     "helper_payout $120.29",
+     "retainage_held $68.16"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "A: after the warranty window",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "m1d1:pass"
+     ]
+    },
+    {
+     "milestone": "m2",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "c3:pass",
+      "c4:pass",
+      "c5:pass",
+      "m2d1:pass"
+     ]
+    }
+   ],
+   "number": "DP-1001",
+   "status": "released",
+   "hold": {
+    "authorization": "05W0213230263031H",
+    "status": "captured",
+    "amount": "$1,885.95",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Permit, removal and the new heater on site",
+     "status": "released",
+     "due": "$594.00",
+     "captures": [
+      "78C31409W8528462P"
+     ],
+     "release": {
+      "release": "$594.00",
+      "fee": "$59.40",
+      "pro": "$408.97",
+      "retained": "$45.44"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    },
+    {
+     "id": "m2",
+     "title": "Installed and inspected",
+     "status": "released",
+     "due": "$891.00",
+     "captures": [
+      "76D90376HL0725837"
+     ],
+     "release": {
+      "release": "$891.00",
+      "fee": "$89.10",
+      "pro": "$613.45",
+      "retained": "$68.16"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "payout_failed",
+    "open": "$113.60",
+    "paid": null
+   },
+   "money": {
+    "captured": "$1,485.00",
+    "refunded": "$0.00",
+    "retained": "$113.60",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $1,885.95 05W0213230263031H",
+     "capture $594.00 78C31409W8528462P",
+     "platform_fee $59.40",
+     "pro_payout $408.97",
+     "helper_payout $80.19",
+     "retainage_held $45.44",
+     "capture $891.00 76D90376HL0725837",
+     "buffer_released $400.95 05W0213230263031H",
+     "platform_fee $89.10",
+     "pro_payout $613.45",
+     "helper_payout $120.29",
+     "retainage_held $68.16"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "B: review window + early pay",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "before:pass",
+      "new_part:pass",
+      "no_drip:pass",
+      "receipt:pass",
+      "work_note:pass"
+     ]
+    }
+   ],
+   "number": "DP-1002",
+   "status": "released",
+   "hold": {
+    "authorization": "2WT95129K9188091W",
+    "status": "captured",
+    "amount": "$234.00",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Fix a leaking faucet",
+     "status": "released",
+     "due": "$195.00",
+     "captures": [
+      "0KK55270F0691044L"
+     ],
+     "release": {
+      "release": "$195.00",
+      "fee": "$19.50",
+      "pro": "$175.50",
+      "retained": "$0.00"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "open",
+    "open": "$0.00",
+    "paid": null
+   },
+   "money": {
+    "captured": "$195.00",
+    "refunded": "$0.00",
+    "retained": "$0.00",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $234.00 2WT95129K9188091W",
+     "capture $195.00 0KK55270F0691044L",
+     "buffer_released $39.00 2WT95129K9188091W",
+     "platform_fee $19.50",
+     "pro_payout $175.50"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "C: defect claim, retainage refunded by the arbiter",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "review",
+     "checker": "rules",
+     "verdicts": [
+      "before:pass",
+      "new_part:pass",
+      "no_drip:pass",
+      "receipt:pass",
+      "work_note:pass"
+     ]
+    }
+   ],
+   "number": "DP-1003",
+   "status": "released",
+   "hold": {
+    "authorization": "6VG20863T0129893U",
+    "status": "captured",
+    "amount": "$234.00",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Fix a leaking faucet",
+     "status": "released",
+     "due": "$195.00",
+     "captures": [
+      "8ML87105RG997752H"
+     ],
+     "release": {
+      "release": "$195.00",
+      "fee": "$19.50",
+      "pro": "$157.95",
+      "retained": "$17.55"
+     },
+     "payout": "failed: PayPal POST /v1/payments/payouts: 422 INSUFFICIENT_FUNDS Sender does not have sufficient funds. Please add funds and retry.",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "refunded",
+    "open": "$0.00",
+    "paid": null
+   },
+   "money": {
+    "captured": "$195.00",
+    "refunded": "$17.55",
+    "retained": "$0.00",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $234.00 6VG20863T0129893U",
+     "capture $195.00 8ML87105RG997752H",
+     "buffer_released $39.00 6VG20863T0129893U",
+     "platform_fee $19.50",
+     "pro_payout $157.95",
+     "retainage_held $17.55",
+     "retainage_refunded $17.55 03L44437FM2713318"
+    ]
+   },
+   "error": null,
+   "message": null
+  }
+ ],
+ "early": {
+  "error": "Early pay is for a milestone that passed its checks and is in the customer's review window.",
+  "why": "the job was review (no review window without passing checks)"
+ }
+}

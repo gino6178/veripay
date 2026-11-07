@@ -1,0 +1,66 @@
+{
+ "checkedAt": "2026-11-05T01:03:29.010Z",
+ "note": "Payouts API read-back for runs 11 and 12 (and the uncounted attempt between them). Receiver masked.",
+ "batches": {
+  "UYBR5MJ2Y246G": {
+   "batchId": "UYBR5MJ2Y246G",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-pro",
+     "itemId": "JQUS5HHLQYEZW",
+     "transactionId": "9Y225274PC3151649",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 20884,
+     "fee": 25
+    }
+   ]
+  },
+  "28J5SXWPYVPKA": {
+   "batchId": "28J5SXWPYVPKA",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1002-pro",
+     "itemId": "3K9EGCL6MUR4J",
+     "transactionId": "54R45214D46197604",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 9990,
+     "fee": 25
+    }
+   ]
+  },
+  "YWNNBQZEWZYW2": {
+   "batchId": "YWNNBQZEWZYW2",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1002-pro",
+     "itemId": "TQXKDRSXR9MUG",
+     "transactionId": "05L77910CW4804530",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 9990,
+     "fee": 25
+    }
+   ]
+  },
+  "PE6ZQSQBT73B6": {
+   "batchId": "PE6ZQSQBT73B6",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1002-pro",
+     "itemId": "HPS59DU53FA7Q",
+     "transactionId": "8TL74951YA705925S",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 9990,
+     "fee": 25
+    }
+   ]
+  }
+ }
+}

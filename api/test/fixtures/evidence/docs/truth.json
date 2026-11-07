@@ -1,0 +1,42 @@
+{
+ "invoice_ok.jpg": {
+  "kind": "invoice",
+  "number": "2026-0412",
+  "date": "2026-11-05",
+  "total": 22500,
+  "verdict": {
+   "amount": 22500,
+   "zip": "78745"
+  }
+ },
+ "invoice_wrong_total.jpg": {
+  "kind": "invoice",
+  "number": "2026-0413",
+  "date": "2026-11-05",
+  "total": 27500
+ },
+ "waiver_conditional_progress.jpg": {
+  "kind": "lien_waiver",
+  "conditional": true,
+  "payment": "progress",
+  "amount": 22500
+ },
+ "waiver_unconditional_final.jpg": {
+  "kind": "lien_waiver",
+  "conditional": false,
+  "payment": "final",
+  "amount": 22500
+ },
+ "permit_plumbing.jpg": {
+  "kind": "permit",
+  "number": "2026-123456 PP",
+  "type": "plumbing",
+  "issued": "2026-11-04"
+ },
+ "permit_wrong_address.jpg": {
+  "kind": "permit",
+  "number": "2026-654321 EP",
+  "type": "electrical",
+  "issued": "2026-10-02"
+ }
+}

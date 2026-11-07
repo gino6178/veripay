@@ -1,18 +1,20 @@
 {
-  "name": "cover-web",
+  "name": "done-paid-web",
   "version": "0.1.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 5195",
+    "dev": "vite --host 127.0.0.1 --port 5196",
     "build": "vite build",
-    "preview": "vite preview --port 5195"
+    "preview": "vite preview --port 5196"
   },
   "dependencies": {
     "ag-charts-community": "14.2.0",
     "ag-charts-react": "14.2.0",
     "ag-grid-community": "36.2.0",
     "ag-grid-react": "36.2.0",
+    "animejs": "4.5.0",
+    "leaflet": "1.9.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

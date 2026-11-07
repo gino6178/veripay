@@ -1,0 +1,680 @@
+{
+ "m2": {
+  "person": "p_e565fe67c1",
+  "thread": [
+   {
+    "from": "agent",
+    "text": "Hi, I'm your agent. Tell me what needs doing, by when, and your budget.",
+    "card": "hello"
+   },
+   {
+    "from": "you",
+    "text": "Kitchen faucet keeps dripping. Fix it this week, under $200."
+   },
+   {
+    "from": "agent",
+    "text": "I wrote the work order: 4 things to prove it's done, up to $200.00. I'm asking pros nearby now.",
+    "card": "work_order",
+    "job": "DP-1001",
+    "jobId": "job_bc3d35ca25"
+   }
+  ]
+ },
+ "m": {
+  "person": "p_aca3108ffc",
+  "signedInAt": "2026-11-06T01:37:31.289Z",
+  "job": "job_d8e396089c",
+  "number": "DP-1002",
+  "tokenId": "tok_91eb22a8",
+  "mandates": [
+   {
+    "id": "mdt_c89eca9c92",
+    "at": "2026-11-06T01:38:03.352Z",
+    "status": "refused",
+    "payer": "p_aca3108ffc",
+    "hash": "c79bc096828ba1d723e05ca4324d974030f626ca015ed867f1cb0e5ac3fac342",
+    "payload": {
+     "type": "DoneMandate",
+     "version": 1,
+     "payer": "p_aca3108ffc",
+     "agentClient": "tok_91eb22a8",
+     "maxAmount": 200,
+     "currency": "USD",
+     "scope": [
+      "hold"
+     ],
+     "merchant": "Done & Paid",
+     "jobId": "job_d8e396089c",
+     "expires": "2026-11-06T02:37:57.786Z",
+     "nonce": "2vxl1w1M8ZZCWYERgVsp5w"
+    },
+    "signature": "WITUDU0nlSFtvmbPCs-NQYESKa8tZIAlEid_3ZKnMBtnMA0okg2_t5P3uK4jw-S5FjtracczpLzRwKZVODKsDA",
+    "kid": "sk_98190db8a2",
+    "signedBy": null,
+    "action": "accept_offer",
+    "amount": 18500,
+    "jobId": "job_d8e396089c",
+    "result": null,
+    "reason": "replay",
+    "note": "Mandate refused: its nonce was already used: a mandate is good for one action.",
+    "receipt": "rcpt_ebc36037f2c0575b"
+   },
+   {
+    "id": "mdt_944fe290b9",
+    "at": "2026-11-06T01:38:03.282Z",
+    "status": "used",
+    "payer": "p_aca3108ffc",
+    "hash": "c79bc096828ba1d723e05ca4324d974030f626ca015ed867f1cb0e5ac3fac342",
+    "payload": {
+     "type": "DoneMandate",
+     "version": 1,
+     "payer": "p_aca3108ffc",
+     "agentClient": "tok_91eb22a8",
+     "maxAmount": 200,
+     "currency": "USD",
+     "scope": [
+      "hold"
+     ],
+     "merchant": "Done & Paid",
+     "jobId": "job_d8e396089c",
+     "expires": "2026-11-06T02:37:57.786Z",
+     "nonce": "2vxl1w1M8ZZCWYERgVsp5w"
+    },
+    "signature": "WITUDU0nlSFtvmbPCs-NQYESKa8tZIAlEid_3ZKnMBtnMA0okg2_t5P3uK4jw-S5FjtracczpLzRwKZVODKsDA",
+    "kid": "sk_98190db8a2",
+    "signedBy": "server-held demo key",
+    "action": "accept_offer",
+    "amount": 18500,
+    "jobId": "job_d8e396089c",
+    "result": "held",
+    "reason": null,
+    "note": null,
+    "receipt": "rcpt_ba97cd660e59ce12"
+   },
+   {
+    "id": "mdt_2b523cfa8d",
+    "at": "2026-11-06T01:37:57.786Z",
+    "status": "issued",
+    "payer": "p_aca3108ffc",
+    "hash": "c79bc096828ba1d723e05ca4324d974030f626ca015ed867f1cb0e5ac3fac342",
+    "payload": {
+     "type": "DoneMandate",
+     "version": 1,
+     "payer": "p_aca3108ffc",
+     "agentClient": "tok_91eb22a8",
+     "maxAmount": 200,
+     "currency": "USD",
+     "scope": [
+      "hold"
+     ],
+     "merchant": "Done & Paid",
+     "jobId": "job_d8e396089c",
+     "expires": "2026-11-06T02:37:57.786Z",
+     "nonce": "2vxl1w1M8ZZCWYERgVsp5w"
+    },
+    "signature": "WITUDU0nlSFtvmbPCs-NQYESKa8tZIAlEid_3ZKnMBtnMA0okg2_t5P3uK4jw-S5FjtracczpLzRwKZVODKsDA",
+    "kid": "sk_98190db8a2",
+    "signedBy": "server-held demo key",
+    "action": null,
+    "amount": null,
+    "jobId": null,
+    "result": null,
+    "reason": null,
+    "note": "issued on the website after the person's PIN step-up",
+    "receipt": "rcpt_ffe0be75e10ac9d6"
+   },
+   {
+    "id": "mdt_a98951e995",
+    "at": "2026-11-06T01:37:57.698Z",
+    "status": "refused",
+    "payer": "p_aca3108ffc",
+    "hash": "298ae80ab20037f50ec01fd2e03c73bd3cbc91a9185f9e0df53cfc6f5b66f1d5",
+    "payload": {
+     "type": "DoneMandate",
+     "version": 1,
+     "payer": "p_aca3108ffc",
+     "agentClient": "tok_91eb22a8",
+     "maxAmount": 150,
+     "currency": "USD",
+     "scope": [
+      "hold"
+     ],
+     "merchant": "Done & Paid",
+     "jobId": "job_d8e396089c",
+     "expires": "2026-11-06T02:37:57.617Z",
+     "nonce": "VZMcRG8-KEoNTBU4rlsiSA"
+    },
+    "signature": "SGDR2NWa6i_BXSChO_oLOMkCvKlklOqmeTbfmzS8E_DgPgoI2lbq1VeG5sIfYERNmVeRUSwYMrO5s2_vOS4ACQ",
+    "kid": "sk_98190db8a2",
+    "signedBy": null,
+    "action": "accept_offer",
+    "amount": 18500,
+    "jobId": "job_d8e396089c",
+    "result": null,
+    "reason": "amount",
+    "note": "Mandate refused: this needs $185.00, more than its maxAmount ($150.00).",
+    "receipt": "rcpt_96a154a6bb36a340"
+   },
+   {
+    "id": "mdt_cc5f40bb55",
+    "at": "2026-11-06T01:37:57.625Z",
+    "status": "issued",
+    "payer": "p_aca3108ffc",
+    "hash": "298ae80ab20037f50ec01fd2e03c73bd3cbc91a9185f9e0df53cfc6f5b66f1d5",
+    "payload": {
+     "type": "DoneMandate",
+     "version": 1,
+     "payer": "p_aca3108ffc",
+     "agentClient": "tok_91eb22a8",
+     "maxAmount": 150,
+     "currency": "USD",
+     "scope": [
+      "hold"
+     ],
+     "merchant": "Done & Paid",
+     "jobId": "job_d8e396089c",
+     "expires": "2026-11-06T02:37:57.617Z",
+     "nonce": "VZMcRG8-KEoNTBU4rlsiSA"
+    },
+    "signature": "SGDR2NWa6i_BXSChO_oLOMkCvKlklOqmeTbfmzS8E_DgPgoI2lbq1VeG5sIfYERNmVeRUSwYMrO5s2_vOS4ACQ",
+    "kid": "sk_98190db8a2",
+    "signedBy": "server-held demo key",
+    "action": null,
+    "amount": null,
+    "jobId": null,
+    "result": null,
+    "reason": null,
+    "note": "issued on the website after the person's PIN step-up",
+    "receipt": "rcpt_6db79db8199da057"
+   }
+  ],
+  "replay": {
+   "status": 400,
+   "error": "mandate",
+   "reason": "replay",
+   "message": "Mandate refused: its nonce was already used: a mandate is good for one action."
+  },
+  "hold": {
+   "bufferWhy": "20% (your setting)",
+   "paidWith": "sandbox test card",
+   "explain": "$200.00 authorized (held, not charged): the price $185.00; $15.00 is buffer (about 8% of the price: capped by your $200.00 ceiling, below the 20% you set, so change orders up to it need no new approval); only what's due is captured; the rest is released.",
+   "note": null,
+   "bufferCapped": "The buffer is $15.00, not 20% ($37.00): the hold stays within the job's $200.00 ceiling. A change order that doesn't fit will ask for a new hold.",
+   "mode": "authorize",
+   "flow": "platform_capture_then_payouts",
+   "status": "held",
+   "amount": {
+    "cents": 20000,
+    "usd": "$200.00"
+   },
+   "price": {
+    "cents": 18500,
+    "usd": "$185.00"
+   },
+   "buffer": {
+    "cents": 1500,
+    "usd": "$15.00"
+   },
+   "capturedOnThis": {
+    "cents": 0,
+    "usd": "$0.00"
+   },
+   "payWith": "card",
+   "paypalOrder": "77H43311C88250412",
+   "authorization": "4FE05308505220535",
+   "capture": null,
+   "createdAt": "2026-11-06T01:38:03.237Z",
+   "honorUntil": "2026-11-09T01:38:03.237Z",
+   "expiresAt": "2026-12-05T01:38:03.237Z",
+   "reauthorized": false,
+   "approveUrl": null,
+   "history": [
+    {
+     "at": "2026-11-06T01:38:03.237Z",
+     "event": "authorized",
+     "id": "4FE05308505220535",
+     "amount": 20000
+    }
+   ]
+  },
+  "status": "held",
+  "pro": "eastside-pipe-drain",
+  "approveBtn": {
+   "x": 143,
+   "y": 342.890625,
+   "w": 100,
+   "h": 34
+  },
+  "rehold": {
+   "bufferWhy": "20% (your setting)",
+   "paidWith": "sandbox test card",
+   "explain": "$247.05 authorized (held, not charged): the price $185.00 plus approved change orders $47.05; $15.00 is buffer (re-held when a change order didn't fit the first hold); only what's due is captured; the rest is released.",
+   "note": null,
+   "bufferCapped": "The buffer is $15.00, not 20% ($37.00): the hold stays within the job's $200.00 ceiling. A change order that doesn't fit will ask for a new hold.",
+   "mode": "authorize",
+   "flow": "platform_capture_then_payouts",
+   "status": "held",
+   "amount": {
+    "cents": 24705,
+    "usd": "$247.05"
+   },
+   "price": {
+    "cents": 18500,
+    "usd": "$185.00"
+   },
+   "buffer": {
+    "cents": 1500,
+    "usd": "$15.00"
+   },
+   "capturedOnThis": {
+    "cents": 0,
+    "usd": "$0.00"
+   },
+   "payWith": "card",
+   "paypalOrder": "5L572496SY250574Y",
+   "authorization": "284463934K6757305",
+   "capture": null,
+   "createdAt": "2026-11-06T01:54:32.028Z",
+   "honorUntil": "2026-11-09T01:54:32.028Z",
+   "expiresAt": "2026-12-05T01:54:32.028Z",
+   "reauthorized": false,
+   "approveUrl": null,
+   "history": [
+    {
+     "at": "2026-11-06T01:38:03.237Z",
+     "event": "authorized",
+     "id": "4FE05308505220535",
+     "amount": 20000
+    },
+    {
+     "at": "2026-11-06T01:54:32.028Z",
+     "event": "re-held",
+     "why": "change order +$47.05 is more than the buffer left; the hold is above your $200.00 ceiling only by approved change orders",
+     "id": "284463934K6757305",
+     "amount": 24705,
+     "replaced": "4FE05308505220535"
+    }
+   ]
+  },
+  "changeOrders": [
+   {
+    "id": "chg_c5e9bceccb",
+    "status": "approved",
+    "amount": {
+     "cents": 4705,
+     "usd": "$47.05"
+    }
+   }
+  ],
+  "final": {
+   "status": "released",
+   "decision": "release",
+   "checker": "model+vlm",
+   "conditions": [
+    {
+     "id": "running",
+     "what": "Photo of the faucet with the water running after the repair",
+     "verdict": "pass",
+     "by": "rules+vlm+model",
+     "confidence": 0.98,
+     "signals": [
+      "exif_time_ok: ev_20929fd710 taken 2026-11-05T19:55:14-06:00",
+      "gps_ok: ev_20929fd710 50 m from the job",
+      "vlm_sees: ev_20929fd710 (sha 46c34b3f0626) The image shows a close-up view of a faucet with water flowing from it. The faucet is made of metal and has a shiny silver color. The water is flowing from the ",
+      "demo library photo (tour)"
+     ],
+     "reason": "photo shows: The image shows a close-up view of a faucet with water flowing from it. The faucet is made of metal and has a shiny silver color. The water is flowing from the faucet, indicating that it is turned on."
+    },
+    {
+     "id": "off_dry",
+     "what": "Photo of the faucet turned off after the repair, with no water dripping",
+     "verdict": "pass",
+     "by": "rules+vlm+model",
+     "confidence": 0.99,
+     "signals": [
+      "exif_time_ok: ev_653663934c taken 2026-11-05T19:57:14-06:00",
+      "gps_ok: ev_653663934c 51 m from the job",
+      "vlm_sees: ev_653663934c (sha 5360fcfdda08) The main objects and fixtures visible in the image are a sink and a faucet. The sink is made of stainless steel and is placed on a white wall. The faucet is att",
+      "demo library photo (tour)"
+     ],
+     "reason": "photo shows: The main objects and fixtures visible in the image are a sink and a faucet. The sink is made of stainless steel and is placed on a white wall. The faucet is attached to the sink and has a handle on it"
+    },
+    {
+     "id": "receipt",
+     "what": "Receipt for the parts and materials (the shut-off valve under the sink is corroded and weeps), dated during the job",
+     "verdict": "pass",
+     "by": "rules+model",
+     "confidence": 0.9,
+     "signals": [
+      "receipt_items_match: 061538 1 4 turn stop valve",
+      "receipt: ev_cb04017a1a AUSTIN PLUMBING SUPPLY WILLIAM CANNON IL), 2026-11-05, total $47.05 (read by done-ocr (done-ocr det1+done2), confidence 0.95)",
+      "receipt_matches_change_orders: receipts $47.05, approved $47.05, parts paid $47.05"
+     ],
+     "reason": "The receipt shows it: for the parts and materials (the shut-off valve under the sink is corroded and weeps), dated during the job."
+    }
+   ],
+   "hold": {
+    "bufferWhy": "20% (your setting)",
+    "paidWith": "sandbox test card",
+    "explain": "$247.05 authorized (held, not charged): the price $185.00 plus approved change orders $47.05, of which $232.05 is already captured; $15.00 is buffer (re-held when a change order didn't fit the first hold); the unused part was released when the last capture was made.",
+    "note": null,
+    "bufferCapped": "The buffer is $15.00, not 20% ($37.00): the hold stays within the job's $200.00 ceiling. A change order that doesn't fit will ask for a new hold.",
+    "mode": "authorize",
+    "flow": "platform_capture_then_payouts",
+    "status": "captured",
+    "amount": {
+     "cents": 24705,
+     "usd": "$247.05"
+    },
+    "price": {
+     "cents": 18500,
+     "usd": "$185.00"
+    },
+    "buffer": {
+     "cents": 1500,
+     "usd": "$15.00"
+    },
+    "capturedOnThis": {
+     "cents": 23205,
+     "usd": "$232.05"
+    },
+    "payWith": "card",
+    "paypalOrder": "5L572496SY250574Y",
+    "authorization": "284463934K6757305",
+    "capture": "3E147340PR028970B",
+    "createdAt": "2026-11-06T01:54:32.028Z",
+    "honorUntil": "2026-11-09T01:54:32.028Z",
+    "expiresAt": "2026-12-05T01:54:32.028Z",
+    "reauthorized": false,
+    "approveUrl": null,
+    "history": [
+     {
+      "at": "2026-11-06T01:38:03.237Z",
+      "event": "authorized",
+      "id": "4FE05308505220535",
+      "amount": 20000
+     },
+     {
+      "at": "2026-11-06T01:54:32.028Z",
+      "event": "re-held",
+      "why": "change order +$47.05 is more than the buffer left; the hold is above your $200.00 ceiling only by approved change orders",
+      "id": "284463934K6757305",
+      "amount": 24705,
+      "replaced": "4FE05308505220535"
+     }
+    ]
+   },
+   "money": {
+    "captured": {
+     "cents": 23205,
+     "usd": "$232.05"
+    },
+    "split": {
+     "release": {
+      "cents": 23205,
+      "usd": "$232.05"
+     },
+     "fee": {
+      "cents": 2321,
+      "usd": "$23.21"
+     },
+     "pro": {
+      "cents": 20884,
+      "usd": "$208.84"
+     },
+     "helper": {
+      "cents": 0,
+      "usd": "$0.00"
+     },
+     "retained": {
+      "cents": 0,
+      "usd": "$0.00"
+     }
+    },
+    "payout": {
+     "milestone": "m1",
+     "batchId": "LEH3LNZTMY7G8",
+     "status": "PENDING",
+     "via": "paypal",
+     "items": [
+      {
+       "id": "DP-1002-pro",
+       "amount": 20884,
+       "to": "pro",
+       "status": "PENDING",
+       "transactionId": null,
+       "says": "Sent to PayPal; PayPal is processing it."
+      }
+     ],
+     "at": "2026-11-06T01:57:48.044Z",
+     "batchStatus": "PENDING",
+     "statusNote": "status is the items' (what reached the pro); batchStatus is PayPal's for the batch as a whole",
+     "says": "Sent to PayPal; PayPal is processing it.",
+     "ok": true
+    },
+    "balanced": true,
+    "ledger": [
+     {
+      "n": 1,
+      "kind": "hold",
+      "amount": {
+       "cents": 20000,
+       "usd": "$200.00"
+      },
+      "at": "2026-11-06T01:38:03.237Z",
+      "ref": "4FE05308505220535",
+      "order": "77H43311C88250412",
+      "note": "$185.00 price + $15.00 buffer"
+     },
+     {
+      "n": 2,
+      "kind": "rehold",
+      "amount": {
+       "cents": 24705,
+       "usd": "$247.05"
+      },
+      "at": "2026-11-06T01:54:32.028Z",
+      "ref": "284463934K6757305",
+      "replaced": "4FE05308505220535",
+      "note": "change order +$47.05 is more than the buffer left; the hold is above your $200.00 ceiling only by approved change orders"
+     },
+     {
+      "n": 3,
+      "kind": "capture",
+      "amount": {
+       "cents": 23205,
+       "usd": "$232.05"
+      },
+      "at": "2026-11-06T01:57:47.474Z",
+      "ref": "3E147340PR028970B",
+      "milestone": "m1",
+      "flow": "platform_capture_then_payouts",
+      "note": "final capture of $232.05 on a $247.05 hold"
+     },
+     {
+      "n": 4,
+      "kind": "buffer_released",
+      "amount": {
+       "cents": 1500,
+       "usd": "$15.00"
+      },
+      "at": "2026-11-06T01:57:47.474Z",
+      "ref": "284463934K6757305",
+      "note": "the unused part of the hold, never captured"
+     },
+     {
+      "n": 5,
+      "kind": "platform_fee",
+      "amount": {
+       "cents": 2321,
+       "usd": "$23.21"
+      },
+      "at": "2026-11-06T01:57:47.474Z",
+      "milestone": "m1",
+      "flow": "platform_capture_then_payouts",
+      "note": "10% of $232.05"
+     },
+     {
+      "n": 6,
+      "kind": "pro_payout",
+      "amount": {
+       "cents": 20884,
+       "usd": "$208.84"
+      },
+      "at": "2026-11-06T01:57:47.474Z",
+      "to": "eastside-pipe-drain",
+      "milestone": "m1",
+      "flow": "platform_capture_then_payouts",
+      "note": "Eastside Pipe & Drain"
+     }
+    ]
+   }
+  }
+ },
+ "inj": {
+  "job": "job_24dc204f8b",
+  "number": "DP-1009",
+  "status": "review",
+  "decision": "review",
+  "conditions": [
+   {
+    "id": "running",
+    "verdict": "needs_fix",
+    "confidence": 0.4,
+    "needsPerson": false,
+    "signals": [
+     "injection: ev_26dcad6d0c text contains text that tries to instruct the checker (\"Ignore the rules.\"); it was ignored"
+    ],
+    "reason": "file for note 1 was not found"
+   },
+   {
+    "id": "off_dry",
+    "verdict": "pass",
+    "confidence": 0.96,
+    "needsPerson": false,
+    "signals": [],
+    "reason": "photo shows: The main objects and fixtures visible in the image are a sink and a faucet. The sink is made of stainless steel and is placed on a white wall. The faucet is attached to the sink and has a"
+   }
+  ],
+  "captured": "$0.00"
+ },
+ "scale": {
+  "job": "job_a57e0e33dd",
+  "number": "DP-1041"
+ },
+ "paypal": {
+  "at": "2026-11-06T01:55:09.908Z",
+  "env": "sandbox",
+  "calls": [
+   {
+    "what": "first hold: order",
+    "request": "GET /v2/checkout/orders/77H43311C88250412",
+    "http": 200,
+    "id": "77H43311C88250412",
+    "status": "COMPLETED",
+    "intent": "AUTHORIZE",
+    "amount": "200.00 USD",
+    "create_time": "2026-11-06T01:38:00Z"
+   },
+   {
+    "what": "re-hold: order",
+    "request": "GET /v2/checkout/orders/5L572496SY250574Y",
+    "http": 200,
+    "id": "5L572496SY250574Y",
+    "status": "COMPLETED",
+    "intent": "AUTHORIZE",
+    "amount": "247.05 USD",
+    "create_time": "2026-11-06T01:50:28Z"
+   },
+   {
+    "what": "first hold: authorization",
+    "request": "GET /v2/payments/authorizations/4FE05308505220535",
+    "http": 200,
+    "id": "4FE05308505220535",
+    "status": "VOIDED",
+    "amount": "200.00 USD",
+    "create_time": "2026-11-06T01:38:00Z",
+    "update_time": "2026-11-06T01:50:30Z"
+   },
+   {
+    "what": "re-hold: authorization",
+    "request": "GET /v2/payments/authorizations/284463934K6757305",
+    "http": 200,
+    "id": "284463934K6757305",
+    "status": "CAPTURED",
+    "amount": "247.05 USD",
+    "create_time": "2026-11-06T01:50:28Z",
+    "update_time": "2026-11-06T01:53:45Z"
+   },
+   {
+    "what": "capture",
+    "request": "GET /v2/payments/captures/3E147340PR028970B",
+    "http": 200,
+    "id": "3E147340PR028970B",
+    "status": "COMPLETED",
+    "amount": "232.05 USD",
+    "final_capture": true,
+    "create_time": "2026-11-06T01:53:45Z"
+   },
+   {
+    "what": "Payouts batch",
+    "request": "GET /v1/payments/payouts/LEH3LNZTMY7G8",
+    "http": 200,
+    "id": "LEH3LNZTMY7G8",
+    "status": "SUCCESS",
+    "amount": "208.84 USD",
+    "time_created": "2026-11-06T01:53:46Z",
+    "items": [
+     {
+      "transaction_id": "11817400N54205331",
+      "transaction_status": "SUCCESS",
+      "amount": "208.84 USD",
+      "sender_item_id": "DP-1002-pro"
+     }
+    ]
+   }
+  ]
+ },
+ "paylater": {
+  "job": "job_b6075acff6",
+  "amount": {
+   "cents": 149500,
+   "usd": "$1,495.00"
+  }
+ },
+ "recon": {
+  "counts": {
+   "matched": 2
+  },
+  "summary": {
+   "text": "The back-office reader confirmed $232.05 was correctly captured for the payment reconciliation.",
+   "source": "model"
+  },
+  "rows": [
+   {
+    "kind": "capture",
+    "job": "DP-1002",
+    "ref": "3E147340PR028970B",
+    "ours": 23205,
+    "paypal": 23205,
+    "status": "matched",
+    "via": "captures API"
+   },
+   {
+    "kind": "payout",
+    "job": "DP-1002",
+    "ref": "SZ2TSX2GUYHFC",
+    "ours": 20884,
+    "paypal": 20884,
+    "status": "matched",
+    "via": "payouts API"
+   }
+  ]
+ },
+ "m3": {
+  "person": "p_b35cbef800",
+  "job": "job_d6196e5c5e",
+  "source": "model",
+  "scopeSource": "model"
+ }
+}

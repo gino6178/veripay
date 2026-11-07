@@ -1,0 +1,14 @@
+{
+ "run": "mp-665107a1",
+ "at": "2026-11-04T14:46:24.219Z",
+ "payeeKind": "stand-in address",
+ "steps": [
+  {
+   "name": "authorize $200 with payee = pro, platform_fees $20 (test card)",
+   "ok": false,
+   "error": "PayPal POST /v2/checkout/orders: 422 UNPROCESSABLE_ENTITY UNSUPPORTED_PAYMENT_INSTRUCTION",
+   "issue": "UNSUPPORTED_PAYMENT_INSTRUCTION",
+   "debugId": "f619028c7062f"
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-// An AG Chart in Cover's chart theme. Loaded on its own (React.lazy) so only staff pages fetch AG Charts.
+// An AG Chart in the VeriPay chart theme. Loaded on its own (React.lazy) so only staff pages fetch AG Charts.
 import { AgCharts } from "ag-charts-react";
 import { chartTheme } from "./theme.js";
 

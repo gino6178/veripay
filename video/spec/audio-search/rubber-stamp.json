@@ -1,0 +1,47 @@
+{
+  "provider": "freesound",
+  "query": "rubber stamp",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:448474",
+      "title": "es-stamp.wav",
+      "author": "eddies2000",
+      "duration_seconds": 5.23477,
+      "preview_url": "https://cdn.freesound.org/previews/448/448474_9090982-hq.mp3",
+      "downloads": 1205,
+      "page_url": "https://freesound.org/people/eddies2000/sounds/448474/",
+      "license_label": "Creative Commons 0",
+      "description": "self inking stamp",
+      "rating": 4.5,
+      "rating_count": 19
+    },
+    {
+      "id": "fs:470710",
+      "title": "traditional stamp.wav",
+      "author": "I.fekry",
+      "duration_seconds": 1.59016,
+      "preview_url": "https://cdn.freesound.org/previews/470/470710_9906084-hq.mp3",
+      "downloads": 10178,
+      "page_url": "https://freesound.org/people/I.fekry/sounds/470710/",
+      "license_label": "Creative Commons 0",
+      "description": "a traditional rubber stamp free for all. Enjoy!",
+      "rating": 4.8,
+      "rating_count": 90
+    },
+    {
+      "id": "fs:683031",
+      "title": "Thump.mp3",
+      "author": "mpuffenbarger",
+      "duration_seconds": 0.708979,
+      "preview_url": "https://cdn.freesound.org/previews/683/683031_4257513-hq.mp3",
+      "downloads": 1608,
+      "page_url": "https://freesound.org/people/mpuffenbarger/sounds/683031/",
+      "license_label": "Creative Commons 0",
+      "description": "Hitting a drywall wall with the side of fist to create a thumping sound. I used it for the sound of a rubber stamp.",
+      "rating": 4.8,
+      "rating_count": 36
+    }
+  ]
+}

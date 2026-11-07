@@ -1,0 +1,81 @@
+{
+ "set": "notes-set.jsonl (22 notes: 11 meet the condition, 11 don't)",
+ "model": "done-audit",
+ "rules_alone": {
+  "wrong_pass": {
+   "k": 0,
+   "n": 11,
+   "rate": 0,
+   "ci95": [
+    0,
+    0.259
+   ]
+  },
+  "good_pass": {
+   "k": 11,
+   "n": 11,
+   "rate": 1,
+   "ci95": [
+    0.741,
+    1
+   ]
+  }
+ },
+ "model_alone": {
+  "wrong_pass": {
+   "k": 8,
+   "n": 11,
+   "rate": 0.727,
+   "ci95": [
+    0.434,
+    0.903
+   ]
+  },
+  "good_pass": {
+   "k": 5,
+   "n": 11,
+   "rate": 0.455,
+   "ci95": [
+    0.213,
+    0.72
+   ]
+  }
+ },
+ "app_model_vetoed_by_code": {
+  "wrong_pass": {
+   "k": 0,
+   "n": 11,
+   "rate": 0,
+   "ci95": [
+    0,
+    0.259
+   ]
+  },
+  "good_pass": {
+   "k": 5,
+   "n": 11,
+   "rate": 0.455,
+   "ci95": [
+    0.213,
+    0.72
+   ]
+  }
+ },
+ "disagreements": [
+  "n00 pass: rules pass, model needs_fix, app needs_fix",
+  "n01 pass: rules pass, model needs_fix, app needs_fix",
+  "n03 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the cause, in words about this job (drain, drains, clog, clogged...))",
+  "n04 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the cause, in words about this job (drain, drains, clog, clogged...); the note is about toilet, flapper, chain (toilet work), not this job (Clear a clogged drain))",
+  "n06 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give a TSBPE licence number (e.g. M-12345 or J-12345))",
+  "n07 pass: rules pass, model needs_fix, app needs_fix",
+  "n09 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the part replaced (cartridge, washer, o-ring, oring...))",
+  "n12 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give studs or anchors, and a weight rating in lb)",
+  "n13 pass: rules pass, model needs_fix, app needs_fix",
+  "n14 pass: rules pass, model needs_fix, app needs_fix",
+  "n15 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the rooms cleaned; the note is about drywall, patched, hole (drywall work), not this job (Clean the home))",
+  "n17 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the paint used and the drying time)",
+  "n18 pass: rules pass, model needs_fix, app needs_fix",
+  "n19 needs_fix: rules needs_fix, model pass, app needs_fix (the note doesn't give the permit number, or why none is needed; the note doesn't give the test and its result)"
+ ],
+ "at": "2026-11-04T18:19:02.096Z"
+}

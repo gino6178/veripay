@@ -1,0 +1,244 @@
+{
+ "at": "2026-11-05T00:32:40.353Z",
+ "paypal": "sandbox",
+ "jobs": [
+  {
+   "label": "tour: hire, change order, evidence, paid",
+   "number": "DP-1001",
+   "status": "released",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "captured",
+    "amount": "$228.55",
+    "order": "0R009454VJ5555157",
+    "authorization": "88X28893UC549835V",
+    "capture": "00M183890S862680M",
+    "history": [
+     "authorized",
+     "re-held: change order +$47.05 is more than the buffer left; the hold is above your $200.00 ceiling only by approved change orders"
+    ]
+   },
+   "due": "$212.05",
+   "checks": {
+    "decision": "release",
+    "checker": "rules",
+    "verdicts": [
+     "c1:pass",
+     "c2:pass",
+     "c3:pass"
+    ]
+   },
+   "money": {
+    "captured": "$212.05",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "split": {
+     "release": "$212.05",
+     "fee": "$21.21",
+     "pro": "$190.84",
+     "helper": "$0.00",
+     "retained": "$0.00"
+    },
+    "balanced": true,
+    "payout": {
+     "milestone": "m1",
+     "batchId": "NHJJNGLTHGWB2",
+     "status": "PENDING",
+     "items": [
+      {
+       "id": "DP-1001-pro",
+       "amount": 19084,
+       "to": "pro",
+       "status": "PENDING",
+       "transactionId": null,
+       "says": "Sent to PayPal; PayPal is processing it."
+      }
+     ],
+     "at": "2026-11-05T00:46:08.044Z",
+     "batchStatus": "PENDING",
+     "statusNote": "status is the items' (what reached the pro); batchStatus is PayPal's for the batch as a whole",
+     "says": "Sent to PayPal; PayPal is processing it.",
+     "ok": true
+    },
+    "ledger": [
+     "hold $198.00 7CF48221KP669802T",
+     "rehold $228.55 88X28893UC549835V",
+     "capture $212.05 00M183890S862680M",
+     "buffer_released $16.50 88X28893UC549835V",
+     "platform_fee $21.21",
+     "pro_payout $190.84"
+    ]
+   }
+  },
+  {
+   "label": "dispute settled part and part",
+   "number": "DP-1002",
+   "status": "resolved",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "captured",
+    "amount": "$198.00",
+    "order": "3F4173129B9594723",
+    "authorization": "41L8945309424880C",
+    "capture": "2HE81929DR994181X",
+    "history": [
+     "authorized"
+    ]
+   },
+   "due": "$165.00",
+   "checks": null,
+   "money": {
+    "captured": "$165.00",
+    "refunded": "$66.00",
+    "paypalFee": "$0.00",
+    "split": {
+     "release": "$99.00",
+     "fee": "$9.90",
+     "pro": "$89.10",
+     "helper": "$0.00",
+     "retained": "$0.00"
+    },
+    "balanced": true,
+    "payout": {
+     "milestone": "m1",
+     "batchId": "8GGLLU6JVXYYC",
+     "status": "PENDING",
+     "items": [
+      {
+       "id": "DP-1002-pro",
+       "amount": 8910,
+       "to": "pro",
+       "status": "PENDING",
+       "transactionId": null,
+       "says": "Sent to PayPal; PayPal is processing it."
+      }
+     ],
+     "at": "2026-11-05T00:46:22.110Z",
+     "batchStatus": "PENDING",
+     "statusNote": "status is the items' (what reached the pro); batchStatus is PayPal's for the batch as a whole",
+     "says": "Sent to PayPal; PayPal is processing it.",
+     "ok": true
+    },
+    "ledger": [
+     "hold $198.00 41L8945309424880C",
+     "capture $165.00 2HE81929DR994181X",
+     "buffer_released $33.00 41L8945309424880C",
+     "refund $66.00 2GG60097E0405241L",
+     "platform_fee $9.90",
+     "pro_payout $89.10"
+    ]
+   }
+  },
+  {
+   "label": "hired then cancelled: hold voided",
+   "number": "DP-1003",
+   "status": "cancelled",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "voided",
+    "amount": "$200.00",
+    "order": "10X44209E4107844D",
+    "authorization": "1GJ942258B526335G",
+    "capture": null,
+    "history": [
+     "authorized",
+     "voided: cancelled"
+    ]
+   },
+   "due": "$185.00",
+   "checks": null,
+   "money": {
+    "captured": "$0.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "balanced": true,
+    "payout": null,
+    "ledger": [
+     "hold $200.00 1GJ942258B526335G",
+     "void $200.00 1GJ942258B526335G"
+    ]
+   }
+  },
+  {
+   "label": "repeat visit (re-held on the vaulted card)",
+   "number": "DP-1004",
+   "status": "review",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "held",
+    "amount": "$165.00",
+    "order": "25W16595G83587444",
+    "authorization": "6WB87789EC357374G",
+    "capture": null,
+    "history": [
+     "authorized"
+    ]
+   },
+   "due": "$165.00",
+   "checks": {
+    "decision": "review",
+    "checker": "rules",
+    "verdicts": [
+     "c1:pass",
+     "c2:pass",
+     "c3:fail"
+    ]
+   },
+   "money": {
+    "captured": "$0.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "balanced": true,
+    "payout": null,
+    "ledger": [
+     "hold $165.00 6WB87789EC357374G"
+    ]
+   }
+  }
+ ],
+ "dispute": {
+  "escalate": {
+   "s": 200,
+   "status": "requested",
+   "note": "PayPal disputes are opened by the buyer in PayPal (Resolution Center). The sandbox needs a sandbox buyer account for that; the demo's card holds have none, so with real sandbox keys the record waits in \"requested\" until sync finds a dispute on the capture. The stand-in opens one itself."
+  },
+  "sync": {
+   "s": 200,
+   "disputes": 0
+  }
+ },
+ "invoice": {
+  "s": 200,
+  "number": "INV-DP-101",
+  "status": "sent",
+  "decision": "release",
+  "checker": "rules",
+  "paypal": {
+   "id": "INV2-YN8W-2YJ4-S3GC-UALA",
+   "url": "https://www.sandbox.paypal.com/invoice/p/#INV2-YN8W-2YJ4-S3GC-UALA",
+   "status": "SENT",
+   "at": "2026-11-05T00:59:45.202Z"
+  },
+  "sentBecause": "every done-condition passed"
+ },
+ "recon": {
+  "counts": {
+   "matched": 5
+  },
+  "summary": {
+   "text": "5 PayPal movements checked: 5 matched.",
+   "source": "rules"
+  },
+  "rows": [
+   "capture DP-1001 00M183890S862680M ours=21205 paypal=21205 matched (captures API)",
+   "payout DP-1001 2KV9WRJRRVZXC ours=19084 paypal=19084 matched (payouts API)",
+   "capture DP-1002 2HE81929DR994181X ours=16500 paypal=16500 matched (captures API)",
+   "refund DP-1002 2GG60097E0405241L ours=6600 paypal=6600 matched (get_refund)",
+   "payout DP-1002 SKFWZP744L37Y ours=8910 paypal=8910 matched (payouts API)"
+  ]
+ }
+}

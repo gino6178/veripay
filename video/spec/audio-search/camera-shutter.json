@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "camera shutter",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:579884",
+      "title": "Yunon YN500 Camera Shutter",
+      "author": "yfjesse",
+      "duration_seconds": 4.5,
+      "preview_url": "https://cdn.freesound.org/previews/579/579884_2391840-hq.mp3",
+      "downloads": 881,
+      "page_url": "https://freesound.org/people/yfjesse/sounds/579884/",
+      "license_label": "Creative Commons 0",
+      "description": "shutter from a Yunon YN500 Camera recorded with AKG 414",
+      "rating": 4.4,
+      "rating_count": 8
+    },
+    {
+      "id": "fs:376205",
+      "title": "Camera shutter.wav",
+      "author": "jdaniel1999",
+      "duration_seconds": 2.43606,
+      "preview_url": "https://cdn.freesound.org/previews/376/376205_3123844-hq.mp3",
+      "downloads": 8452,
+      "page_url": "https://freesound.org/people/jdaniel1999/sounds/376205/",
+      "license_label": "Creative Commons 0",
+      "description": "A camera shutter being pressed.",
+      "rating": 4.6,
+      "rating_count": 85
+    },
+    {
+      "id": "fs:271010",
+      "title": "Camera Shutter Click",
+      "author": "Kodack",
+      "duration_seconds": 1.56249,
+      "preview_url": "https://cdn.freesound.org/previews/271/271010_2276808-hq.mp3",
+      "downloads": 4363,
+      "page_url": "https://freesound.org/people/Kodack/sounds/271010/",
+      "license_label": "Creative Commons 0",
+      "description": "a quick shutter snap from an Olympus camera",
+      "rating": 4.6,
+      "rating_count": 42
+    },
+    {
+      "id": "fs:520684",
+      "title": "Contarex camera shutter.wav",
+      "author": "Tonik1105",
+      "duration_seconds": 2.30365,
+      "preview_url": "https://cdn.freesound.org/previews/520/520684_10067806-hq.mp3",
+      "downloads": 7943,
+      "page_url": "https://freesound.org/people/Tonik1105/sounds/520684/",
+      "license_label": "Creative Commons 0",
+      "description": "Contarex camera shutter sound",
+      "rating": 4.8,
+      "rating_count": 121
+    },
+    {
+      "id": "fs:538142",
+      "title": "Camera shutter (Pentax K20D)",
+      "author": "tnk",
+      "duration_seconds": 0.418254,
+      "preview_url": "https://cdn.freesound.org/previews/538/538142_244233-hq.mp3",
+      "downloads": 908,
+      "page_url": "https://freesound.org/people/tnk/sounds/538142/",
+      "license_label": "Creative Commons 0",
+      "description": "Pentax K20D camera shutter sound, recorded with two Sennheiser e945 microphones.",
+      "rating": 4.8,
+      "rating_count": 16
+    },
+    {
+      "id": "fs:661279",
+      "title": "Real Canon T5i camera shutter",
+      "author": "igorzets",
+      "duration_seconds": 0.949546,
+      "preview_url": "https://cdn.freesound.org/previews/661/661279_3040688-hq.mp3",
+      "downloads": 686,
+      "page_url": "https://freesound.org/people/igorzets/sounds/661279/",
+      "license_label": "Creative Commons 0",
+      "description": "Sound of a Canon camera shutter taking two pictures.",
+      "rating": 4.9,
+      "rating_count": 15
+    }
+  ]
+}

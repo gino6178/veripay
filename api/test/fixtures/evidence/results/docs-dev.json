@@ -1,0 +1,151 @@
+{
+ "set": "docs (6 rendered documents)",
+ "kind": {
+  "k": 6,
+  "n": 6,
+  "rate": 1,
+  "ci95": [
+   0.61,
+   1
+  ]
+ },
+ "fields_exact": {
+  "k": 6,
+  "n": 6,
+  "rate": 1,
+  "ci95": [
+   0.61,
+   1
+  ]
+ },
+ "rows": [
+  {
+   "n": "invoice_ok.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "pass",
+   "got": {
+    "zip": "78745",
+    "vendor": "LONE STAR FAUCET & DRAIN (DEMO)",
+    "number": "2026-0412",
+    "date": "2026-11-05",
+    "total": 22500,
+    "billTo": "Demo Homeowner, 4100 Demo Rd, Austin TX 78745",
+    "items": [
+     "Kitchen faucet cartridge repair",
+     "Shutoffvalve (change order)"
+    ]
+   },
+   "checks": []
+  },
+  {
+   "n": "invoice_wrong_total.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "fail",
+   "got": {
+    "zip": "78745",
+    "vendor": "LONE STAR FAUCET & DRAIN (DEMO)",
+    "number": "2026-0413",
+    "date": "2026-11-05",
+    "total": 27500,
+    "billTo": "Demo Homeowner, 4100 Demo Rd, Austin TX 78745",
+    "items": [
+     "Kitchen faucet cartridge repair",
+     "Extra labor"
+    ]
+   },
+   "checks": [
+    "total_matches: invoice total $275.00 vs agreed $225.00"
+   ]
+  },
+  {
+   "n": "waiver_conditional_progress.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "pass",
+   "got": {
+    "zip": "78745",
+    "title": "CONDITIONAL WAIVER AND RELEASE ON PROGRESS PAYMENT",
+    "conditional": true,
+    "payment": "progress",
+    "project": "Kitchen faucet repair (demo)",
+    "location": "4100 Demo Rd , Austin TX 78745",
+    "owner": "Date: 11/05/2026",
+    "claimant": "Lone Star Faucet & Drain (demo)",
+    "customer": null,
+    "amount": 22500,
+    "throughDate": "2026-11-05",
+    "signed": true,
+    "signedDate": "2026-11-05"
+   },
+   "checks": []
+  },
+  {
+   "n": "waiver_unconditional_final.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "fail",
+   "got": {
+    "zip": "78745",
+    "title": "UNCONDITIONAL WAIVER AND RELEASE ON FINAL PAYMENT",
+    "conditional": false,
+    "payment": "final",
+    "project": "Kitchen faucet repair (demo)",
+    "location": "4100 Demo Rd , Austin TX 78745",
+    "owner": "Date: 11/06/2026",
+    "claimant": "Lone Star Faucet & Drain (demo)",
+    "customer": null,
+    "amount": 22500,
+    "throughDate": null,
+    "signed": true,
+    "signedDate": "2026-11-06"
+   },
+   "checks": [
+    "type_fits: before payment the waiver must be CONDITIONAL (an unconditional one waives rights before the money arrives)",
+    "payment_stage: waiver is for final payment, milestone is progress"
+   ]
+  },
+  {
+   "n": "permit_plumbing.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "pass",
+   "got": {
+    "zip": "78745",
+    "jurisdiction": "CITY OF AUSTIN",
+    "number": "2026-123456 PP",
+    "type": "plumbing",
+    "address": "4100 Demo Rd, Austin TX 78745",
+    "issued": "2026-11-04",
+    "status": "issued",
+    "contractor": "Lone Star Faucet & Drain (demo), License # M -12345",
+    "licence": null
+   },
+   "checks": []
+  },
+  {
+   "n": "permit_wrong_address.jpg",
+   "kind": true,
+   "fields": true,
+   "verdict": "fail",
+   "got": {
+    "zip": "78702",
+    "jurisdiction": "CITY OF AUSTIN",
+    "number": "2026-654321 EP",
+    "type": "electrical",
+    "address": "77 Sample St, Austin TX 78702",
+    "issued": "2026-10-02",
+    "status": "expired",
+    "contractor": null,
+    "licence": null
+   },
+   "checks": [
+    "address_matches: ZIP 78702 vs job 78745",
+    "type_fits: permit type electrical, job needs plumbing",
+    "status_ok: status expired"
+   ]
+  }
+ ],
+ "at": "2026-11-04T16:13:55.236Z"
+}

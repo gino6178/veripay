@@ -8,18 +8,23 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const [src, shots = "D:/paypal/video/cover-agent-screens"] = process.argv.slice(2);
+const [src, shots = "D:/paypal/video/done-agent-screens"] = process.argv.slice(2);
 if (!src) { console.error("usage: node extract-ops.mjs <subagents folder> [screenshots folder]"); process.exit(1); }
 const out = path.join(here, "ops");
 fs.mkdirSync(out, { recursive: true });
 
-// which round each agent belonged to: Cover's test agents are started with a description "Cover round N: ..."; every
-// other agent in the folder (Join's tests, the agents that built Cover) is left out
-function roundOf(desc) { const m = desc.match(/^Cover round (\d+):/i); return m ? +m[1] : null; }
+// which round each agent belonged to: Done & Paid's test agents are started with a description "Done round N: ..."; every
+// other agent in the folder (Join's and Cover's tests, the agents that built Done & Paid) is left out
+function roundOf(desc) { const m = desc.match(/^Done round (\d+):/i); return m ? +m[1] : null; }
 
 const scrub = (s) => String(s)
-  .replace(/cover_[A-Za-z0-9_-]{16,}/g, "cover_<token>")
-  .replace(/cvpk_[A-Za-z0-9_-]{8,}/g, "cvpk_<key>")
+  .replace(/done_[A-Za-z0-9_-]{16,}/g, "done_<token>")
+  .replace(/dpk_[A-Za-z0-9_-]{8,}/g, "dpk_<key>")
+  .replace(/(code=|"code"\s*:\s*")[A-Za-z0-9_-]{12,}/g, "$1<code>")
+  .replace(/(\\?"(?:pin|personPin|pinOnce)\\?"\s*:\s*\\?")\d{4,6}/gi, "$1<pin>")
+  .replace(/(\bpin\b[^0-9\n]{0,12})\d{4,6}\b/gi, "$1<pin>")
+  // the test rounds' own chosen PINs (the seeded demo PINs are public on the site and stay)
+  .replace(new RegExp(`\\b(${(process.env.SCRUB_PINS || "4821,7350,5093").split(",").join("|")})\\b`, "g"), "<pin>")
   .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]{8,}/gi, "$1<token>")
   .replace(/("(?:token|pass|access_token|secret)"\s*:\s*")[^"]{8,}"/gi, '$1<hidden>"')
   .replace(/\/me\/[A-Za-z0-9_-]{8,}/g, "/me/<link>")
@@ -77,10 +82,10 @@ for (const f of fs.readdirSync(src).filter((f) => f.endsWith(".meta.json"))) {
   }
   const rec = { id: id.slice(6), round, title: desc, model, startedAt: at, endedAt: lines.at(-1)?.timestamp, calls: steps.length,
     brief: clip(scrub(brief), 4000), steps, finalMessage: clip(scrub(final), 4000), ...(shot ? { screenshots: `${shots}/round${round}-${id.slice(6, 14)}` } : {}) };
-  const file = `round${String(round).padStart(2, "0")}-${desc.replace(/^Cover round \d+:\s*/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40)}-${id.slice(6, 12)}.json`;
+  const file = `round${String(round).padStart(2, "0")}-${desc.replace(/^Done round \d+:\s*/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40)}-${id.slice(6, 12)}.json`;
   fs.writeFileSync(path.join(out, file), JSON.stringify(rec, null, 1));
   index.push({ file, round, title: desc, model, startedAt: at, calls: steps.length, screenshots: shot });
 }
 index.sort((a, b) => a.startedAt.localeCompare(b.startedAt));
-fs.writeFileSync(path.join(out, "index.json"), JSON.stringify({ about: "Every Cover test agent's operations, one file each (from extract-ops.mjs).", agents: index.length, calls: index.reduce((t, x) => t + x.calls, 0), screenshots: index.reduce((t, x) => t + x.screenshots, 0), list: index }, null, 1));
+fs.writeFileSync(path.join(out, "index.json"), JSON.stringify({ about: "Every Done & Paid test agent's operations, one file each (from extract-ops.mjs).", agents: index.length, calls: index.reduce((t, x) => t + x.calls, 0), screenshots: index.reduce((t, x) => t + x.screenshots, 0), list: index }, null, 1));
 console.log(`${index.length} agents, ${index.reduce((t, x) => t + x.calls, 0)} calls, ${index.reduce((t, x) => t + x.screenshots, 0)} screenshots`);

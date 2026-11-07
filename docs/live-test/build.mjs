@@ -5,15 +5,25 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const { rounds } = JSON.parse(fs.readFileSync(path.join(here, "rounds.json"), "utf8"));
+// agent test rounds (rounds.json, optional until the first round) and real PayPal sandbox runs (sandbox/runs.json)
+const read = (f, d) => { try { return JSON.parse(fs.readFileSync(path.join(here, f), "utf8")); } catch { return d; } };
+const { rounds } = read("rounds.json", { rounds: [] });
+const { runs = [], note: runsNote = "" } = read("sandbox/runs.json", {});
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const sum = (r, k) => r.testers.reduce((t, x) => t + x[k], 0);
 const totals = rounds.map((r) => ({ n: r.n, blocker: sum(r, "blocker"), bug: sum(r, "bug"), confusing: sum(r, "confusing"), testers: r.testers.length }));
 const agents = rounds.reduce((t, r) => t + r.testers.length, 0);
 const first = totals[0] || { blocker: 0, bug: 0, confusing: 0 }, last = totals.at(-1) || first;
+// what the agents actually did (ops/index.json from extract-ops.mjs) and which sandbox runs ended with PayPal saying SUCCESS
+const ops = read("ops/index.json", {});
+// a run counts when its record says PayPal answered SUCCESS for the payouts (runs.json is written from PayPal's answers)
+const paidRuns = runs.filter((r) => /\bSUCCESS\b/.test(`${r.title} ${r.what}`)).length;
+const exists = (f) => { try { return fs.statSync(path.join(here, f)).isFile(); } catch { return false; } };
+const fixesTotal = rounds.reduce((t, r) => t + (r.fixes || []).length, 0);
+const blockersTotal = totals.reduce((t, x) => t + x.blocker, 0);
 
 // stacked bars: blockers, bugs, confusing per round
-const W = 960, H = 300, padL = 40, padB = 36, padT = 16, max = Math.max(...totals.map((t) => t.blocker + t.bug + t.confusing));
+const W = 960, H = 300, padL = 40, padB = 46, padT = 16, max = Math.max(1, ...totals.map((t) => t.blocker + t.bug + t.confusing));
 const top = Math.ceil(max / 10) * 10, slot = (W - padL) / totals.length, bw = Math.min(46, slot * 0.56);
 const y = (v) => padT + (H - padT - padB) * (1 - v / top);
 const grid = [0, top / 2, top].map((v) => `<line x1="${padL}" x2="${W}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${padL - 8}" y="${y(v) + 4}" class="tick" text-anchor="end">${v}</text>`).join("");
@@ -21,7 +31,7 @@ const bars = totals.map((t, i) => {
   const x = padL + slot * i + (slot - bw) / 2; let base = 0;
   const seg = ["blocker", "bug", "confusing"].map((k) => { if (!t[k]) return ""; const y0 = y(base), y1 = y(base + t[k]); base += t[k]; return `<rect x="${x}" y="${y1}" width="${bw}" height="${y0 - y1 - 1.5}" rx="3" class="${k}"><title>Round ${t.n}: ${t[k]} ${k}</title></rect>`; }).join("");
   const all = t.blocker + t.bug + t.confusing;
-  return `${seg}<text x="${x + bw / 2}" y="${y(all) - 7}" class="val" text-anchor="middle">${all}</text><text x="${x + bw / 2}" y="${H - padB + 20}" class="tick" text-anchor="middle">R${t.n}</text>`;
+  return `${seg}<text x="${x + bw / 2}" y="${y(all) - 7}" class="val" text-anchor="middle">${all}</text><text x="${x + bw / 2}" y="${H - padB + 18}" class="tick" text-anchor="middle">R${t.n}</text><text x="${x + bw / 2}" y="${H - padB + 32}" class="tick small" text-anchor="middle">${t.testers} testers</text>`;
 }).join("");
 const chart = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Issues found per round">${grid}${bars}</svg>`;
 
@@ -30,7 +40,7 @@ const card = (r) => {
   const t = totals.find((x) => x.n === r.n);
   return `<article class="round" id="r${r.n}">
   <header><div class="num">${r.n}</div><div><p class="date">Round ${r.n} · ${esc(r.date)}</p><h2>${esc(r.title)}</h2></div>
-    <div class="sums">${chip(t.blocker, "blocker")}${chip(t.bug, "bug")}${chip(t.confusing, "confusing")}</div></header>
+    <div class="sums">${chip(t.blocker, "blocker")}${chip(t.bug, "bug")}${chip(t.confusing, "confusing")}<span class="chip fixed">${(r.fixes || []).length} changes after</span></div></header>
   <p class="setup">${esc(r.setup)}</p>
   <table><thead><tr><th>Tester</th><th>Played</th><th>Via</th><th class="n">Blocker</th><th class="n">Bug</th><th class="n">Confusing</th></tr></thead><tbody>
   ${r.testers.map((x) => `<tr><td><a href="${esc(x.report)}">${esc(x.name)}</a></td><td>${esc(x.role)}</td><td><span class="via">${esc(x.via)}</span></td><td class="n${x.blocker ? " hot" : ""}">${x.blocker}</td><td class="n${x.bug ? " warm" : ""}">${x.bug}</td><td class="n">${x.confusing}</td></tr>`).join("\n  ")}
@@ -41,17 +51,19 @@ const card = (r) => {
 </article>`;
 };
 
+const sandboxSection = runs.length ? `<section class="panel"><h2>Real PayPal sandbox runs</h2><p class="setup">${esc(runsNote)}</p>
+<table><thead><tr><th>#</th><th>Run</th><th>Date</th><th class="n">Steps</th><th class="n">Passed</th><th class="n">Failed</th></tr></thead><tbody>
+${runs.map((r) => `<tr><td>${r.n}</td><td>${exists(r.file) ? `<a href="${esc(r.file)}">${esc(r.title)}</a>` : esc(r.title)}<p class="setup">${esc(r.what)}${r.failedWhy ? ` <b>Failed:</b> ${esc(r.failedWhy)}` : ""}${r.correction ? ` <b>Correction:</b> ${esc(r.correction)}` : ""}</p></td><td>${esc(r.date)}</td><td class="n">${r.steps}</td><td class="n">${r.passed}</td><td class="n${r.failed ? " warm" : ""}">${r.failed}</td></tr>`).join("")}
+</tbody></table></section>` : "";
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Agent Testing</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<title>VeriPay Testing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Schibsted+Grotesk:wght@400;500;600&family=Martian+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--ink:#14181f;--soft:#5b6472;--line:#e3e6eb;--accent:#0b63ce;--blocker:#d6336c;--bug:#e8890c;--confusing:#8aa4c8;--chipbg:#eef1f5}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1116;--card:#161b22;--ink:#e8ecf2;--soft:#98a2b3;--line:#2a313c;--accent:#5aa2ff;--blocker:#ff6b9a;--bug:#ffb347;--confusing:#5f7aa3;--chipbg:#1f2630}}
-:root[data-theme="dark"]{--bg:#0e1116;--card:#161b22;--ink:#e8ecf2;--soft:#98a2b3;--line:#2a313c;--accent:#5aa2ff;--blocker:#ff6b9a;--bug:#ffb347;--confusing:#5f7aa3;--chipbg:#1f2630}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+:root{--bg:#F5F7FA;--card:#fff;--ink:#001C64;--soft:#56657F;--line:#DCE3EC;--accent:#0070E0;--blocker:#B42318;--bug:#B87400;--confusing:#9CC3F2;--chipbg:#EEF2F7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Schibsted Grotesk",system-ui,sans-serif}
 main{max-width:1040px;margin:0 auto;padding:48px 16px 80px}
-h1{font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+h1{font:800 clamp(28px,4.4vw,44px)/1.1 "Plus Jakarta Sans",sans-serif;margin:0 0 12px;letter-spacing:-.02em}
 .lede{color:var(--soft);font-size:18px;max-width:760px;margin:0 0 28px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:28px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
@@ -63,7 +75,7 @@ svg{width:100%;height:auto;display:block}.grid{stroke:var(--line)}.tick{fill:var
 rect.blocker,.legend .blocker{fill:var(--blocker);background:var(--blocker)}rect.bug,.legend .bug{fill:var(--bug);background:var(--bug)}rect.confusing,.legend .confusing{fill:var(--confusing);background:var(--confusing)}
 .round{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
 .round header{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
-.num{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px}
+.num{flex:none;width:44px;height:44px;border-radius:10px;background:#003087;color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px}
 .round h2{margin:0;font-size:21px;letter-spacing:-.01em}.date{margin:0;color:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
 .round header>div:nth-child(2){flex:1;min-width:220px}.sums{display:flex;gap:6px;flex-wrap:wrap}
 .chip{font-size:13px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--chipbg)}
@@ -75,26 +87,35 @@ th{text-align:left;color:var(--soft);font-weight:500;font-size:13px;border-botto
 td{border-bottom:1px solid var(--line);padding:7px 8px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;width:84px}
 td.hot{color:var(--blocker);font-weight:700}td.warm{color:var(--bug);font-weight:700}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.via{font:500 12px "JetBrains Mono",monospace;background:var(--chipbg);padding:2px 7px;border-radius:6px}
+.via{font:500 12px "Martian Mono",monospace;background:var(--chipbg);padding:2px 7px;border-radius:6px}
 .extra{font-size:14px;color:var(--soft);border-left:3px solid var(--accent);padding-left:10px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px}@media (max-width:700px){.two{grid-template-columns:1fr}}
 h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:0 0 6px}.two p{margin:0}ul{margin:0;padding-left:18px}
 footer{color:var(--soft);font-size:14px;margin-top:32px}
+.chip.fixed{color:var(--accent)}.tick.small{font-size:11px}.tested{margin:0 0 14px;padding-left:20px;display:grid;gap:4px;font-size:15px}
 </style></head><body><main>
-<h1>Cover, tested by AI agents</h1>
-<p class="lede">Claude Sonnet agents were given the address of the live server and nothing else: no source code, no docs, no account made for them. Each played a person or that person's agent, booked and paid in the PayPal sandbox, and reported every blocker, bug and thing it had to guess. After each round we fixed what they found and sent the next one.</p>
+<h1>VeriPay, tested by AI agents and on PayPal's sandbox</h1>
+<p class="lede">Claude agents (Sonnet, and Haiku in the later basic-flow round) were given the address of the live server and nothing else: no source code, no docs, no account made for them. Each played a person or that person's agent, booked and paid in the PayPal sandbox, and reported every blocker, bug and thing it had to guess. After each round we fixed what they found and sent the next one. VeriPay was called Done &amp; Paid during these rounds, so the reports and logs below use that name.</p>
 <div class="stats">
-  <div class="stat"><b>${rounds.length}</b><span>rounds</span></div>
+  <div class="stat"><b>${rounds.length}</b><span>test rounds</span></div>
   <div class="stat"><b>${agents}</b><span>agent and persona runs</span></div>
-  <div class="stat"><b>${first.blocker + first.bug} → ${last.blocker + last.bug}</b><span>blockers and bugs, round 1 → ${last.n}</span></div>
-  <div class="stat"><b>${first.confusing} → ${last.confusing}</b><span>things an agent had to guess</span></div>
+  ${ops.calls ? `<div class="stat"><b>${ops.calls.toLocaleString("en-US")}</b><span>calls they made</span></div>` : ""}
+  ${ops.screenshots ? `<div class="stat"><b>${ops.screenshots}</b><span>screenshots they took</span></div>` : ""}
+  <div class="stat"><b>${runs.length}</b><span>real PayPal sandbox runs</span></div>
+  <div class="stat"><b>${paidRuns}</b><span>of them with payouts PayPal marked SUCCESS</span></div>
+  <div class="stat"><b>${blockersTotal}</b><span>blockers found (the fixes are listed with each round)</span></div>
+  <div class="stat"><b>${fixesTotal}</b><span>changes made from what they found</span></div>
 </div>
-<section class="panel"><h2>Issues found per round</h2>
+<section class="panel"><h2>What each round tested, and what it found</h2>
+<p class="setup">Every round tested more than the one before: new features (milestones, PIN consent, materials advances, paperwork), harsher red-team agents and more testers. So the bars measure how much was probed, not a product getting worse. After each round we fixed what was found; the changes are listed with each round below.</p>
+<ol class="tested">${rounds.map((r) => `<li><a href="#r${r.n}"><b>Round ${r.n}</b></a> ${esc(r.title)}</li>`).join("")}</ol>
 <div class="legend"><span><i class="blocker"></i>Blocker</span><span><i class="bug"></i>Bug</span><span><i class="confusing"></i>Confusing</span></div>
 ${chart}</section>
+${sandboxSection}
+${rounds.length ? "" : '<p class="setup">No agent test rounds yet.</p>'}
 ${rounds.map(card).join("\n")}
-<footer>Each tester's full report is linked by name. The write-up with every fix is <a href="../live-testing.md">live-testing.md</a>. Built from rounds.json by build.mjs.</footer>
+<footer>Each tester's full report is linked by name. Real sandbox runs link to what PayPal answered. Built from the round records.</footer>
 </main></body></html>
 `;
 fs.writeFileSync(path.join(here, "index.html"), html);
-console.log(`index.html: ${rounds.length} rounds, ${agents} runs`);
+console.log(`index.html: ${rounds.length} rounds, ${agents} agent runs, ${runs.length} sandbox runs`);

@@ -1,0 +1,22 @@
+{"id": "n00", "title": "Clear a clogged drain", "checkId": "work_note", "note": "Snaked the kitchen drain; the clog was grease and food buildup in the P-trap. Runs freely now.", "label": "pass"}
+{"id": "n01", "title": "Clear a clogged drain", "checkId": "work_note", "note": "Hair clog in the tub drain stopper, pulled it out with a zip-it and flushed with hot water.", "label": "pass"}
+{"id": "n02", "title": "Clear a clogged drain", "checkId": "work_note", "note": "Replaced the corroded shut-off valve under the sink, it was seized and leaking at the stem.", "label": "needs_fix"}
+{"id": "n03", "title": "Clear a clogged drain", "checkId": "work_note", "note": "All done, everything works great now, thanks for the business.", "label": "needs_fix"}
+{"id": "n04", "title": "Clear a clogged drain", "checkId": "work_note", "note": "New flapper in the toilet tank, chain adjusted, it stops running now.", "label": "needs_fix"}
+{"id": "n05", "title": "Clear a clogged drain", "checkId": "licence", "note": "Licensed plumber, TSBPE licence M-41234.", "label": "pass"}
+{"id": "n06", "title": "Clear a clogged drain", "checkId": "licence", "note": "I am a licensed and insured plumber with 20 years of experience.", "label": "needs_fix"}
+{"id": "n07", "title": "Clear a clogged drain", "checkId": "licence", "note": "Journeyman J-55120 under RMP-40123.", "label": "pass"}
+{"id": "n08", "title": "Fix a leaking faucet", "checkId": "work_note", "note": "Replaced the single-handle cartridge and both O-rings; no drip after 10 minutes.", "label": "pass"}
+{"id": "n09", "title": "Fix a leaking faucet", "checkId": "work_note", "note": "Fixed it, all good now and no more leaks at all anywhere.", "label": "needs_fix"}
+{"id": "n10", "title": "Fix a leaking faucet", "checkId": "work_note", "note": "Cleared hair from the bathroom drain and the P-trap, runs fast.", "label": "needs_fix"}
+{"id": "n11", "title": "Mount a TV on the wall", "checkId": "work_note", "note": "Mounted into two studs with 5/16 lag bolts; bracket rated 132 lb, TV is 55 lb.", "label": "pass"}
+{"id": "n12", "title": "Mount a TV on the wall", "checkId": "work_note", "note": "TV is up on the wall and looks great, customer happy with it.", "label": "needs_fix"}
+{"id": "n13", "title": "Mount a TV on the wall", "checkId": "work_note", "note": "Toggle anchors rated 80 lb each, four of them, the studs were off-center.", "label": "pass"}
+{"id": "n14", "title": "Clean the home", "checkId": "work_note", "note": "Kitchen, both bathrooms and all floors done; could not reach the top of the fridge.", "label": "pass"}
+{"id": "n15", "title": "Clean the home", "checkId": "work_note", "note": "Patched the drywall hole and sanded it smooth, primer is drying.", "label": "needs_fix"}
+{"id": "n16", "title": "Patch a drywall hole", "checkId": "work_note", "note": "Behr eggshell color matched, two coats, dry to the touch in 2 hours.", "label": "pass"}
+{"id": "n17", "title": "Patch a drywall hole", "checkId": "work_note", "note": "Wall looks nice now, really happy with how it came out today.", "label": "needs_fix"}
+{"id": "n18", "title": "Replace a water heater", "checkId": "work_note", "note": "Permit #2026-123456 PP pulled; leak check at all fittings, no leaks after 30 minutes.", "label": "pass"}
+{"id": "n19", "title": "Replace a water heater", "checkId": "work_note", "note": "New 50 gallon unit installed and working, hot water at the kitchen tap.", "label": "needs_fix"}
+{"id": "n20", "title": "Assemble furniture", "checkId": "work_note", "note": "Assembled the wardrobe and the desk, all drawers run, no missing parts.", "label": "pass"}
+{"id": "n21", "title": "Assemble furniture", "checkId": "work_note", "note": "Replaced the faucet cartridge in the kitchen, no more drips.", "label": "needs_fix"}

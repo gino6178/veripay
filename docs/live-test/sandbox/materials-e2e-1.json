@@ -1,0 +1,137 @@
+{
+ "at": "2026-11-05T02:18:59.202Z",
+ "paypal": "sandbox",
+ "checker": "live",
+ "steps": [
+  {
+   "name": "hired and held",
+   "number": "DP-1001",
+   "price": "$1,485.00",
+   "hold": "$1,885.95",
+   "authorization": "7R244616BA642451D",
+   "status": "held"
+  },
+  {
+   "name": "materials change order approved",
+   "change": "chg_299e960725",
+   "amount": "$87.03",
+   "status": "approved",
+   "hold": "$1,885.95"
+  },
+  {
+   "name": "advance requested and checked",
+   "status": "awaiting_customer",
+   "amount": "$87.03",
+   "check": {
+    "verdict": "pass",
+    "decision": "review",
+    "needsPerson": true,
+    "reasons": [
+     "ev_83429fad05 has no camera make or model (a drawn or edited image?); a person confirms"
+    ],
+    "invoice": {
+     "store": "HILL COUNTRY PLUMBING SUPPLY RIVER",
+     "total": 8703,
+     "date": "2026-11-04",
+     "readBy": "done-ocr (done-ocr det1+done2)"
+    },
+    "source": "vlm",
+    "attestation": "ada80f50693c354dc2592c42112a3e203c3e98e38ed9fc8721e4914306cdfeae"
+   },
+   "error": null
+  },
+  {
+   "name": "advance approved by the customer (PIN session)",
+   "status": "paid",
+   "error": null
+  },
+  {
+   "name": "advance paid",
+   "capture": "1TL5049225608972G",
+   "amount": "$87.03",
+   "payout": {
+    "batchId": "W32ZJXGD4KANW",
+    "status": "PENDING"
+   },
+   "paypal": {
+    "status": "PENDING",
+    "items": [
+     {
+      "id": "DP-1001-materials-299e960725",
+      "status": "PENDING",
+      "transactionId": null,
+      "amount": 8703
+     }
+    ]
+   },
+   "ledger": [
+    "hold 1885.95 7R244616BA642451D",
+    "capture 87.03 1TL5049225608972G",
+    "materials_payout 87.03"
+   ],
+   "balanced": true
+  },
+  {
+   "name": "milestone m1",
+   "status": "released",
+   "verdicts": [
+    "c1:pass",
+    "c2:pass",
+    "m1d1:pass"
+   ],
+   "release": {
+    "release": "681.03",
+    "materials": {
+     "advanced": 8703,
+     "returned": 0
+    },
+    "capture": "3S4134101L114923G"
+   },
+   "payout": {
+    "batchId": "U88UPSFQX7X6Y",
+    "status": "PENDING"
+   }
+  },
+  {
+   "name": "milestone m2",
+   "status": "released",
+   "verdicts": [
+    "c3:pass",
+    "c4:pass",
+    "c5:pass",
+    "m2d1:pass"
+   ],
+   "release": {
+    "release": "879.73",
+    "materials": null,
+    "capture": "89F72663G2819752N"
+   },
+   "payout": {
+    "batchId": "DNXWKYKVW73V8",
+    "status": "PENDING"
+   }
+  },
+  {
+   "name": "the ledger",
+   "status": "released",
+   "captured": "1560.76",
+   "materials": "87.03",
+   "balanced": true,
+   "ledger": [
+    "hold 1885.95 7R244616BA642451D",
+    "capture 87.03 1TL5049225608972G",
+    "materials_payout 87.03",
+    "capture 594.00 3S4134101L114923G",
+    "platform_fee 68.10",
+    "pro_payout 433.96",
+    "helper_payout 91.94",
+    "capture 879.73 89F72663G2819752N",
+    "buffer_released 325.19 7R244616BA642451D",
+    "platform_fee 87.97",
+    "pro_payout 673.00",
+    "helper_payout 118.76",
+    "parts_adjusted 11.27"
+   ]
+  }
+ ]
+}

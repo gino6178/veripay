@@ -1,4 +1,5 @@
-"""Cover-OCR's synthetic US documents: store receipts (big-box and electronics stores, with sales tax), repair-shop
+"""Done-OCR's synthetic US documents (from Cover-OCR's generator): supply-store parts receipts and home-service pros'
+invoices (trip fee, labor hours, parts, tax on parts) first, then store receipts (big-box and electronics stores, with sales tax), repair-shop
 invoices, vet invoices and police incident reports with a case number. They are written in English, with USD,
 MM/DD/YYYY dates and US addresses, and drawn in a varied set of Latin fonts. Some are printed as a thermal receipt
 (light grey, faded bands) or as a dot-matrix printout (each glyph rebuilt from dots). Then they are spoilt the way
@@ -55,6 +56,21 @@ CITIES = [("Austin", "TX", "787"), ("Denver", "CO", "802"), ("Columbus", "OH", "
           ("Sacramento", "CA", "958"), ("Nashville", "TN", "372"), ("Madison", "WI", "537"), ("Boise", "ID", "837"), ("Richmond", "VA", "232"), ("Albany", "NY", "122"), ("Tucson", "AZ", "857")]
 TAX = {"TX": 8.25, "CO": 8.81, "OH": 7.5, "OR": 0.0, "NC": 7.25, "FL": 7.5, "AZ": 8.6, "CA": 8.75, "TN": 9.25, "WI": 5.5, "ID": 6.0, "VA": 6.0, "NY": 8.0}
 STORES = ["BRIGHTWAY HOME CENTER", "VOLT ELECTRONICS", "NORTHLINE HARDWARE", "MAPLE & CO HOME", "PIXEL POINT", "HOMESTEAD SUPPLY", "SUMMIT OUTLET", "BLUE HARBOR MARKET", "CIRCUIT CITYWIDE", "TRUEVALUE LANE"]
+PARTS = [("Moen 1225 Cartridge", 32.48), ("Delta RP46074 Cartridge", 24.97), ("Fluidmaster 400H Fill Valve", 11.98), ("Korky Flapper 2in", 7.47), ("Toilet Repair Kit", 26.98), ("InSinkErator Badger 5", 109.00),
+         ("1/2 HP Disposal", 129.00), ("Plumbers Putty 14oz", 5.98), ("PTFE Tape 1/2in", 2.48), ("P-Trap Kit 1-1/2in", 9.87), ("Tilting TV Mount 37-70in", 39.99), ("Lag Bolts 5/16 x 3in 8pk", 6.47),
+         ("Cord Cover Kit", 19.97), ("Drywall Patch Kit", 12.98), ("Spackle 8oz", 6.98), ("Interior Paint Qt", 18.98), ("Sanding Sponge", 3.97), ("Supply Line 3/8 x 20in", 8.97), ("Wax Ring", 4.98)]
+SUPPLY = ["NORTHLINE HARDWARE", "BRIGHTWAY HOME CENTER", "LONE STAR PLUMBING SUPPLY", "CAPITOL HARDWARE", "AUSTIN PRO SUPPLY"]
+PROS = ["ACE RIVERA PLUMBING (DEMO)", "CLEARFLOW PLUMBING (DEMO)", "SPARKLE SQUAD CLEANING (DEMO)", "FIXIT FRANK HANDYMAN (DEMO)", "HILL COUNTRY HOME SERVICES (DEMO)"]
+SERVICES = {"PLUMBING": [("Service call / trip fee", 89.00), ("Replace faucet cartridge", 0), ("Replace fill valve and flapper", 0), ("Clear drain and trap", 0), ("Install garbage disposal", 0)],
+            "CLEANING": [("Deep clean 1BR apartment", 0), ("Inside oven", 45.00), ("Inside fridge", 35.00), ("Move-out clean", 0)],
+            "HANDYMAN": [("Mount TV on studs", 0), ("Assemble dresser", 0), ("Assemble bed frame", 0), ("Patch and paint drywall", 0), ("Hide cables in cord cover", 40.00)]}
+PLATES = [("RHEEM", "GAS WATER HEATER", ["CAPACITY 50 GAL", "INPUT 40000 BTU/HR", "NATURAL GAS", "RECOVERY 40.9 GPH", "WORKING PRESSURE 150 PSI"]),
+          ("A.O. SMITH", "ELECTRIC WATER HEATER", ["CAPACITY 40 GAL", "240 V 4500 W", "1 PHASE 60 HZ", "WORKING PRESSURE 150 PSI"]),
+          ("BRADFORD WHITE", "GAS WATER HEATER", ["CAPACITY 40 GAL", "INPUT 38000 BTU/HR", "PROPANE GAS"]),
+          ("CARRIER", "AIR CONDITIONER", ["208/230 V 1 PH 60 HZ", "COMPRESSOR RLA 13.5", "REFRIGERANT R-454B", "MIN CIRCUIT AMPS 18.4", "MAX FUSE 30 A"]),
+          ("TRANE", "HEAT PUMP OUTDOOR UNIT", ["208/230 V 1 PH 60 HZ", "REFRIGERANT R-410A", "MAX FUSE 25 A"]),
+          ("INSINKERATOR", "FOOD WASTE DISPOSER", ["115 V 60 HZ", "6.9 A", "1/2 HP"]), ("GE", "BUILT-IN DISHWASHER", ["120 V 60 HZ", "10.0 A"])]
+PERMIT_WORK = ["Water heater replacement", "Gas line repair", "Electrical service upgrade", "Bathroom remodel - plumbing", "HVAC replacement", "Fence over 7 ft", "Deck repair"]
 GOODS = [("Dyson V8 Vacuum", 299.99), ("LG 55in 4K TV", 449.99), ("Apple AirPods Pro", 249.00), ("Instant Pot 6qt", 89.95), ("Ninja Air Fryer", 119.99), ("Dehumidifier 35pt", 189.00), ("Office Chair Mesh", 159.99),
          ("LED Desk Lamp", 34.99), ("Queen Mattress Topper", 79.99), ("Microwave 1.1cf", 129.00), ("Laptop Sleeve 15in", 24.99), ("Mechanical Keyboard", 89.99), ("27in Monitor", 229.99), ("Space Heater", 49.99),
          ("Robot Vacuum", 279.00), ("Bluetooth Speaker", 59.99), ("Smart Watch", 199.99), ("Camera Lens 50mm", 129.95), ("Cordless Drill", 99.00), ("Window AC 8000BTU", 329.00), ("HDMI Cable 6ft", 12.99)]
@@ -74,7 +90,7 @@ def addr(r):
     c, s, z = r.choice(CITIES); return f"{r.randrange(100, 9999)} {r.choice(STREETS)}", f"{c}, {s} {z}{r.randrange(10, 99)}", s
 
 def document(r):
-    kind = r.choice(["receipt", "receipt", "repair", "vet", "police"])
+    kind = r.choice(["parts", "parts", "parts", "service", "service", "service", "receipt", "repair", "plate", "plate", "permit", "lien"])  # Done & Paid: parts receipts and pros' invoices first; then rating plates, permits, lien waivers
     y = r.choice([2025, 2026]); m = r.randrange(1, 13); d = r.randrange(1, 29); hh, mi = r.randrange(1, 13), r.randrange(60)
     date = f"{y}-{m:02d}-{d:02d}"
     us = f"{m:02d}/{d:02d}/{y}" if r.random() < 0.8 else f"{m:02d}/{d:02d}/{y % 100:02d}"
@@ -103,6 +119,53 @@ def document(r):
         if taxid: L += [(f"EIN {taxid}", 18, "l")]
         L += [(r.choice(["Thank you for your business", "Payment due upon receipt", "90-day warranty on parts and labor"]), 18, "c")]
         fields = {"date": date, "amount": tot, "currency": "USD", "merchant": name, "taxId": taxid, "reportNo": None, "items": [n for n, _ in its]}
+    elif kind == "parts":  # a supply-store receipt for the job's parts
+        a1, a2, st = f"{r.randrange(100, 9999)} {r.choice(STREETS)}", f"Austin, TX 787{r.randrange(10, 99)}", "TX"
+        name = r.choice(SUPPLY); its = r.sample(PARTS, r.choice([1, 1, 2, 3])); qty = [r.choice([1, 1, 1, 2]) for _ in its]
+        sub = round(sum(p * q for (_, p), q in zip(its, qty)), 2); tax = round(sub * 8.25 / 100, 2); tot = round(sub + tax, 2)
+        L += [(name, 28, "c"), (a1, 20, "c"), (a2, 20, "c"), (f"STORE {r.randrange(100, 9999):04d}  REG {r.randrange(1, 20):02d}  TRN {r.randrange(1000, 9999)}", 18, "l"), (f"{us} {hh:02d}:{mi:02d} {r.choice(['AM', 'PM'])}", 20, "l")]
+        for (nm, p), q in zip(its, qty): L.append((f"{nm}{f' {q} @ {money(p)}' if q > 1 else ''}  {money(p * q)}", 20, "l"))
+        L += [(f"SUBTOTAL  {money(sub)}", 20, "l"), (f"SALES TAX 8.25%  {money(tax)}", 20, "l"), (f"TOTAL  ${money(tot)}", 24, "l"), (f"{card(r)}  ${money(tot)}", 18, "l"), (r.choice(["THANK YOU FOR SHOPPING", "PRO DESK: ASK ABOUT VOLUME PRICING", "SAVE YOUR RECEIPT"]), 18, "c")]
+        fields = {"date": date, "amount": tot, "currency": "USD", "merchant": name, "taxId": None, "reportNo": None, "items": [n for n, _ in its]}
+    elif kind == "service":  # the pro's own invoice for the job: trip fee, labor, parts, tax on parts
+        trade = r.choice(list(SERVICES)); name = next(p for p in PROS if trade[:4] in p or trade == "PLUMBING" and "PLUMB" in p) if r.random() < 0.7 else r.choice(PROS)
+        rate_hr = r.choice([75, 85, 95, 110, 125]); hrs = r.choice([1.0, 1.5, 2.0, 2.5, 3.0]); lines = []
+        fixed = [x for x in SERVICES[trade] if x[1]]; task = r.choice([x for x in SERVICES[trade] if not x[1]])
+        lines.append((f"{task[0]}", round(rate_hr * hrs, 2), f"Labor {hrs:g} hr @ {money(rate_hr)}"))
+        if fixed and r.random() < 0.6: lines.append((fixed[0][0], fixed[0][1], None))
+        parts = r.sample(PARTS, r.choice([0, 1, 1, 2])) if trade != "CLEANING" else []
+        for nm, p in parts: lines.append((nm, p, None))
+        labor = round(sum(x[1] for x in lines[:len(lines) - len(parts)]), 2); ptot = round(sum(p for _, p in parts), 2); tax = round(ptot * 8.25 / 100, 2); tot = round(labor + ptot + tax, 2)
+        if r.random() < 0.4: taxid = ein(r)
+        L += [(name, 24, "c"), (f"{r.randrange(100, 9999)} {r.choice(STREETS)}, Austin, TX 787{r.randrange(10, 99)}", 18, "c"), (f"TX License #{r.choice(['M', 'RMP-', 'TACLA'])}{r.randrange(10000, 99999)}" if trade == "PLUMBING" else f"Insured & bonded  (512) {r.randrange(200, 999)}-{r.randrange(1000, 9999)}", 18, "c"),
+              ("INVOICE", 28, "c"), (f"Invoice # {r.randrange(1000, 99999)}", 20, "l"), (f"Date: {us}", 20, "l"), (f"Service address: {r.randrange(100, 9999)} {r.choice(STREETS)}", 18, "l"), ("Description  Amount", 20, "l")]
+        for nm, p, sub in lines: L.append((f"{nm}  {money(p)}", 20, "l"))
+        L += [(f"Subtotal  {money(labor + ptot)}", 20, "l"), (f"Tax on parts 8.25%  {money(tax)}", 20, "l") if parts else (f"Tax  0.00", 20, "l"), (f"{r.choice(['TOTAL', 'Total Due', 'Amount Due'])}  ${money(tot)}", 24, "l")]
+        if taxid: L += [(f"EIN {taxid}", 18, "l")]
+        L += [(r.choice(["Paid via Done & Paid", "Thank you for your business", "1-year warranty on labor"]), 18, "c")]
+        fields = {"date": date, "amount": tot, "currency": "USD", "merchant": name, "taxId": taxid, "reportNo": None, "items": [nm for nm, _, _ in lines]}
+    elif kind == "plate":  # a product rating / serial plate (water heater, AC, disposal): brand, model, serial, specs
+        brand, kindname, specs = r.choice(PLATES)
+        model = f"{r.choice('ABCDEGHMRSTX')}{r.choice('ABCDEGHMRSTX')}{r.randrange(10, 99)}-{r.randrange(100, 999)}{r.choice(['', 'A', 'B', 'T', 'N'])}"
+        serial = f"{r.choice('ABCDEFGHJKLMNPRSTUVWXYZ')}{r.randrange(10, 99)}{r.randrange(10, 53):02d}{r.randrange(100000, 999999)}"
+        L += [(brand, 30, "c"), (kindname, 22, "c"), (f"MODEL NO. {model}", 22, "l"), (f"SERIAL NO. {serial}", 22, "l")]
+        L += [(x, 20, "l") for x in r.sample(specs, min(len(specs), r.choice([2, 3, 4])))]
+        L += [(f"MFD. {m:02d}/{y}", 20, "l"), (r.choice(["LISTED E123456", "CERTIFIED TO ANSI Z21.10.1", "MADE IN USA", "ASSEMBLED IN MEXICO"]), 18, "l")]
+        fields = {"date": None, "amount": None, "currency": None, "merchant": brand, "taxId": None, "reportNo": serial, "items": [model]}
+    elif kind == "permit":  # a City of Austin building / trade permit
+        no = f"{y}-{r.randrange(10**5, 10**6):06d} {r.choice(['PP', 'EP', 'BP', 'MP'])}"; work = r.choice(PERMIT_WORK); fee = round(r.choice([85, 110, 135, 185, 240, 310]) + r.choice([0, 0.5]), 2)
+        L += [("CITY OF AUSTIN", 26, "c"), ("DEVELOPMENT SERVICES DEPARTMENT", 20, "c"), ("BUILDING PERMIT", 28, "c"), (f"Permit No: {no}", 22, "l"), (f"Issued: {us}", 20, "l"),
+              (f"Expires: {(m % 12) + 1:02d}/{d:02d}/{y + (1 if m == 12 else 0)}", 20, "l"), (f"Site: {r.randrange(100, 9999)} {r.choice(STREETS)}, Austin, TX 787{r.randrange(10, 99)}", 18, "l"),
+              (f"Work: {work}", 20, "l"), (f"Contractor: {r.choice(PROS)}", 18, "l"), (f"License: {r.choice(['RMP-', 'TECL-', 'TACLA'])}{r.randrange(10000, 99999)}", 18, "l"),
+              (f"Fee Paid: ${money(fee)}", 22, "l"), ("POST AT JOB SITE UNTIL FINAL INSPECTION", 18, "c")]
+        fields = {"date": date, "amount": fee, "currency": "USD", "merchant": "CITY OF AUSTIN DEVELOPMENT SERVICES DEPARTMENT", "taxId": None, "reportNo": no, "items": [work]}
+    elif kind == "lien":  # a Texas conditional waiver and release on final payment (Property Code 53.284 wording, shortened)
+        claimant = r.choice(PROS); amt = round(r.randrange(90, 2600) + r.choice([0, 0.5, 0.25]), 2)
+        L += [("CONDITIONAL WAIVER AND RELEASE", 24, "c"), ("ON FINAL PAYMENT", 24, "c"), ("Texas Property Code Sec. 53.284", 18, "c"),
+              (f"Project: {r.randrange(100, 9999)} {r.choice(STREETS)}, Austin, TX", 18, "l"), (f"Job No: {r.randrange(1000, 99999)}", 20, "l"), (f"Claimant: {claimant}", 18, "l"),
+              (f"Payment amount: ${money(amt)}", 22, "l"), ("Upon receipt of this payment the claimant", 18, "l"), ("waives and releases its lien and payment bond", 18, "l"),
+              ("claims for all labor and materials furnished.", 18, "l"), (f"Date: {us}", 20, "l"), ("Signature: ____________________", 18, "l")]
+        fields = {"date": date, "amount": amt, "currency": "USD", "merchant": claimant, "taxId": None, "reportNo": None, "items": ["Conditional Waiver and Release on Final Payment"]}
     else:
         dept = r.choice(DEPTS); no = f"{y % 100:02d}-{r.randrange(10**5, 10**6)}"; item = r.choice(STOLEN)
         L += [(dept, 22, "c"), ("INCIDENT REPORT", 28, "c"), (f"Case No: {no}", 22, "l"), (f"Date Reported: {us}", 20, "l"), (f"Time: {hh:02d}{mi:02d} HRS", 20, "l"),
@@ -195,7 +258,7 @@ def main():
         kind, f, L = document(r)
         fn = r.choice(sorted(fonts))
         style = "plain"
-        if kind == "receipt": style = r.choice(["plain", "thermal", "thermal", "dotmatrix"])
+        if kind in ("receipt", "parts"): style = r.choice(["plain", "thermal", "thermal", "dotmatrix"])
         elif r.random() < 0.15: style = "dotmatrix"
         if style != "plain" and fn not in MONO and r.random() < 0.7 and any(k in MONO for k in fonts): fn = r.choice(sorted(k for k in fonts if k in MONO))
         img, boxes = render(L, fonts[fn], style, r)

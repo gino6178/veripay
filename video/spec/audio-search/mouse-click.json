@@ -1,0 +1,86 @@
+{
+  "provider": "freesound",
+  "query": "mouse click",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:534104",
+      "title": "mouse-click-double-00.flac",
+      "author": "pbimal",
+      "duration_seconds": 0.470295,
+      "preview_url": "https://cdn.freesound.org/previews/534/534104_11830391-hq.mp3",
+      "downloads": 7737,
+      "page_url": "https://freesound.org/people/pbimal/sounds/534104/",
+      "license_label": "Creative Commons 0",
+      "description": "Double click mouse button.",
+      "rating": 4.8,
+      "rating_count": 108
+    },
+    {
+      "id": "fs:687108",
+      "title": "Mouse 2 Button Long Click",
+      "author": "aphom000",
+      "duration_seconds": 1.32063,
+      "preview_url": "https://cdn.freesound.org/previews/687/687108_11545182-hq.mp3",
+      "downloads": 3971,
+      "page_url": "https://freesound.org/people/aphom000/sounds/687108/",
+      "license_label": "Creative Commons 0",
+      "description": "Audio of a mouse's right button being clicked for a bit of time.",
+      "rating": 4.8,
+      "rating_count": 56
+    },
+    {
+      "id": "fs:678248",
+      "title": "Mouse Click Sound.mp3",
+      "author": "Pixeliota",
+      "duration_seconds": 1.24188,
+      "preview_url": "https://cdn.freesound.org/previews/678/678248_7806746-hq.mp3",
+      "downloads": 27933,
+      "page_url": "https://freesound.org/people/Pixeliota/sounds/678248/",
+      "license_label": "Creative Commons 0",
+      "description": "Click Sounds From A Computer Mouse Use This Sound For Animations, Games, Videos... And Whatever You Like One Click Sound",
+      "rating": 4.7,
+      "rating_count": 642
+    },
+    {
+      "id": "fs:213004",
+      "title": "Mouse Click.wav",
+      "author": "abstraktgeneriert",
+      "duration_seconds": 2.32934,
+      "preview_url": "https://cdn.freesound.org/previews/213/213004_3610778-hq.mp3",
+      "downloads": 13725,
+      "page_url": "https://freesound.org/people/abstraktgeneriert/sounds/213004/",
+      "license_label": "Creative Commons 0",
+      "description": "Might be useful for mouse clicks of an operating system or web browser.",
+      "rating": 4.4,
+      "rating_count": 118
+    },
+    {
+      "id": "fs:860688",
+      "title": "Mouse click",
+      "author": "OwenMellor",
+      "duration_seconds": 0.612979,
+      "preview_url": "https://cdn.freesound.org/previews/860/860688_19012800-hq.mp3",
+      "downloads": 21,
+      "page_url": "https://freesound.org/people/OwenMellor/sounds/860688/",
+      "license_label": "Creative Commons 0",
+      "description": "A mouse click",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:622579",
+      "title": "Mouse Clicks.mp3",
+      "author": "AUDACITIER",
+      "duration_seconds": 5.43347,
+      "preview_url": "https://cdn.freesound.org/previews/622/622579_13682949-hq.mp3",
+      "downloads": 119,
+      "page_url": "https://freesound.org/people/AUDACITIER/sounds/622579/",
+      "license_label": "Creative Commons 0",
+      "description": "Three mouse clicks: -Left button -Right button -Middle button",
+      "rating": 4.8,
+      "rating_count": 4
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+ "at": "2026-11-05T00:34:21.976Z",
+ "paypal": "sandbox",
+ "runs": [
+  {
+   "label": "A: two milestones, after the final capture",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "m1d1:pass"
+     ]
+    },
+    {
+     "milestone": "m2",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c3:pass",
+      "c4:pass",
+      "c5:pass",
+      "m2d1:pass"
+     ]
+    }
+   ],
+   "number": "DP-1001",
+   "status": "released",
+   "hold": {
+    "authorization": "0V00770996359431B",
+    "status": "captured",
+    "amount": "$1,885.95",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Permit, removal and the new heater on site",
+     "status": "released",
+     "due": "$594.00",
+     "captures": [
+      "82J634147W0114359"
+     ],
+     "release": {
+      "release": "$594.00",
+      "fee": "$59.40",
+      "pro": "$408.97",
+      "retained": "$45.44"
+     },
+     "payout": "X6MR7FS9XJSQQ",
+     "earlyPay": null
+    },
+    {
+     "id": "m2",
+     "title": "Installed and inspected",
+     "status": "released",
+     "due": "$891.00",
+     "captures": [
+      "6YN815658T469804S"
+     ],
+     "release": {
+      "release": "$891.00",
+      "fee": "$89.10",
+      "pro": "$613.45",
+      "retained": "$68.16"
+     },
+     "payout": "YS9PWHNN2JATQ",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "open",
+    "open": "$113.60",
+    "paid": null
+   },
+   "money": {
+    "captured": "$1,485.00",
+    "refunded": "$0.00",
+    "retained": "$113.60",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $1,885.95 0V00770996359431B",
+     "capture $594.00 82J634147W0114359",
+     "platform_fee $59.40",
+     "pro_payout $408.97",
+     "helper_payout $80.19",
+     "retainage_held $45.44",
+     "capture $891.00 6YN815658T469804S",
+     "buffer_released $400.95 0V00770996359431B",
+     "platform_fee $89.10",
+     "pro_payout $613.45",
+     "helper_payout $120.29",
+     "retainage_held $68.16"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "A: after the warranty window",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "m1d1:pass"
+     ]
+    },
+    {
+     "milestone": "m2",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c3:pass",
+      "c4:pass",
+      "c5:pass",
+      "m2d1:pass"
+     ]
+    }
+   ],
+   "number": "DP-1001",
+   "status": "released",
+   "hold": {
+    "authorization": "0V00770996359431B",
+    "status": "captured",
+    "amount": "$1,885.95",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Permit, removal and the new heater on site",
+     "status": "released",
+     "due": "$594.00",
+     "captures": [
+      "82J634147W0114359"
+     ],
+     "release": {
+      "release": "$594.00",
+      "fee": "$59.40",
+      "pro": "$408.97",
+      "retained": "$45.44"
+     },
+     "payout": "X6MR7FS9XJSQQ",
+     "earlyPay": null
+    },
+    {
+     "id": "m2",
+     "title": "Installed and inspected",
+     "status": "released",
+     "due": "$891.00",
+     "captures": [
+      "6YN815658T469804S"
+     ],
+     "release": {
+      "release": "$891.00",
+      "fee": "$89.10",
+      "pro": "$613.45",
+      "retained": "$68.16"
+     },
+     "payout": "YS9PWHNN2JATQ",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "released",
+    "open": "$0.00",
+    "paid": "C5MRB9WEFH4LG"
+   },
+   "money": {
+    "captured": "$1,485.00",
+    "refunded": "$0.00",
+    "retained": "$0.00",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $1,885.95 0V00770996359431B",
+     "capture $594.00 82J634147W0114359",
+     "platform_fee $59.40",
+     "pro_payout $408.97",
+     "helper_payout $80.19",
+     "retainage_held $45.44",
+     "capture $891.00 6YN815658T469804S",
+     "buffer_released $400.95 0V00770996359431B",
+     "platform_fee $89.10",
+     "pro_payout $613.45",
+     "helper_payout $120.29",
+     "retainage_held $68.16",
+     "retainage_paid $113.60 C5MRB9WEFH4LG"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "B: review window + early pay",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "c3:pass"
+     ]
+    }
+   ],
+   "number": "DP-1002",
+   "status": "released",
+   "hold": {
+    "authorization": "03490555TV498622X",
+    "status": "captured",
+    "amount": "$222.00",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Fix the leaking faucet",
+     "status": "released",
+     "due": "$185.00",
+     "captures": [
+      "2WR292430L7826220"
+     ],
+     "release": {
+      "release": "$185.00",
+      "fee": "$18.50",
+      "pro": "$166.50",
+      "retained": "$0.00"
+     },
+     "payout": "nothing_to_send: ",
+     "earlyPay": {
+      "amount": "$163.17",
+      "fee": "$3.33",
+      "batchId": "E6YD7V35DJB46"
+     }
+    }
+   ],
+   "warranty": {
+    "status": "open",
+    "open": "$0.00",
+    "paid": null
+   },
+   "money": {
+    "captured": "$185.00",
+    "refunded": "$0.00",
+    "retained": "$0.00",
+    "earlyPayFees": "$3.33",
+    "balanced": true,
+    "ledger": [
+     "hold $222.00 03490555TV498622X",
+     "capture $185.00 2WR292430L7826220",
+     "buffer_released $37.00 03490555TV498622X",
+     "platform_fee $18.50",
+     "pro_payout $163.17 E6YD7V35DJB46",
+     "early_pay_fee $3.33"
+    ]
+   },
+   "error": null,
+   "message": null
+  },
+  {
+   "label": "C: defect claim, retainage refunded by the arbiter",
+   "checks": [
+    {
+     "milestone": "m1",
+     "decision": "release",
+     "checker": "rules",
+     "verdicts": [
+      "c1:pass",
+      "c2:pass",
+      "c3:pass"
+     ]
+    }
+   ],
+   "number": "DP-1003",
+   "status": "released",
+   "hold": {
+    "authorization": "4TY30422JB0936242",
+    "status": "captured",
+    "amount": "$222.00",
+    "history": [
+     "authorized"
+    ]
+   },
+   "milestones": [
+    {
+     "id": "m1",
+     "title": "Fix the leaking faucet",
+     "status": "released",
+     "due": "$185.00",
+     "captures": [
+      "7CP64610NV0561126"
+     ],
+     "release": {
+      "release": "$185.00",
+      "fee": "$18.50",
+      "pro": "$149.85",
+      "retained": "$16.65"
+     },
+     "payout": "B5EFSV5PBNLWG",
+     "earlyPay": null
+    }
+   ],
+   "warranty": {
+    "status": "refunded",
+    "open": "$0.00",
+    "paid": null
+   },
+   "money": {
+    "captured": "$185.00",
+    "refunded": "$16.65",
+    "retained": "$0.00",
+    "earlyPayFees": "$0.00",
+    "balanced": true,
+    "ledger": [
+     "hold $222.00 4TY30422JB0936242",
+     "capture $185.00 7CP64610NV0561126",
+     "buffer_released $37.00 4TY30422JB0936242",
+     "platform_fee $18.50",
+     "pro_payout $149.85",
+     "retainage_held $16.65",
+     "retainage_refunded $16.65 3AS08393MS432522A"
+    ]
+   },
+   "error": null,
+   "message": null
+  }
+ ],
+ "early": {
+  "status": "passed",
+  "error": null,
+  "why": null
+ }
+}

@@ -1,0 +1,419 @@
+{
+ "id": "ab9c34eedf0b19d62",
+ "round": 10,
+ "title": "Done round 10: customer agent, basic flow",
+ "model": "Haiku 5.5",
+ "startedAt": "2026-11-05T07:51:34.795Z",
+ "endedAt": "2026-11-05T08:19:15.038Z",
+ "calls": 54,
+ "brief": "Read <scratch> first; <dir> is that folder and <you> is \"maria\". Basic-flow check of our own demo app (localhost, simulated PayPal, demo accounts). Use HTTP only (MCP SDK or fetch) — no browser tools.\nYou are Maria Lopez's AI agent over MCP (MCP SDK; REST only if MCP fails, say so). Token: <dir>/maria-token.json (its personPin is Maria's; use it only when acting as Maria in person steps). Start at http://localhost:8810/llms.txt.\nTask: \"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don't pay until it's fixed.\" Post, wait for offers (1–2 min), accept a fair one, follow it to payment. Person steps: act as Maria over HTTP — for the simulated PayPal approval, POST the approval form the server's approveUrl page shows (a=yes) as she would; for links the server gives, POST /api/auth/link {code, pin} and make her decision (confirm the conditions whose evidence fits; ask for a fix on the rest with a reason), noting each. Use wait_for_news. Be patient up to 25 minutes; if nothing moves for 8 minutes, use the job's demo \"finish now\" (POST /api/jobs/<id>/demo-finish as Maria) and note it. Report to <dir>/reports/maria.md: reached payment? time, held vs captured, payout status, who decided each condition, anything that failed or confused you. Keep it under ~60 tool calls.",
+ "steps": [
+  {
+   "n": 1,
+   "at": "2026-11-05T07:51:39.697Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "1\t# Done round 10: testing Done & Paid as a real user would\n2\t\n3\tDone & Paid runs on this machine at http://localhost:8810. It hires local pros in Austin, TX and pays them only when the\n4\twork is proven done; money moves through PayPal (here a stand-in that follows PayPal's rules: no real money; ids are\n5\ttagged simulated). Every pro except \"Luis Ortega Plumbing (test)\" is a demo pro run by the platform.\n6\t\n7\tDo not read Done & Paid's source code, repository or any file on this disk except the files named in your prompt; use\n8\tonly what the server sends you. Start where your role would start (your prompt says where). The platform has its own\n9\tclock: GET /api/info gives \"now\"; use that date, not today's.\n10\t\n11\tTools: HTTP (curl, or node fetch scripts). For MCP, @modelcontextprotocol/sdk is in D:/paypal/join/examples/node_modules\n12\t(write any scripts in D:/paypal/join/examples/ named done10-<you>-*.mjs and delete them at the end). Keep it under about\n13\t70 tool calls and 25 minutes. Never print or paste your token or key into your report.\n14\t\n15\tReport to <dir>/reports/<you>.md:\n16\t- what you did, step by step, with what the server answered (amounts, ids, statuses);\n17\t- what each side ends up with: what was held, captured, paid out and to whom, refunded; how long each step took;\n18\t- whether you had to ask your person for anything and why;\n19\t- findings as BLOCKER, BUG, CONFUSING or MINOR, each with the exact request and response;\n20\t- a section \"Unclear\": every answer, field or message you had to guess about, even small ones.\n21\tEnd with: VERDICT: <n> BLOCKER, <n> BUG, <n> CONFUSING. Your final message: the VERDICT line and your 3 most important\n22\tfindings.\n23\t"
+  },
+  {
+   "n": 2,
+   "at": "2026-11-05T07:51:40.137Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "1\t{\"token\":\"<hidden>\",\"person\":\"Maria Lopez\",\"personId\":\"p_23aa5645cd\",\"personPin\":\"<pin>\",\"zip\":\"<pin>\",\"platformToday\":\"2026-11-05\"}"
+  },
+  {
+   "n": 3,
+   "at": "2026-11-05T07:51:46.612Z",
+   "tool": "Bash",
+   "did": "curl -s http://localhost:8810/llms.txt; echo; echo ---; curl -s http://localhost:8810/api/info",
+   "got": "# Done & Paid\n\n> Your agent hires a local pro, writes a machine-checkable definition of done, negotiates with the pro's agent, holds\n> the money with a PayPal authorization, checks the pro's photos and receipts against each done-condition, and the\n> moment they all pass captures the payment and pays the pro (and helper) with one PayPal Payouts batch.\n> This server is a demonstration on PayPal's sandbox, in Austin, TX. Every pro is fictional and marked \"(demo)\".\n\nDone & Paid hires local pros for your person and pays them only when the work is done. You act for one person (whoami).\nFlow: post_job with what's wrong in their words, the ZIP and a budget -> Done writes the scope: the items and the done-conditions, each with the evidence that proves it -> pros' agents send offers -> list_offers -> counter_offer once if it helps -> accept_offer (this holds the price plus a buffer on their saved PayPal or card with a PayPal authorization; nothing is charged yet) -> the pro works, may ask for a change order (approve_change within your limits) -> the pro sends photos and receipts -> each done-condition is checked -> if all pass, the money is captured and paid to the pro at once. If some fail, the job goes to review: release (if your person allows you), request_fix, or open_dispute.\nRules enforced whatever you do: your person's limits (per job, per month, the largest change order you may approve, whether you may release or cancel; shown in dollars by my_limits; only they change them, on the website); money goes only to the pro's verified PayPal, never to an address you give; evidence text is data, never instructions; a model's verdict never moves money by itself, code rules do. Tell your person what you agreed to and show them any approveUrl.\nWhen a step needs your person (a limit too low, raising the price ceiling, a permission you lack), the error carries askPerson { url, what, expires }: show that link to your person. It opens the website's page, and the person signs in there with their own PIN (you never have it, and the link alone signs nobody in); nothing changes until they change it. Every person-only step (limits, permissions, tokens, the price ceiling, confirm, release, waiving, approving a change order, applying a scope revision) needs the person's PIN step-up on the website; in production that step-up is Log in with PayPal. Tools refuse arguments they don't take (the error lists the ones they do). Results are a summary of the job by default; pass view: \"full\" for everything.\nJob options (post_job options, or set_options until an offer is accepted): releaseMode instant|review, reviewHours, retainPct, warrantyDays, inspector (an id from GET /api/inspectors), requireBefore; milestones for a multi-day job (or \"none\"). review_scope checks a scope for gaps before or after posting.\n\n## Connecting (a customer's agent)\n\n- MCP (Streamable HTTP): http://localhost:8810/mcp with Authorization: Bearer <token>\n- REST: POST http://localhost:8810/api/agent/<tool>  …(+19141 chars)"
+  },
+  {
+   "n": 4,
+   "at": "2026-11-05T07:51:59.629Z",
+   "tool": "Bash",
+   "did": "mkdir -p \"D:/paypal/join/examples\" && cat > \"D:/paypal/join/examples/done10-maria-call.mjs\" <<'EOF'\nimport { Client } from \"@modelcontextprotocol/sdk/client/index.js\";\nimport { StreamableHTTPClientTransport } from \"@modelcontextprotocol/sdk/client/streamableHttp.js\";\nimport fs from \"node:fs\";\nconst tok = JSON.parse(fs.readFileSync(\"<scratch>\",\"utf8\")).token;\nconst [tool, argsJson] = [process.argv[2], process.argv[3] || \"{}\"];\nconst client = new Client({ name: \"maria\", version: \"1.0.0\" });\nconst transport = new StreamableHTTPClientTransport(new URL(\"http://localhost:8810/mcp\"), { requestInit: { headers: { Authorization: `Bearer ${tok}` } } });\ntry {\n  await client.connect(transport);\n  const r = await client.callTool({ name: tool, arguments: JSON.parse(argsJson) });\n  console.log(r.content.map(c => c.text ?? JSON.stringify(c)).join(\"\\n\"));\n  if (r.isError) console.log(\"[isError]\");\n} catch (e) { console.log(\"MCP_ERROR: \" + e.message); process.exitCode = 1; }\nfinally { await client.close().catch(()=>{}); }\nEOF\ncd \"D:/paypal/join/examples\" && node done10-maria-call.mjs whoami '{}'; echo; node done10-maria-call.mjs my_limits '{}'",
+   "got": "{\n \"person\": {\n  \"id\": \"p_23aa5645cd\",\n  \"name\": \"Demo · Maria Lopez\",\n  \"email\": null,\n  \"role\": \"customer\",\n  \"pro\": null,\n  \"zip\": \"78702\",\n  \"address\": null,\n  \"demo\": true,\n  \"savedPayment\": null,\n  \"created\": \"2026-11-05T07:51:23.962Z\"\n },\n \"you\": {\n  \"client\": \"Maria Lopez's agent (Done round 10)\",\n  \"scopes\": [\n   \"read\",\n   \"hire\",\n   \"pay\"\n  ]\n },\n \"limits\": {\n  \"perJobMax\": \"$500.00\",\n  \"monthlyMax\": \"$1,500.00\",\n  \"spentThisMonth\": \"$0.00\",\n  \"leftThisMonth\": \"$1,500.00\",\n  \"changeMax\": \"$75.00\",\n  \"materialsAdvanceMax\": \"$150.00\",\n  \"bufferPct\": 20,\n  \"agentMayRelease\": false,\n  \"agentMayCancel\": true,\n  \"cents\": {\n   \"perJobMax\": 50000,\n   \"monthlyMax\": 150000,\n   \"spentThisMonth\": 0,\n   \"changeMax\": 7500,\n   \"materialsAdvanceMax\": 15000\n  },\n  \"rule\": \"Only your person changes these, on the website. Payouts go only to the pro's verified PayPal.\"\n }\n}\n\n{\n \"perJobMax\": \"$500.00\",\n \"monthlyMax\": \"$1,500.00\",\n \"spentThisMonth\": \"$0.00\",\n \"leftThisMonth\": \"$1,500.00\",\n \"changeMax\": \"$75.00\",\n \"materialsAdvanceMax\": \"$150.00\",\n \"bufferPct\": 20,\n \"agentMayRelease\": false,\n \"agentMayCancel\": true,\n \"cents\": {\n  \"perJobMax\": 50000,\n  \"monthlyMax\": 150000,\n  \"spentThisMonth\": 0,\n  \"changeMax\": 7500,\n  \"materialsAdvanceMax\": 15000\n },\n \"rule\": \"Only your person changes these, on the website. Payouts go only to the pro's verified PayPal.\"\n}"
+  },
+  {
+   "n": 5,
+   "at": "2026-11-05T07:52:33.428Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs post_job '{\"text\":\"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don'\"'\"'t pay until it'\"'\"'s fixed.\",\"zip\":\"78702\",\"budget\":199}'",
+   "got": "{\n \"view\": \"summary\",\n \"id\": \"job_534dfecf3e\",\n \"number\": \"DP-1036\",\n \"status\": \"offered\",\n \"title\": \"Fix a leaking faucet\",\n \"next\": \"Compare offers; counter once or accept one (accepting holds the money).\",\n \"waitingOn\": {\n  \"who\": \"pro\",\n  \"what\": \"send an offer\"\n },\n \"priceCeiling\": \"$199.00\",\n \"due\": \"$0.00\",\n \"conditions\": [\n  {\n   \"id\": \"before\",\n   \"what\": \"Photo of the faucet or the worn part before the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"new_part\",\n   \"what\": \"Photo of the new cartridge, washer or O-ring installed\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"no_drip\",\n   \"what\": \"Photo of the faucet with the water on and no drip, at least 10 minutes after the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"work_note\",\n   \"what\": \"Note naming the part replaced and anything else found\",\n   \"evidence\": \"note\"\n  }\n ],\n \"money\": {\n  \"captured\": \"$0.00\",\n  \"refunded\": \"$0.00\",\n  \"payout\": null\n },\n \"currentMilestone\": null,\n \"remaining\": {\n  \"cents\": 0,\n  \"usd\": \"$0.00\"\n },\n \"scopeReplies\": [],\n \"rating\": null,\n \"paypalDispute\": null,\n \"schedule\": null,\n \"paidAt\": null,\n \"toFix\": [],\n \"payoutState\": null,\n \"full\": \"Send view: \\\"full\\\" for the whole job (scope, thread, evidence, ledger, timeline).\"\n}"
+  },
+  {
+   "n": 6,
+   "at": "2026-11-05T07:52:53.885Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":0,\"seconds\":50}'; echo ---; node done10-maria-call.mjs my_jobs '{}'",
+   "got": "{\n \"events\": [\n  {\n   \"id\": 415,\n   \"at\": \"2026-11-05T07:52:49.055Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"job_scoped\",\n   \"summary\": \"DP-1036: \\\"Fix a leaking faucet\\\" scoped with 4 done-conditions (rules).\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": null\n   }\n  },\n  {\n   \"id\": 416,\n   \"at\": \"2026-11-05T07:52:49.090Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offers_requested\",\n   \"summary\": \"DP-1036: Offers asked for: local pros' agents usually answer within 60-120 seconds.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": null\n   }\n  },\n  {\n   \"id\": 419,\n   \"at\": \"2026-11-05T07:53:05.640Z\",\n   \"actor\": {\n    \"kind\": \"pro_agent\",\n    \"pro\": \"luis-ortega-plumbing\",\n    \"client\": \"Luis Ortega Plumbing (test)'s agent via A2A\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_received\",\n   \"summary\": \"DP-1036: Luis Ortega Plumbing (test) offered $140.00.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": null\n   }\n  }\n ],\n \"last\": 419,\n \"jobs\": [\n  {\n   \"job\": \"job_534dfecf3e\",\n   \"number\": \"DP-1036\",\n   \"status\": \"offered\",\n   \"waitingOn\": {\n    \"who\": \"customer\",\n    \"what\": \"counter or accept an offer\"\n   },\n   \"next\": \"Compare offers; counter once or accept one (accepting holds the money).\"\n  }\n ]\n}\n---\n[\n {\n  \"view\": \"summary\",\n  \"id\": \"job_534dfecf3e\",\n  \"number\": \"DP-1036\",\n  \"status\": \"offered\",\n  \"title\": \"Fix a leaking faucet\",\n  \"next\": \"Compare offers; counter once or accept one (accepting holds the money).\",\n  \"waitingOn\": null,\n  \"priceCeiling\": null,\n  \"due\": \"$0.00\",\n  \"conditions\": [],\n  \"pro\": null,\n  \"full\": \"Send view: \\\"full\\\" for the whole job (scope, thread, evidence, ledger, timeline).\"\n }\n]"
+  },
+  {
+   "n": 7,
+   "at": "2026-11-05T07:53:29.690Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs list_offers '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}'; echo ---; node done10-maria-call.mjs wait_for_news '{\"after\":419,\"seconds\":50}'",
+   "got": "{\n \"job\": \"job_534dfecf3e\",\n \"status\": \"offered\",\n \"priceCeiling\": {\n  \"cents\": 19900,\n  \"usd\": \"$199.00\"\n },\n \"offers\": [\n  {\n   \"id\": \"ofr_92e669cd72\",\n   \"pro\": {\n    \"id\": \"luis-ortega-plumbing\",\n    \"name\": \"Luis Ortega Plumbing (test)\",\n    \"owner\": null,\n    \"trade\": \"plumbing\",\n    \"zip\": \"78721\",\n    \"rating\": null,\n    \"jobs\": 0,\n    \"license\": null,\n    \"demo\": false,\n    \"agent\": \"external\",\n    \"verified\": [\n     {\n      \"id\": \"paypal\",\n      \"label\": \"PayPal verified\",\n      \"ok\": true\n     },\n     {\n      \"id\": \"license\",\n      \"label\": \"Licence not verified\",\n      \"ok\": false\n     },\n     {\n      \"id\": \"insurance\",\n      \"label\": \"Insurance not verified\",\n      \"ok\": false\n     }\n    ],\n    \"verification\": {\n     \"paypal\": {\n      \"verified\": true,\n      \"method\": \"demo verification (stands in for Log in with PayPal)\",\n      \"demoAddress\": true\n     },\n     \"license\": {\n      \"required\": true,\n      \"valid\": false,\n      \"number\": \"M-41877\",\n      \"class\": \"Master Plumber\",\n      \"status\": \"not_verified\",\n      \"why\": \"Not in the demo registry. Not yet verified: send a photo or PDF of your licence (licenseDoc) and staff review it. A live TSBPE public lookup is out of scope for the demo.\",\n      \"document\": false\n     },\n     \"insurance\": null,\n     \"reviewed\": null,\n     \"registry\": \"DEMO registry in TSBPE's format: fictional records, not a lookup of TSBPE's real database\"\n    },\n    \"agentNote\": \"This pro's own agent connects over A2A.\",\n    \"rules\": {\n     \"callout\": \"$60.00\",\n     \"hourly\": \"$90.00\",\n     \"perMileBeyond\": \"$1.50 a mile past 6 miles\",\n     \"leadHours\": 12,\n     \"rushMultiplier\": 1.1,\n     \"radiusMiles\": 25,\n     \"partsPolicy\": \"at_cost\"\n    },\n    \"helper\": null,\n    \"payout\": {\n     \"verified\": true,\n     \"to\": \"l••••••@done-demo.example\",\n     \"demoAddress\": true,\n     \"says\": \"A demo address (no PayPal account behind it): payouts to it stay UNCLAIMED in the sandbox.\"\n    }\n   },\n   \"declinedWhy\": null,\n   \"overCeiling\": false,\n   \"acceptable\": true,\n   \"acceptableWhy\": null,\n   \"previous\": null,\n   \"counterUsed\": false,\n   \"termsChanged\": null,\n   \"hireable\": true,\n   \"blocked\": null,\n   \"amount\": {\n    \"cents\": 14000,\n    \"usd\": \"$140.00\"\n   },\n   \"ask\": {\n    \"cents\": 14000,\n    \"usd\": \"$140.00\"\n   },\n   \"parts\": {\n    \"cents\": 0,\n    \"usd\": \"$0.00\"\n   },\n   \"partsPolicy\": \"at_cost\",\n   \"partsSays\": \"No parts in the price.\",\n   \"arrival\": \"2026-11-05T09:30:00.000Z\",\n   \"helper\": null,\n   \"breakdown\": {\n    \"callout\": null,\n    \"labor\": null,\n    \"hours\": null,\n    \"parts\": null,\n    \"travel\": null,\n    \"rush\": 1,\n    \"total\": {\n     \"cents\": 14000,\n     \"usd\": \"$140.00\"\n    },\n    \"given\": false,\n    \"note\": \"The pro's own agent gave one price, not a breakdown.\"\n   },\n   \"miles\": null,\n   \"status\": \"open\",\n   \"counter\": null,\n   \"answer\": null,\n   \"created\": \"2026-11-05T07:53:05.617Z\",\n   \"expires\": \"2026-11-07T07:53:05.617Z\",\n   \"agent\": \"external\"\n  }\n ],\n \"thread\": [\n  {\n   \"id\": \"msg_262608284c\",\n   \"a …(+1170 chars)"
+  },
+  {
+   "n": 8,
+   "at": "2026-11-05T07:54:05.073Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node -e '' ; node done10-maria-call.mjs list_offers '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' | node -e 'let s=\"\";process.stdin.on(\"data\",d=>s+=d).on(\"end\",()=>{const j=JSON.parse(s);for(const o of j.offers)console.log(JSON.stringify({id:o.id,pro:o.pro.name,amount:o.amount.usd,overCeiling:o.overCeiling,acceptable:o.acceptable,acceptableWhy:o.acceptableWhy,hireable:o.hireable,blocked:o.blocked,arrival:o.arrival,status:o.status,verified:o.pro.verified.map(v=>v.id+\":\"+v.ok),note:o.breakdown&&o.breakdown.note}))})'",
+   "got": "{\"id\":\"ofr_92e669cd72\",\"pro\":\"Luis Ortega Plumbing (test)\",\"amount\":\"$140.00\",\"overCeiling\":false,\"acceptable\":true,\"acceptableWhy\":null,\"hireable\":true,\"blocked\":null,\"arrival\":\"2026-11-05T09:30:00.000Z\",\"status\":\"open\",\"verified\":[\"paypal:true\",\"license:false\",\"insurance:false\"],\"note\":\"The pro's own agent gave one price, not a breakdown.\"}\n{\"id\":\"ofr_5c4fa0c413\",\"pro\":\"Barton Creek Plumbing (demo)\",\"amount\":\"$220.00\",\"overCeiling\":true,\"acceptable\":false,\"acceptableWhy\":\"Over the job's $199.00 ceiling: the customer accepts it only by raising the ceiling (raiseCeiling: true).\",\"hireable\":true,\"blocked\":null,\"arrival\":\"2026-11-05T08:01:49.123Z\",\"status\":\"open\",\"verified\":[\"paypal:true\",\"license:true\",\"insurance:true\"]}\n{\"id\":\"ofr_2a8064834b\",\"pro\":\"Eastside Pipe & Drain (demo)\",\"amount\":\"$195.00\",\"overCeiling\":false,\"acceptable\":true,\"acceptableWhy\":null,\"hireable\":true,\"blocked\":null,\"arrival\":\"2026-11-05T08:01:01.079Z\",\"status\":\"open\",\"verified\":[\"paypal:true\",\"license:true\",\"insurance:true\"]}\n{\"id\":\"ofr_dc31d72282\",\"pro\":\"Hill Country Leak Pros (demo)\",\"amount\":\"$255.00\",\"overCeiling\":true,\"acceptable\":false,\"acceptableWhy\":\"Over the job's $199.00 ceiling: the customer accepts it only by raising the ceiling (raiseCeiling: true).\",\"hireable\":true,\"blocked\":null,\"arrival\":\"2026-11-05T08:04:13.111Z\",\"status\":\"open\",\"verified\":[\"paypal:true\",\"license:true\",\"insurance:true\"]}"
+  },
+  {
+   "n": 9,
+   "at": "2026-11-05T07:54:26.997Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs counter_offer '{\"job\":\"job_534dfecf3e\",\"offer\":\"ofr_2a8064834b\",\"amount\":165}'; echo; node done10-maria-call.mjs wait_for_news '{\"after\":430,\"seconds\":50}'",
+   "got": "{\n \"view\": \"summary\",\n \"id\": \"job_534dfecf3e\",\n \"number\": \"DP-1036\",\n \"status\": \"offered\",\n \"title\": \"Fix a leaking faucet\",\n \"next\": \"Compare offers; counter once or accept one (accepting holds the money).\",\n \"waitingOn\": {\n  \"who\": \"customer\",\n  \"what\": \"counter or accept an offer\"\n },\n \"priceCeiling\": \"$199.00\",\n \"due\": \"$0.00\",\n \"conditions\": [\n  {\n   \"id\": \"before\",\n   \"what\": \"Photo of the faucet or the worn part before the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"new_part\",\n   \"what\": \"Photo of the new cartridge, washer or O-ring installed\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"no_drip\",\n   \"what\": \"Photo of the faucet with the water on and no drip, at least 10 minutes after the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"work_note\",\n   \"what\": \"Note naming the part replaced and anything else found\",\n   \"evidence\": \"note\"\n  }\n ],\n \"offers\": [\n  {\n   \"id\": \"ofr_92e669cd72\",\n   \"pro\": \"Luis Ortega Plumbing (test)\",\n   \"amount\": \"$140.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T09:30:00.000Z\",\n   \"status\": \"open\",\n   \"acceptable\": true,\n   \"acceptableWhy\": null\n  },\n  {\n   \"id\": \"ofr_5c4fa0c413\",\n   \"pro\": \"Barton Creek Plumbing (demo)\",\n   \"amount\": \"$220.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T08:01:49.123Z\",\n   \"status\": \"open\",\n   \"acceptable\": false,\n   \"acceptableWhy\": \"Over the job's $199.00 ceiling: the customer accepts it only by raising the ceiling (raiseCeiling: true).\"\n  },\n  {\n   \"id\": \"ofr_2a8064834b\",\n   \"pro\": \"Eastside Pipe & Drain (demo)\",\n   \"amount\": \"$180.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T08:01:01.079Z\",\n   \"status\": \"open\",\n   \"acceptable\": true,\n   \"acceptableWhy\": null\n  },\n  {\n   \"id\": \"ofr_dc31d72282\",\n   \"pro\": \"Hill Country Leak Pros (demo)\",\n   \"amount\": \"$255.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T08:04:13.111Z\",\n   \"status\": \"open\",\n   \"acceptable\": false,\n   \"acceptableWhy\": \"Over the job's $199.00 ceiling: the customer accepts it only by raising the ceiling (raiseCeiling: true).\"\n  },\n  {\n   \"id\": \"ofr_ca547e1a4b\",\n   \"pro\": \"Mueller Plumbing Co. (demo)\",\n   \"amount\": \"$220.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T08:01:25.222Z\",\n   \"status\": \"open\",\n   \"acceptable\": false,\n   \"acceptableWhy\": \"Over the job's $199.00 ceiling: the customer accepts it only by raising the ceiling (raiseCeiling: true).\"\n  },\n  {\n   \"id\": \"ofr_7383f7ab5e\",\n   \"pro\": \"Lone Star Rooter (demo)\",\n   \"amount\": \"$195.00\",\n   \"parts\": \"$0.00\",\n   \"arrival\": \"2026-11-05T08:01:37.079Z\",\n   \"status\": \"open\",\n   \"acceptable\": true,\n   \"acceptableWhy\": null\n  }\n ],\n \"money\": {\n  \"captured\": \"$0.00\",\n  \"refunded\": \"$0.00\",\n  \"payout\": null\n },\n \"currentMilestone\": null,\n \"remaining\": {\n  \"cents\": 0,\n  \"usd\": \"$0.00\"\n },\n \"scopeReplies\": [],\n \"rating\": null,\n \"paypalDispute\": null,\n \"schedule\": null,\n \"paidAt\": null,\n \"toFix\": [],\n \"payoutState\": null,\n \"offer\": \"ofr_2a8064834b\",\n \"full\": \"Send view: \\\"full\\\" for the whole job (scope, thread, evidence, ledger, ti …(+2064 chars)"
+  },
+  {
+   "n": 10,
+   "at": "2026-11-05T07:55:10.032Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs accept_offer '{\"job\":\"job_534dfecf3e\",\"offer\":\"ofr_2a8064834b\",\"payWith\":\"paypal\",\"view\":\"full\"}' | head -c 6000",
+   "got": "{\n \"id\": \"job_534dfecf3e\",\n \"number\": \"DP-1036\",\n \"status\": \"agreed\",\n \"text\": \"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don't pay until it's fixed.\",\n \"created\": \"2026-11-05T07:52:45.002Z\",\n \"updated\": \"2026-11-05T08:09:24.362Z\",\n \"clock\": {\n  \"aheadMinutes\": 14,\n  \"says\": \"The demo clock is 14 minutes ahead of real time (moved by the demo panel, the judges' tour or \\\"finish now\\\"; never by a pro's agent). Times on jobs are demo times.\",\n  \"recent\": [\n   {\n    \"at\": \"2026-11-05T07:54:47.796Z\",\n    \"minutes\": 14,\n    \"by\": \"demo tour: the pro's visit on DP-1035 takes 15 minutes (timed photos)\"\n   }\n  ]\n },\n \"address\": {\n  \"line\": null,\n  \"city\": \"Austin\",\n  \"state\": \"TX\",\n  \"zip\": \"78702\",\n  \"lat\": 30.2632,\n  \"lng\": -97.7166,\n  \"precise\": false\n },\n \"budget\": {\n  \"cents\": 19900,\n  \"usd\": \"$199.00\"\n },\n \"bufferPct\": 20,\n \"options\": {\n  \"releaseMode\": \"instant\",\n  \"reviewHours\": 48,\n  \"retainPct\": 0,\n  \"warrantyDays\": 14,\n  \"inspector\": null,\n  \"requireBefore\": false\n },\n \"scope\": {\n  \"title\": \"Fix a leaking faucet\",\n  \"trade\": \"plumbing\",\n  \"items\": [\n   \"Find the source of the leak (cartridge, washer or O-ring)\",\n   \"Replace the worn part with a matching one\",\n   \"Test with the water back on\"\n  ],\n  \"checks\": [\n   {\n    \"id\": \"before\",\n    \"what\": \"Photo of the faucet or the worn part before the repair\",\n    \"evidence\": \"photo\",\n    \"rule\": \"photo>=1;in_window;near_job;not_reused\",\n    \"ruleText\": \"At least 1 photo, taken during the job, at the job address, not used on another job\",\n    \"shots\": {\n     \"min\": 2,\n     \"max\": 6,\n     \"labels\": [\n      \"wide shot showing the room\",\n      \"close-up of the work\"\n     ],\n     \"closeUps\": true,\n     \"context\": \"include something that shows where it is (a fixture, a window, the room)\"\n    },\n    \"by\": \"writer\"\n   },\n   {\n    \"id\": \"new_part\",\n    \"what\": \"Photo of the new cartridge, washer or O-ring installed\",\n    \"evidence\": \"photo\",\n    \"rule\": \"photo>=1;in_window;near_job;not_reused\",\n    \"ruleText\": \"At least 1 photo, taken during the job, at the job address, not used on another job\",\n    \"shots\": {\n     \"min\": 2,\n     \"max\": 6,\n     \"labels\": [\n      \"wide shot showing the room\",\n      \"close-up of the work\"\n     ],\n     \"closeUps\": true,\n     \"context\": \"include something that shows where it is (a fixture, a window, the room)\"\n    },\n    \"by\": \"writer\"\n   },\n   {\n    \"id\": \"no_drip\",\n    \"what\": \"Photo of the faucet with the water on and no drip, at least 10 minutes after the repair\",\n    \"evidence\": \"photo\",\n    \"rule\": \"photo>=1;in_window;near_job;not_reused;after:new_part>=10m\",\n    \"ruleText\": \"At least 1 photo, taken during the job, at the job address, not used on another job, taken at least 10 minutes after the \\\"new_part\\\" photo\",\n    \"shots\": {\n     \"min\": 2,\n     \"max\": 6,\n     \"labels\": [\n      \"wide shot showing the room\",\n      \"close-up of the work\"\n     ],\n     \"closeUps\": true,\n     \"context\": \"include something that s …(+2999 chars)"
+  },
+  {
+   "n": 11,
+   "at": "2026-11-05T07:55:29.491Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_status '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));console.log(JSON.stringify({status:j.status,hold:j.hold,approveUrl:j.approveUrl,paypal:j.paypal,money:j.money,ledger:j.ledger,askPerson:j.askPerson},null,1).slice(0,3000));console.log(Object.keys(j).join(\",\"))' \"<scratch>\"",
+   "got": "{\n \"status\": \"agreed\",\n \"hold\": {\n  \"bufferWhy\": \"20% (your setting)\",\n  \"paidWith\": \"PayPal approval\",\n  \"explain\": \"Waiting for approval: nothing is held yet. Once approved in PayPal, $199.00 is authorized (held, not charged): the price $180.00 plus a buffer.\",\n  \"note\": null,\n  \"bufferCapped\": \"The buffer is $19.00, not 20% ($36.00): the hold stays within the job's $199.00 ceiling. A change order that doesn't fit will ask for a new hold.\",\n  \"mode\": \"authorize\",\n  \"flow\": \"platform_capture_then_payouts\",\n  \"status\": \"pending_approval\",\n  \"amount\": {\n   \"cents\": 19900,\n   \"usd\": \"$199.00\"\n  },\n  \"price\": {\n   \"cents\": 18000,\n   \"usd\": \"$180.00\"\n  },\n  \"buffer\": {\n   \"cents\": 1900,\n   \"usd\": \"$19.00\"\n  },\n  \"capturedOnThis\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"payWith\": \"paypal\",\n  \"paypalOrder\": \"MOCK-00FDA8759A25\",\n  \"authorization\": null,\n  \"capture\": null,\n  \"createdAt\": null,\n  \"honorUntil\": null,\n  \"expiresAt\": null,\n  \"reauthorized\": false,\n  \"approveUrl\": \"/mock-paypal/approve?token=MOCK-00FDA8759A25\",\n  \"history\": []\n },\n \"money\": {\n  \"captured\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"feeRate\": 0.1,\n  \"refunded\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"paypalFee\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"platformNet\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"retained\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"earlyPayFees\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  },\n  \"balanced\": true,\n  \"payout\": null,\n  \"payouts\": [],\n  \"releases\": [],\n  \"ledger\": []\n }\n}\nid,number,status,text,created,updated,clock,address,budget,bufferPct,options,scope,offers,thread,agreed,milestones,currentMilestone,flow,risk,hold,due,remaining,changeOrders,evidence,submissions,checks,lastCheck,queue,dispute,warranty,money,scopeReview,scopeReplies,rating,warnings,paypalDispute,schedule,receipts,timeline,paidAt,next,waitingOn,toFix,payoutState"
+  },
+  {
+   "n": 12,
+   "at": "2026-11-05T07:55:52.572Z",
+   "tool": "Bash",
+   "did": "curl -s \"http://localhost:8810/mock-paypal/approve?token=MOCK-00FDA8759A25\" | head -c 4000",
+   "got": "<!doctype html><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>PayPal (simulated)</title><style>body{font:16px system-ui;background:#f5f7fa;margin:0;display:grid;place-items:center;min-height:100vh}.c{background:#fff;padding:32px;border-radius:16px;box-shadow:0 8px 30px #0001;max-width:380px;width:calc(100% - 32px)}h1{font-size:20px;margin:0 0 4px}.n{color:#a15c00;background:#fff4e0;padding:8px 12px;border-radius:8px;font-size:13px;margin:12px 0 20px}button{font:inherit;width:100%;padding:12px;border-radius:999px;border:0;margin-top:8px;cursor:pointer}.y{background:#0070e0;color:#fff;font-weight:600}.x{background:#eee}</style><div class=\"c\"><h1>PayPal</h1><p>Authorize (hold, not charge) <b>$199.00</b> to Done &amp; Paid, and save PayPal for later holds</p><p>For <b>DP-1036</b> Fix a leaking faucet: Eastside Pipe &amp; Drain (demo) hired at $180.00. The account that hired: Maria. If that isn't you, someone else on this browser started it: cancel.</p><p class=\"n\">Simulated PayPal: this server runs without sandbox keys. No money moves.</p><form method=\"post\"><button class=\"y\" name=\"a\" value=\"yes\">Agree and continue</button><button class=\"x\" name=\"a\" value=\"no\">Cancel</button></form></div>"
+  },
+  {
+   "n": 13,
+   "at": "2026-11-05T07:56:00.463Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; curl -s -i -X POST -d \"a=yes\" \"http://localhost:8810/mock-paypal/approve?token=MOCK-00FDA8759A25\" | head -c 1500; echo; echo ---; cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_status '{\"job\":\"job_534dfecf3e\"}' | head -c 2500",
+   "got": "HTTP/1.1 302 Found\r\nLocation: /paypal/return?job=job_534dfecf3e\r\nVary: Accept\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: 55\r\nDate: Thu, 05 Nov 2026 07:56:04 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\n\r\nFound. Redirecting to /paypal/return?job=job_534dfecf3e\n---\n{\n \"view\": \"summary\",\n \"id\": \"job_534dfecf3e\",\n \"number\": \"DP-1036\",\n \"status\": \"held\",\n \"title\": \"Fix a leaking faucet\",\n \"next\": \"The pro starts work.\",\n \"waitingOn\": {\n  \"who\": \"pro\",\n  \"what\": \"start work\"\n },\n \"priceCeiling\": \"$199.00\",\n \"due\": \"$180.00\",\n \"conditions\": [\n  {\n   \"id\": \"before\",\n   \"what\": \"Photo of the faucet or the worn part before the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"new_part\",\n   \"what\": \"Photo of the new cartridge, washer or O-ring installed\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"no_drip\",\n   \"what\": \"Photo of the faucet with the water on and no drip, at least 10 minutes after the repair\",\n   \"evidence\": \"photo\"\n  },\n  {\n   \"id\": \"work_note\",\n   \"what\": \"Note naming the part replaced and anything else found\",\n   \"evidence\": \"note\"\n  }\n ],\n \"milestones\": [\n  {\n   \"id\": \"m1\",\n   \"title\": \"Fix a leaking faucet\",\n   \"status\": \"open\",\n   \"amount\": \"$180.00\",\n   \"checkIds\": [\n    \"before\",\n    \"new_part\",\n    \"no_drip\",\n    \"work_note\"\n   ]\n  }\n ],\n \"hired\": {\n  \"pro\": \"Eastside Pipe & Drain (demo)\",\n  \"price\": \"$180.00\",\n  \"parts\": \"$0.00\"\n },\n \"hold\": {\n  \"status\": \"held\",\n  \"amount\": \"$199.00\",\n  \"buffer\": \"$19.00\",\n  \"explain\": \"$199.00 authorized (held, not charged): the price $180.00; $19.00 is buffer (about 11% of the price: capped by your $199.00 ceiling, below the 20% you set, so change orders up to it need no new approval); only what's due is captured; the rest is released.\",\n  \"approveUrl\": null\n },\n \"money\": {\n  \"captured\": \"$0.00\",\n  \"refunded\": \"$0.00\",\n  \"payout\": null\n },\n \"currentMilestone\": \"m1\",\n \"remaining\": {\n  \"cents\": 18000,\n  \"usd\": \"$180.00\"\n },\n \"scopeReplies\": [],\n \"rating\": null,\n \"paypalDispute\": null,\n \"schedule\": null,\n \"paidAt\": null,\n \"toFix\": [],\n \"payoutState\": null,\n \"full\": \"Send view: \\\"full\\\" for the whole job (scope, thread, evidence, ledger, timeline).\"\n}"
+  },
+  {
+   "n": 14,
+   "at": "2026-11-05T07:56:22.149Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":438,\"seconds\":50}' | head -c 3000",
+   "got": "{\n \"events\": [\n  {\n   \"id\": 442,\n   \"at\": \"2026-11-05T08:09:24.397Z\",\n   \"realAt\": \"2026-11-05T07:55:24.397Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"job_agreed\",\n   \"summary\": \"DP-1036: Hired Eastside Pipe & Drain (demo) for $180.00.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"eastside-pipe-drain\"\n   }\n  },\n  {\n   \"id\": 443,\n   \"at\": \"2026-11-05T08:09:24.405Z\",\n   \"realAt\": \"2026-11-05T07:55:24.405Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_declined\",\n   \"summary\": \"DP-1036: Your offer ofr_92e669cd72 wasn't chosen: the customer chose another offer.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"luis-ortega-plumbing\",\n    \"offer\": \"ofr_92e669cd72\"\n   }\n  },\n  {\n   \"id\": 444,\n   \"at\": \"2026-11-05T08:09:24.412Z\",\n   \"realAt\": \"2026-11-05T07:55:24.412Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_declined\",\n   \"summary\": \"DP-1036: Your offer ofr_5c4fa0c413 wasn't chosen: the customer chose another offer.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"barton-creek-plumbing\",\n    \"offer\": \"ofr_5c4fa0c413\"\n   }\n  },\n  {\n   \"id\": 445,\n   \"at\": \"2026-11-05T08:09:24.420Z\",\n   \"realAt\": \"2026-11-05T07:55:24.420Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_declined\",\n   \"summary\": \"DP-1036: Your offer ofr_dc31d72282 wasn't chosen: the customer chose another offer.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"hill-country-leak-pros\",\n    \"offer\": \"ofr_dc31d72282\"\n   }\n  },\n  {\n   \"id\": 446,\n   \"at\": \"2026-11-05T08:09:24.427Z\",\n   \"realAt\": \"2026-11-05T07:55:24.427Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_declined\",\n   \"summary\": \"DP-1036: Your offer ofr_ca547e1a4b wasn't chosen: the customer chose another offer.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"mueller-plumbing\",\n    \"offer\": \"ofr_ca547e1a4b\"\n   }\n  },\n  {\n   \"id\": 447,\n   \"at\": \"2026-11-05T08:09:24.435Z\",\n   \"realAt\": \"2026-11-05T07:55:24.435Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_23aa5645cd\"\n   ],\n   \"action\": \"offer_declined\",\n   \"summary\": \"DP-1036: Your offer ofr_7383f7ab5e wasn't chosen: the customer chose another offer.\",\n   \"ref\": \"job_534dfecf3e\",\n   \"data\": {\n    \"pro\": \"lone-star-rooter\",\n    \"offer\": \"ofr_7383f7ab5e\"\n   }\n  },\n  {\n   \"id\": 448,\n   \"at\": \"2026-11-05T08:09:24.474Z\",\n   \"realAt\": \"2026-11-05T07:55:24.474Z\",\n   \"actor\": {\n    \"kind\": \"agent\",\n    \"client\": \"Maria Lopez's agent (Done round 10)\"\n   },\n   \"who\": [\n    \"p_2"
+  },
+  {
+   "n": 15,
+   "at": "2026-11-05T07:56:41.837Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && cat > done10-maria-news.mjs <<'EOF'\nlet s=\"\";process.stdin.on(\"data\",d=>s+=d).on(\"end\",()=>{try{const j=JSON.parse(s);for(const e of j.events)console.log(e.id,e.at,e.action,\"|\",e.summary);console.log(\"last\",j.last,\"jobs:\",JSON.stringify(j.jobs))}catch(e){console.log(s.slice(0,1500))}})\nEOF\nnode done10-maria-call.mjs wait_for_news '{\"after\":448,\"seconds\":50}' | node done10-maria-news.mjs",
+   "got": "449 2026-11-05T08:09:28.500Z scope_review | DP-1036: Scope review (rules): TSBPE-licensed plumber is needed for this work (City of Austin; Texas Occupations Code ch. 1301)..\n452 2026-11-05T08:10:04.521Z money_held | DP-1036: $199.00 held with PayPal (authorization AUTH-32AE11DAD45D). Eastside Pipe & Drain (demo) can start.\nlast 452 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"held\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"start work\"},\"next\":\"The pro starts work.\"}]"
+  },
+  {
+   "n": 16,
+   "at": "2026-11-05T07:57:04.621Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":452,\"seconds\":50}' | node done10-maria-news.mjs",
+   "got": "460 2026-11-05T08:11:51.040Z work_started | DP-1036: Eastside Pipe & Drain (demo) started work, with 3 before photos.\nlast 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]"
+  },
+  {
+   "n": 17,
+   "at": "2026-11-05T07:57:54.769Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]"
+  },
+  {
+   "n": 18,
+   "at": "2026-11-05T07:59:00.325Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]"
+  },
+  {
+   "n": 19,
+   "at": "2026-11-05T08:00:07.326Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:01:10 UTC 2026"
+  },
+  {
+   "n": 20,
+   "at": "2026-11-05T08:01:14.021Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:02:19 UTC 2026"
+  },
+  {
+   "n": 21,
+   "at": "2026-11-05T08:02:22.736Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:03:27 UTC 2026"
+  },
+  {
+   "n": 22,
+   "at": "2026-11-05T08:03:34.557Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:04:42 UTC 2026"
+  },
+  {
+   "n": 23,
+   "at": "2026-11-05T08:04:46.825Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:05:56 UTC 2026"
+  },
+  {
+   "n": 24,
+   "at": "2026-11-05T08:06:00.727Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 460 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"working\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send the evidence and submit\"},\"next\":\"The pro is working.\"}]\nThu Nov  5 08:07:14 UTC 2026"
+  },
+  {
+   "n": 25,
+   "at": "2026-11-05T08:07:21.064Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && cat > done10-maria-finish.mjs <<'EOF'\nimport fs from \"node:fs\";\nconst tok = JSON.parse(fs.readFileSync(\"<scratch>\",\"utf8\")).token;\nconst r = await fetch(\"http://localhost:8810/api/jobs/job_534dfecf3e/demo-finish\", { method: \"POST\", headers: { Authorization: `Bearer ${tok}`, \"Content-Type\": \"application/json\" }, body: \"{}\" });\nconst t = await r.text();\nconsole.log(r.status, t.slice(0, 1500));\nEOF\nnode done10-maria-finish.mjs",
+   "got": "401 {\"error\":\"signin\",\"message\":\"Sign in first.\"}"
+  },
+  {
+   "n": 26,
+   "at": "2026-11-05T08:07:43.722Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; curl -s -c \"<scratch>\" -X POST -H \"Content-Type: application/json\" -d '{\"as\":\"customer\"}' http://localhost:8810/api/auth/demo; echo; curl -s -b \"<scratch>\" http://localhost:8810/api/auth/me | head -c 800",
+   "got": "{\"person\":{\"id\":\"p_6ed7d67717\",\"name\":\"Demo · Sam Patel\",\"email\":null,\"role\":\"customer\",\"pro\":null,\"zip\":\"78704\",\"address\":null,\"demo\":true,\"savedPayment\":null,\"created\":\"2026-11-05T08:36:48.500Z\"},\"limits\":{\"perJobMax\":\"$500.00\",\"monthlyMax\":\"$1,500.00\",\"spentThisMonth\":\"$0.00\",\"leftThisMonth\":\"$1,500.00\",\"changeMax\":\"$75.00\",\"materialsAdvanceMax\":\"$150.00\",\"bufferPct\":20,\"agentMayRelease\":false,\"agentMayCancel\":true,\"cents\":{\"perJobMax\":50000,\"monthlyMax\":150000,\"spentThisMonth\":0,\"changeMax\":7500,\"materialsAdvanceMax\":15000},\"rule\":\"Only your person changes these, on the website. Payouts go only to the pro's verified PayPal.\"},\"pinOnce\":\"<pin>\",\"pin\":{\"set\":true,\"says\":\"Your PIN is shown once (pinOnce): you need it to come back as this customer and to confirm anything only you may do. Your agent never gets it.\"}}\n{\"error\":\"not_found\",\"message\":\"Nothing at /api/auth/me. Agents: start at /llms.txt.\"}"
+  },
+  {
+   "n": 27,
+   "at": "2026-11-05T08:07:59.132Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; J=\"<scratch>\"; curl -s -c \"$J\" -X POST -H \"Content-Type: application/json\" -d '{\"as\":\"customer\",\"personId\":\"p_23aa5645cd\",\"pin\":\"<pin>\"}' http://localhost:8810/api/auth/demo | head -c 400; echo; echo ---; curl -s -b \"$J\" -X POST -H \"Content-Type: application/json\" -d '{}' http://localhost:8810/api/jobs/job_534dfecf3e/demo-finish | head -c 600",
+   "got": "{\"person\":{\"id\":\"p_23aa5645cd\",\"name\":\"Demo · Maria Lopez\",\"email\":null,\"role\":\"customer\",\"pro\":null,\"zip\":\"78702\",\"address\":null,\"demo\":true,\"savedPayment\":{\"kind\":\"paypal\",\"label\":\"PayPal\"},\"created\":\"2026-11-05T07:51:23.962Z\"},\"limits\":{\"perJobMax\":\"$500.00\",\"monthlyMax\":\"$1,500.00\",\"spentThisMonth\":\"$180.00\",\"leftThisMonth\":\"$1,320.00\",\"changeMax\":\"$75.00\",\"materialsAdvanceMax\":\"$150.00\",\"buf\n---\n{\"id\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"review\",\"text\":\"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don't pay until it's fixed.\",\"created\":\"2026-11-05T07:52:45.002Z\",\"updated\":\"2026-11-05T08:37:56.589Z\",\"clock\":{\"aheadMinutes\":29,\"says\":\"The demo clock is 29 minutes ahead of real time (moved by the demo panel, the judges' tour or \\\"finish now\\\"; never by a pro's agent). Times on jobs are demo times.\",\"recent\":[{\"at\":\"2026-11-05T08:02:42.459Z\",\"minutes\":15,\"by\":\"demo tour: the pro's visit on DP-1038 takes 15 minutes (time"
+  },
+  {
+   "n": 28,
+   "at": "2026-11-05T08:09:04.582Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_status '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));const o={status:j.status,next:j.next,waitingOn:j.waitingOn,checks:j.checks,evidence:(j.evidence||[]).map(e=>({kind:e.kind,check:e.checkId||e.check,status:e.status,at:e.at})),submissions:j.submissions,queue:j.queue,lastCheck:j.lastCheck,risk:j.risk,warnings:j.warnings,money:j.money,hold:j.hold&&{status:j.hold.status,explain:j.hold.explain},askPerson:j.askPerson,toFix:j.toFix};console.log(JSON.stringify(o,null,1).slice(0,9000))' \"<scratch>\"",
+   "got": "{\n \"status\": \"review\",\n \"next\": \"Every check passed, but some need a person to confirm (low confidence or no model verdict). Your person decides: show them askPerson (from job_status) to look at the photos and confirm, release, ask for a fix or dispute on the website.\",\n \"waitingOn\": {\n  \"who\": \"customer\",\n  \"what\": \"confirm, release, ask for a fix or dispute\",\n  \"also\": \"staff (expert queue)\"\n },\n \"checks\": [\n  {\n   \"round\": 1,\n   \"kind\": \"milestone\",\n   \"milestone\": \"m1\",\n   \"at\": \"2026-11-05T08:37:56.567Z\",\n   \"decidedFrom\": {\n    \"checker\": \"model+vlm\",\n    \"model\": \"done-audit\",\n    \"vlm\": \"none\",\n    \"documents\": null,\n    \"label\": \"model verdicts, decided by code\"\n   },\n   \"evidence\": [\n    \"ev_374f6bfedf\",\n    \"ev_b6d1c0df1a\",\n    \"ev_b05a7f2852\",\n    \"ev_010b36dfc6\"\n   ],\n   \"checks\": [\n    {\n     \"id\": \"before\",\n     \"what\": \"Photo of the faucet or the worn part before the repair\",\n     \"verdict\": \"pass\",\n     \"reason\": \"BEFORE photo shows: The image shows a red and black object, which could be a part of a machine or a device. The object is placed on a green and white striped surface, which might be a table or a countertop. There are no ; confidence 0.5 is under 0.6, so a person confirms\",\n     \"confidence\": 0.5,\n     \"signals\": [\n      \"exif_time_ok: ev_010b36dfc6 taken 2026-11-05T02:24:17-06:00\",\n      \"gps_ok: ev_010b36dfc6 33 m from the job\",\n      \"vlm_sees: ev_010b36dfc6 The image shows a red and black object, which could be a part of a machine or a device. The object is placed on a green and white striped surface, which might b\",\n      \"not_same_spot: ev_010b36dfc6 looks unlike the BEFORE photos (image hash 39 bits apart)\",\n      \"before_named: part\",\n      \"needs_person: low_confidence 0.5\"\n     ],\n     \"label\": \"NEEDS_REVIEW\",\n     \"by\": \"rules+vlm\",\n     \"needsPerson\": true\n    },\n    {\n     \"id\": \"new_part\",\n     \"what\": \"Photo of the new cartridge, washer or O-ring installed\",\n     \"verdict\": \"pass\",\n     \"reason\": \"the photo's description doesn't say it is mounted, installed or connected; a person confirms\",\n     \"confidence\": 0.3,\n     \"signals\": [\n      \"exif_time_ok: ev_b05a7f2852 taken 2026-11-05T02:26:28-06:00\",\n      \"gps_ok: ev_b05a7f2852 36 m from the job\",\n      \"vlm_sees: ev_b05a7f2852 The image shows a white rectangular object with a black border. The object is placed on a brown surface, which is likely a table or a countertop. The object app\",\n      \"not_same_spot: ev_b05a7f2852 looks unlike the BEFORE photos (image hash 30 bits apart)\",\n      \"needs_person: description_gap (the photo's description doesn't say it is mounted, installed or connected)\"\n     ],\n     \"label\": \"NEEDS_REVIEW\",\n     \"by\": \"rules+vlm\",\n     \"needsPerson\": true\n    },\n    {\n     \"id\": \"no_drip\",\n     \"what\": \"Photo of the faucet with the water on and no drip, at least 10 minutes after the repair\",\n     \"verdict\": \"pass\",\n     \"reason\": \"the photo's description doesn't name the faucet; a person confirms\",\n     \"confidence\": 0.3,\n     \"sign …(+6000 chars)"
+  },
+  {
+   "n": 29,
+   "at": "2026-11-05T08:09:43.885Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_evidence '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));const arr=Array.isArray(j)?j:(j.evidence||j.items||[j]);console.log(Object.keys(j).join(\",\"));for(const e of arr.slice(0,12))console.log(JSON.stringify({id:e.id,kind:e.kind,check:e.checkId||e.check,at:e.at,url:e.url,text:e.text,gps:e.gps,exif:e.exif||e.camera}).slice(0,500))' \"<scratch>\"",
+   "got": "job,number,evidence,howToFetch\n{\"id\":\"ev_7aa9c8ea0c\",\"kind\":\"photo\",\"check\":\"before\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_7aa9c8ea0c\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:11:39.000Z\",\"lat\":30.263406,\"lng\":-97.71687,\"camera\":null}}\n{\"id\":\"ev_5f7ea1a75c\",\"kind\":\"photo\",\"check\":\"new_part\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_5f7ea1a75c\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:11:46.000Z\",\"lat\":30.263546,\"lng\":-97.716919,\"camera\":null}}\n{\"id\":\"ev_5863541058\",\"kind\":\"photo\",\"check\":\"no_drip\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_5863541058\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:11:50.000Z\",\"lat\":30.263587,\"lng\":-97.716937,\"camera\":null}}\n{\"id\":\"ev_010b36dfc6\",\"kind\":\"photo\",\"check\":\"before\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_010b36dfc6\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:24:17.000Z\",\"lat\":30.263413,\"lng\":-97.716836,\"camera\":null}}\n{\"id\":\"ev_b05a7f2852\",\"kind\":\"photo\",\"check\":\"new_part\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_b05a7f2852\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:26:28.000Z\",\"lat\":30.263434,\"lng\":-97.716865,\"camera\":null}}\n{\"id\":\"ev_b6d1c0df1a\",\"kind\":\"photo\",\"check\":\"no_drip\",\"url\":\"/api/jobs/job_534dfecf3e/evidence/ev_b6d1c0df1a\",\"text\":null,\"exif\":{\"taken\":\"2026-11-05T08:37:38.000Z\",\"lat\":30.263461,\"lng\":-97.716834,\"camera\":null}}\n{\"id\":\"ev_374f6bfedf\",\"kind\":\"note\",\"check\":\"work_note\",\"url\":null,\"text\":\"Part replaced: the worn Moen 1225 cartridge. Ran the water 10 minutes after the repair: no drips under the sink.\"}"
+  },
+  {
+   "n": 30,
+   "at": "2026-11-05T08:10:26.092Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && cat > done10-maria-dl.mjs <<'EOF'\nimport fs from \"node:fs\";\nconst S=\"<scratch>\";\nconst tok = JSON.parse(fs.readFileSync(S+\"maria-token.json\",\"utf8\")).token;\nconst ids = [\"ev_7aa9c8ea0c\",\"ev_5f7ea1a75c\",\"ev_5863541058\",\"ev_010b36dfc6\",\"ev_b05a7f2852\",\"ev_b6d1c0df1a\"];\nfor (const id of ids) {\n  const r = await fetch(`http://localhost:8810/api/jobs/job_534dfecf3e/evidence/${id}`, { headers: { Authorization: `Bearer ${tok}` } });\n  const buf = Buffer.from(await r.arrayBuffer());\n  fs.writeFileSync(S+`maria-${id}.bin`, buf);\n  console.log(id, r.status, r.headers.get(\"content-type\"), buf.length);\n}\nEOF\nnode done10-maria-dl.mjs",
+   "got": "ev_7aa9c8ea0c 200 image/jpeg 39270\nev_5f7ea1a75c 200 image/jpeg 37628\nev_5863541058 200 image/jpeg 40054\nev_010b36dfc6 200 image/jpeg 42573\nev_b05a7f2852 200 image/jpeg 23499\nev_b6d1c0df1a 200 image/jpeg 22480"
+  },
+  {
+   "n": 31,
+   "at": "2026-11-05T08:10:53.669Z",
+   "tool": "Bash",
+   "did": "cd \"<scratch>\" && for f in maria-ev_*.bin; do cp \"$f\" \"${f%.bin}.jpg\"; done; ls maria-ev_*.jpg",
+   "got": "maria-ev_010b36dfc6.jpg\nmaria-ev_5863541058.jpg\nmaria-ev_5f7ea1a75c.jpg\nmaria-ev_7aa9c8ea0c.jpg\nmaria-ev_b05a7f2852.jpg\nmaria-ev_b6d1c0df1a.jpg"
+  },
+  {
+   "n": 32,
+   "at": "2026-11-05T08:10:53.809Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "032-1.jpg"
+   ]
+  },
+  {
+   "n": 33,
+   "at": "2026-11-05T08:10:54.435Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "033-2.jpg"
+   ]
+  },
+  {
+   "n": 34,
+   "at": "2026-11-05T08:10:55.284Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "034-3.jpg"
+   ]
+  },
+  {
+   "n": 35,
+   "at": "2026-11-05T08:10:56.713Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "035-4.jpg"
+   ]
+  },
+  {
+   "n": 36,
+   "at": "2026-11-05T08:10:57.736Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "036-5.jpg"
+   ]
+  },
+  {
+   "n": 37,
+   "at": "2026-11-05T08:10:59.094Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "037-6.jpg"
+   ]
+  },
+  {
+   "n": 38,
+   "at": "2026-11-05T08:11:25.791Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));console.log(JSON.stringify({askPerson:j.askPerson,next:j.next,waitingOn:j.waitingOn,money:j.money&&{captured:j.money.captured,held:j.money.held},hold:j.hold&&{status:j.hold.status,explain:j.hold.explain},warranty:j.warranty,payoutState:j.payoutState,paidAt:j.paidAt,warnings:j.warnings,risk:j.risk},null,1))' \"<scratch>\"",
+   "got": "{\n \"askPerson\": {\n  \"url\": \"/link?code=<code>\",\n  \"what\": \"look at the evidence for DP-1036 and confirm, release, ask for a fix or dispute\",\n  \"to\": \"/jobs/job_534dfecf3e\",\n  \"expires\": \"2026-11-06T08:09:28.048Z\",\n  \"oneUse\": true,\n  \"limit\": \"agentMayRelease\",\n  \"wouldBe\": null,\n  \"current\": null,\n  \"job\": {\n   \"id\": \"job_534dfecf3e\",\n   \"number\": \"DP-1036\"\n  },\n  \"tell\": \"Show this link to your person: it opens the website, shows what you asked, and they sign in with their own PIN (you don't have it) and change it themselves if they agree.\"\n },\n \"next\": \"Every check passed, but some need a person to confirm (low confidence or no model verdict). Your person decides: show them askPerson (from job_status) to look at the photos and confirm, release, ask for a fix or dispute on the website.\",\n \"waitingOn\": {\n  \"who\": \"customer\",\n  \"what\": \"confirm, release, ask for a fix or dispute\",\n  \"also\": \"staff (expert queue)\"\n },\n \"money\": {\n  \"captured\": {\n   \"cents\": 0,\n   \"usd\": \"$0.00\"\n  }\n },\n \"hold\": {\n  \"status\": \"held\",\n  \"explain\": \"$199.00 authorized (held, not charged): the price $180.00; $19.00 is buffer (about 11% of the price: capped by your $199.00 ceiling, below the 20% you set, so change orders up to it need no new approval); only what's due is captured; the rest is released.\"\n },\n \"warranty\": null,\n \"payoutState\": null,\n \"paidAt\": null,\n \"warnings\": [],\n \"risk\": {\n  \"dispute\": {\n   \"p\": 0.0256,\n   \"why\": [\n    {\n     \"factor\": \"pro_jobs\",\n     \"says\": \"the pro has 148 jobs done lowers the dispute risk\",\n     \"effect\": \"lowers\",\n     \"logOdds\": -0.559\n    },\n    {\n     \"factor\": \"first_time_hirer\",\n     \"says\": \"a first-time hirer raises the dispute risk\",\n     \"effect\": \"raises\",\n     \"logOdds\": 0.329\n    },\n    {\n     \"factor\": \"price_to_ceiling\",\n     \"says\": \"the price is 90% of the ceiling lowers the dispute risk\",\n     \"effect\": \"lowers\",\n     \"logOdds\": -0.295\n    }\n   ]\n  },\n  \"overrun\": {\n   \"p\": 0.0475,\n   \"why\": [\n    {\n     \"factor\": \"pro_jobs\",\n     \"says\": \"the pro has 148 jobs done lowers the overrun risk\",\n     \"effect\": \"lowers\",\n     \"logOdds\": -0.438\n    },\n    {\n     \"factor\": \"price\",\n     \"says\": \"the price ($180) lowers the overrun risk\",\n     \"effect\": \"lowers\",\n     \"logOdds\": -0.419\n    },\n    {\n     \"factor\": \"trade\",\n     \"says\": \"a plumbing job raises the overrun risk\",\n     \"effect\": \"raises\",\n     \"logOdds\": 0.301\n    },\n    {\n     \"factor\": \"allowance_to_parts\",\n     \"says\": \"the parts allowance is 100% of the part estimate lowers the overrun risk\",\n     \"effect\": \"lowers\",\n     \"logOdds\": -0.27\n    }\n   ]\n  },\n  \"source\": \"model: done-risk\",\n  \"version\": \"done-risk-dispute-r1,done-risk-overrun-r1\",\n  \"at\": \"2026-11-05T07:55:24.363Z\"\n }\n}"
+  },
+  {
+   "n": 39,
+   "at": "2026-11-05T08:11:45.041Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; curl -s \"http://localhost:8810/api/auth/link/info?code=<code>\"; echo",
+   "got": "{\"for\":\"Demo · Maria Lopez\",\"what\":\"look at the evidence for DP-1036 and confirm, release, ask for a fix or dispute\",\"to\":\"/jobs/job_534dfecf3e\",\"limit\":\"agentMayRelease\",\"wouldBe\":null,\"current\":null,\"job\":{\"id\":\"job_534dfecf3e\",\"number\":\"DP-1036\"},\"needs\":\"pin\"}"
+  },
+  {
+   "n": 40,
+   "at": "2026-11-05T08:11:56.192Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && cat > done10-maria-link.mjs <<'EOF'\nimport fs from \"node:fs\";\nconst S=\"<scratch>\";\nconst t = JSON.parse(fs.readFileSync(S+\"maria-token.json\",\"utf8\"));\nconst jar = S+\"maria-cookie2.txt\";\nconst r = await fetch(\"http://localhost:8810/api/auth/link\", { method:\"POST\", headers:{ \"Content-Type\":\"application/json\", Cookie: fs.existsSync(jar)? \"\" : \"\" }, body: JSON.stringify({ code: \"TJZ2XNFbhaSbh_ihNzciQxen\", pin: t.personPin }) });\nconsole.log(r.status, (await r.text()).slice(0, 800));\nEOF\nnode done10-maria-link.mjs",
+   "got": "200 {\"person\":{\"id\":\"p_23aa5645cd\",\"name\":\"Demo · Maria Lopez\",\"email\":null,\"role\":\"customer\",\"pro\":null,\"zip\":\"78702\",\"address\":null,\"demo\":true,\"savedPayment\":{\"kind\":\"paypal\",\"label\":\"PayPal\"},\"created\":\"2026-11-05T07:51:23.962Z\"},\"to\":\"/jobs/job_534dfecf3e\",\"what\":\"look at the evidence for DP-1036 and confirm, release, ask for a fix or dispute\",\"limit\":\"agentMayRelease\",\"wouldBe\":null,\"current\":null,\"job\":{\"id\":\"job_534dfecf3e\",\"number\":\"DP-1036\"}}"
+  },
+  {
+   "n": 41,
+   "at": "2026-11-05T08:12:26.264Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; J=\"<scratch>\"; curl -s -b \"$J\" http://localhost:8810/api/jobs/job_534dfecf3e > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));console.log(Object.keys(j).join(\",\"));console.log(JSON.stringify(j.actions||j.can||j.askPerson||null).slice(0,1500));console.log(JSON.stringify(j.queue||null).slice(0,300))' \"<scratch>\"",
+   "got": "id,number,status,text,created,updated,clock,address,budget,bufferPct,options,scope,offers,thread,agreed,milestones,currentMilestone,flow,risk,hold,due,remaining,changeOrders,evidence,submissions,checks,lastCheck,queue,dispute,warranty,money,scopeReview,scopeReplies,rating,warnings,paypalDispute,schedule,receipts,timeline,paidAt,next,waitingOn,toFix,payoutState\nnull\n[{\"milestone\":\"m1\",\"slaDue\":\"2026-11-05T19:07:56.589Z\",\"why\":\"moderate confidence: an expert confirms\"}]"
+  },
+  {
+   "n": 42,
+   "at": "2026-11-05T08:12:44.440Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; J=\"<scratch>\"; curl -s -b \"$J\" -X POST -H \"Content-Type: application/json\" -d '{\"milestone\":\"m1\",\"reason\":\"Photos do not show the job: the before and new-part photos show a corroded shut-off valve, not the bathroom faucet cartridge, and the no-drip photo does not show the faucet. Please send photos of the faucet itself, the old and new cartridge, and the faucet running with no drip 10 minutes after the repair.\"}' http://localhost:8810/api/jobs/job_534dfecf3e/request-fix | head -c 700; echo",
+   "got": "{\"id\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"needs_fix\",\"text\":\"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don't pay until it's fixed.\",\"created\":\"2026-11-05T07:52:45.002Z\",\"updated\":\"2026-11-05T08:41:49.933Z\",\"clock\":{\"aheadMinutes\":29,\"says\":\"The demo clock is 29 minutes ahead of real time (moved by the demo panel, the judges' tour or \\\"finish now\\\"; never by a pro's agent). Times on jobs are demo times.\",\"recent\":[{\"at\":\"2026-11-05T08:02:42.459Z\",\"minutes\":15,\"by\":\"demo tour: the pro's visit on DP-1038 takes 15 minutes (timed photos)\"},{\"at\":\"2026-11-05T07:54:47.796Z\",\"minutes\":14,\"by\":\"demo tour: the pro's visit on DP-"
+  },
+  {
+   "n": 43,
+   "at": "2026-11-05T08:12:56.940Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && date -u; node done10-maria-call.mjs wait_for_news '{\"after\":460,\"seconds\":50}' | node done10-maria-news.mjs",
+   "got": "Thu Nov  5 08:13:03 UTC 2026\n506 2026-11-05T08:37:38.328Z evidence_submitted | DP-1036: Eastside Pipe & Drain (demo) sent 4 evidence items for the job.\n507 2026-11-05T08:37:56.580Z checked | DP-1036: the job: 4/4 done-conditions passed (model+vlm): the customer decides.\n513 2026-11-05T08:41:49.972Z fix_requested | DP-1036: Asked the pro to fix the job: Photos do not show the job: the before and new-part photos show a corroded shut-off valve, not the bathroom faucet cartr\nlast 513 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"needs_fix\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send what the check asked for\"},\"next\":\"The pro is fixing what the check found.\"}]"
+  },
+  {
+   "n": 44,
+   "at": "2026-11-05T08:13:22.785Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":513,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "last 513 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"needs_fix\",\"waitingOn\":{\"who\":\"pro\",\"what\":\"send what the check asked for\"},\"next\":\"The pro is fixing what the check found.\"}]\nThu Nov  5 08:14:40 UTC 2026"
+  },
+  {
+   "n": 45,
+   "at": "2026-11-05T08:14:45.496Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs wait_for_news '{\"after\":513,\"seconds\":50}' | node done10-maria-news.mjs; date -u",
+   "got": "518 2026-11-05T08:43:41.802Z evidence_submitted | DP-1036: Eastside Pipe & Drain (demo) sent 4 evidence items for the job.\n520 2026-11-05T08:44:03.961Z checked | DP-1036: the job: 4/4 done-conditions passed (model+vlm): the customer decides.\nlast 520 jobs: [{\"job\":\"job_534dfecf3e\",\"number\":\"DP-1036\",\"status\":\"review\",\"waitingOn\":{\"who\":\"customer\",\"what\":\"confirm, release, ask for a fix or dispute\",\"also\":\"staff (expert queue)\"},\"next\":\"Every check passed, but some need a person to confirm (low confidence or no model verdict): look at the evidence and release, or ask for a fix.\"}]\nThu Nov  5 08:15:10 UTC 2026"
+  },
+  {
+   "n": 46,
+   "at": "2026-11-05T08:15:20.278Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_evidence '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));const old=new Set([\"ev_7aa9c8ea0c\",\"ev_5f7ea1a75c\",\"ev_5863541058\",\"ev_010b36dfc6\",\"ev_b05a7f2852\",\"ev_b6d1c0df1a\",\"ev_374f6bfedf\"]);for(const e of j.evidence){console.log(old.has(e.id)?\"old\":\"NEW\",e.id,e.kind,e.check||e.checkId,e.exif&&e.exif.taken,e.text||\"\",e.url||\"\")}' \"<scratch>\"",
+   "got": "old ev_7aa9c8ea0c photo before 2026-11-05T08:11:39.000Z  /api/jobs/job_534dfecf3e/evidence/ev_7aa9c8ea0c\nold ev_5f7ea1a75c photo new_part 2026-11-05T08:11:46.000Z  /api/jobs/job_534dfecf3e/evidence/ev_5f7ea1a75c\nold ev_5863541058 photo no_drip 2026-11-05T08:11:50.000Z  /api/jobs/job_534dfecf3e/evidence/ev_5863541058\nold ev_010b36dfc6 photo before 2026-11-05T08:24:17.000Z  /api/jobs/job_534dfecf3e/evidence/ev_010b36dfc6\nold ev_b05a7f2852 photo new_part 2026-11-05T08:26:28.000Z  /api/jobs/job_534dfecf3e/evidence/ev_b05a7f2852\nold ev_b6d1c0df1a photo no_drip 2026-11-05T08:37:38.000Z  /api/jobs/job_534dfecf3e/evidence/ev_b6d1c0df1a\nold ev_374f6bfedf note work_note null Part replaced: the worn Moen 1225 cartridge. Ran the water 10 minutes after the repair: no drips under the sink. \nNEW ev_d4a990ca48 photo before 2026-11-05T08:30:27.000Z  /api/jobs/job_534dfecf3e/evidence/ev_d4a990ca48\nNEW ev_95fbcff94e photo new_part 2026-11-05T08:32:34.000Z  /api/jobs/job_534dfecf3e/evidence/ev_95fbcff94e\nNEW ev_f4b603f62a photo no_drip 2026-11-05T08:43:41.000Z  /api/jobs/job_534dfecf3e/evidence/ev_f4b603f62a\nNEW ev_051afb920b note work_note null Part replaced: the worn Moen 1225 cartridge. Ran the water 10 minutes after the repair: no drips under the sink."
+  },
+  {
+   "n": 47,
+   "at": "2026-11-05T08:16:00.228Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && cat > done10-maria-dl2.mjs <<'EOF'\nimport fs from \"node:fs\";\nconst S=\"<scratch>\";\nconst tok = JSON.parse(fs.readFileSync(S+\"maria-token.json\",\"utf8\")).token;\nfor (const id of [\"ev_d4a990ca48\",\"ev_95fbcff94e\",\"ev_f4b603f62a\"]) {\n  const r = await fetch(`http://localhost:8810/api/jobs/job_534dfecf3e/evidence/${id}`, { headers: { Authorization: `Bearer ${tok}` } });\n  fs.writeFileSync(S+`maria-${id}.jpg`, Buffer.from(await r.arrayBuffer()));\n  console.log(id, r.status);\n}\nEOF\nnode done10-maria-dl2.mjs; cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_status '{\"job\":\"job_534dfecf3e\",\"view\":\"full\"}' > \"<scratch>\"; node -e 'const j=JSON.parse(require(\"fs\").readFileSync(process.argv[1],\"utf8\"));const lc=j.lastCheck;console.log(JSON.stringify(lc.checks.map(c=>({id:c.id,verdict:c.verdict,conf:c.confidence,label:c.label,reason:c.reason.slice(0,160)}))));console.log(j.status,JSON.stringify(j.askPerson&&{url:j.askPerson.url}),JSON.stringify(j.money.captured))' \"<scratch>\"",
+   "got": "ev_d4a990ca48 200\nev_95fbcff94e 200\nev_f4b603f62a 200\n[{\"id\":\"before\",\"verdict\":\"pass\",\"conf\":0.5,\"label\":\"NEEDS_REVIEW\",\"reason\":\"BEFORE photo shows: The image shows a green and brown color scheme with a brown circle in the middle. The circle is placed on a green background with a brown bo\"},{\"id\":\"new_part\",\"verdict\":\"pass\",\"conf\":0.3,\"label\":\"NEEDS_REVIEW\",\"reason\":\"the photo's description doesn't say it is mounted, installed or connected; a person confirms\"},{\"id\":\"no_drip\",\"verdict\":\"pass\",\"conf\":0.3,\"label\":\"NEEDS_REVIEW\",\"reason\":\"the photo's description doesn't name the faucet; a person confirms\"},{\"id\":\"work_note\",\"verdict\":\"pass\",\"conf\":0.53,\"label\":\"NEEDS_REVIEW\",\"reason\":\"Note note 2 shows it: note naming the part replaced and anything else found.; confidence 0.53 is under 0.6, so a person confirms\"}]\nreview {\"url\":\"/link?code=<code>\"} {\"cents\":0,\"usd\":\"$0.00\"}"
+  },
+  {
+   "n": 48,
+   "at": "2026-11-05T08:16:58.072Z",
+   "tool": "Bash",
+   "did": "cd \"<scratch>\" && ls -la maria-ev_d4a990ca48.jpg maria-ev_95fbcff94e.jpg maria-ev_f4b603f62a.jpg",
+   "got": "-rw-r--r-- 1 Gino 197121 23787 Nov  5 16:16 maria-ev_95fbcff94e.jpg\n-rw-r--r-- 1 Gino 197121 44017 Nov  5 16:16 maria-ev_d4a990ca48.jpg\n-rw-r--r-- 1 Gino 197121 24003 Nov  5 16:16 maria-ev_f4b603f62a.jpg"
+  },
+  {
+   "n": 49,
+   "at": "2026-11-05T08:16:58.374Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "049-7.jpg"
+   ]
+  },
+  {
+   "n": 50,
+   "at": "2026-11-05T08:16:59.689Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "050-8.jpg"
+   ]
+  },
+  {
+   "n": 51,
+   "at": "2026-11-05T08:17:01.648Z",
+   "tool": "Read",
+   "did": "read <scratch>",
+   "got": "[screenshot]",
+   "screens": [
+    "051-9.jpg"
+   ]
+  },
+  {
+   "n": 52,
+   "at": "2026-11-05T08:17:22.857Z",
+   "tool": "Bash",
+   "did": "cd /tmp 2>/dev/null; J=\"<scratch>\"; curl -s -b \"$J\" -X POST -H \"Content-Type: application/json\" -d '{\"milestone\":\"m1\",\"reason\":\"Second round still does not show the job. Before and new-part photos again show a corroded shut-off valve, not the bathroom sink faucet or its cartridge. No-drip photo again shows only under-sink pipes, with no faucet in frame. The note names a Moen 1225 cartridge, but no photo shows a cartridge. Please send: the faucet with the cartridge or washer visible before the repair, the new part installed on the faucet, and the faucet itself with the water running and no drip 10 minutes later.\"}' http://localhost:8810/api/jobs/job_534dfecf3e/request-fix | node -e 'let s=\"\";process.stdin.on(\"data\",d=>s+=d).on(\"end\",()=>{const j=JSON.parse(s);console.log(j.status||j.error, j.message||\"\")})'; cd \"D:/paypal/join/examples\" && node done10-maria-call.mjs job_status '{\"job\":\"job_534dfecf3e\"}' | node -e 'let s=\"\";process.stdin.on(\"data\",d=>s+=d).on(\"end\",()=>{const j=JSON.parse(s);console.log(j.status,\"|\",j.next,\"|\",JSON.stringify(j.money&&j.money.captured||j.due))})'; date -u",
+   "got": "needs_fix \nneeds_fix | The pro is fixing what the check found. | \"$0.00\"\nThu Nov  5 08:17:47 UTC 2026"
+  },
+  {
+   "n": 53,
+   "at": "2026-11-05T08:18:18.937Z",
+   "tool": "Bash",
+   "did": "cd \"D:/paypal/join/examples\" && rm -f done10-maria-call.mjs done10-maria-news.mjs done10-maria-finish.mjs done10-maria-link.mjs done10-maria-dl.mjs done10-maria-dl2.mjs && ls done10-maria-* 2>/dev/null; mkdir -p \"<scratch>\" && echo ok",
+   "got": "ok"
+  },
+  {
+   "n": 54,
+   "at": "2026-11-05T08:18:54.961Z",
+   "tool": "Write",
+   "did": "write <scratch>\n# Done round 10: Maria Lopez agent report\n\nAgent: Maria Lopez's AI agent, over MCP (@modelcontextprotocol/sdk, Streamable HTTP at http://localhost:8810/mcp). REST was used only for the person steps the server gives as links or website actions (PayPal approval page, /api/auth/link, the website session for the fix request and demo-finish). Job: DP-1036, job_534dfecf3e.\n\nTask: \"The bathroom sink faucet in my house at 78702 drips all night. Get someone out this week, under $200, and don't pay until it's fixed.\"\n\n## Result\n\n- Reached payment (hold): yes. Accepted an offer, approved the PayPal hold, $199.00 authorized.\n- Reached capture: no. Captured $0.00, refunded $0.00, no payout. Money stays held.\n- Current state: job status `needs_fix` (second fix request sent, pro is fixing). Not finished.\n- Time: started about 07:51 real, ended about 08:19 real (about 28 min, slightly over the 25 min guide). Pro idle after start about 10 min, so the 8-minute demo-finish was used (see step 14).\n\n## What I did, step by step\n\n1. `whoami` and `my_limits` (MCP). Limits: $500 per job, $1,500 per month, change orders up to $75, buffer 20%, agentMayRelease false, agentMayCancel true. No saved payment method yet (`savedPayment: null`).\n2. `post_job` text as given, zip 78702, budget 199. Server: job DP-1036 (job_534dfecf3e), ceiling $199.00, scope with 4 done-conditions (before, new_part, no_drip, work_note), status offered.\n3. `wait_for_news` 50 s, then `list_offers`. Offers came in from 07:53 to 07:54 real time:\n   - Luis Ortega Plumbing (test): $140.00, licence NOT verified (no licence doc), acceptable.\n   - Eastside Pipe & Drain (demo): $195.00, licence and insurance verified, acceptable.\n   - Lone Star Rooter (demo): $195.00, acceptable.\n   - Barton Creek Plumbing (demo): $220.00, over ceiling, not acceptable without raising it.\n   - Mueller Plumbing Co. (demo): $220.00, over ceiling.\n   - Hill Country Leak Pros (demo): $255.00, over ceiling.\n4. Decision on offers (Maria's brief: fair, under $200, don't pay until fixed). I chose Eastside Pipe & Drain: fully verified, under the ceiling, arrival 08:01 same day. I countered once at $165 (`counter_offer`). The pro's agent countered back at $180.00 (event 438).\n5. `accept_offer` offer ofr_2a8064834b, payWith \"paypal\" (saved method was not available). Server: status agreed, PayPal order MOCK-00FDA8759A25, approveUrl /mock-paypal/approve?token=MOCK-00FDA8759A25. The other offers were declined by the platform as \"not chosen\".\n6. Person step, simulated PayPal approval: GET the approve page (it shows $199.00 hold for DP-1036, Eastside $180.00, \"the account that hired: Maria\"), then POST `a=yes` as Maria. Response 302 to /paypal/return. Status became `held`, hold $199.00 = price $180.00 + buffer $19.00 (buffer capped by the $199 ceiling, not 20%). Event money_held: AUTH-32AE11DAD45D.\n7. `wait_for_news`: scope review noted a TSBPE-licensed plumber is needed (City of Austin / Texas Occupations Code ch. 1301). Work started 07:57 real with 3 before photos.\n8. No further news for about 8 minutes: no evidence submitted.\n9. Used the demo \"finish now\" (see step 14 for how it worked). Pro's evidence arrived on the platform: 4 items (3 photos + 1 note).\n10. Read the job with `job_status` (full) and `job_evidence`. Checker verdicts: all 4 conditions \"pass\" in code, but three photo conditions are NEEDS_REVIEW (confidence 0.3 to 0.5) and the work note is NEEDS_REVIEW too (0.66). Downloaded the 6 photos and looked at them as Maria would:\n    - before (2 photos): both show a corroded, weeping shut-off valve (caption \"DEMO PHOTO (synthetic): corroded shut-off valve, weeping\"). Not the faucet, not a worn cartridge.\n    - new_part (2 photos): the same valve. No new cartridge or washer is visible.\n    - no_drip (2 photos): one shows the same valve (08:11). The other shows the under-sink pipes, dry, caption \"under the sink, water on 10 min, dry\". No faucet in frame.\n    - work_note: \"Part replaced: the worn Moen …(+7696 chars)",
+   "got": "File created successfully at: <scratch> (file state is current in your context — no need to Read it back)"
+  }
+ ],
+ "finalMessage": "Maria's run reached payment but not capture. The $199.00 hold is authorized, nothing is captured or paid out, and the job is in `needs_fix` after two fix requests. The report is at `<scratch>`.\n\n**What happened:** I posted DP-1036 (job_534dfecf3e). Six offers came in within about two minutes. I countered Eastside Pipe & Drain once at $165, they countered back at $180, and I accepted at $180 (licence and insurance verified). Maria approved the PayPal hold, which authorized $199.00 ($180 plus a $19 buffer capped by the ceiling). The pro started work. After about 8 minutes of silence I used demo-finish. The pro's photos did not show the faucet, so Maria asked for a fix twice with specific reasons. The second round of photos again showed a shut-off valve and under-sink pipes. I did not confirm or release any condition. The 25-minute window ended with the job waiting on the pro's third attempt.\n\n**Unintended side effect:** my first `/api/auth/demo {\"as\":\"customer\"}` call with no PIN created a new demo account, \"Sam Patel\" (p_6ed7d67717). I did not use it, and I have no tool to delete it.\n\n**Scripts:** I deleted my helper scripts from `D:/paypal/join/examples`.\n\nVERDICT: 0 BLOCKER, 2 BUG, 4 CONFUSING\n\nTop three findings:\n1. The checker event says \"4/4 done-conditions passed\" while three of four are NEEDS_REVIEW at confidence 0.3 to 0.5, and the photos do not show the faucet (BUG). Nothing is captured, but the wording reads as ready to pay.\n2. `POST /api/auth/demo {\"as\":\"customer\"}` without a PIN silently creates a new demo customer rather than an error (CONFUSING). Resuming Maria needs `personId` and `pin` in the same call, which llms.txt does not say.\n3. `demo-finish` returns 401 with the agent Bearer token and needs the website session (CONFUSING). It also moves the shared demo clock, which was 14 minutes ahead and became 29 minutes ahead.",
+ "screenshots": "D:/paypal/video/done-agent-screens/round10-ab9c34ee"
+}

@@ -1,0 +1,5 @@
+{ "port": 11471, "backendPort": 18101, "llamaServer": "D:/paypal/tools/llama-b11840-vulkan/llama-server.exe", "ctx": 8192, "maxWaitMs": 15000,
+  "models": {
+    "done-audit": { "gguf": "D:/paypal/done/ml/models/done-audit-qwen06-Q4_K_M.gguf", "threads": 4, "args": ["-ngl", "99"] },
+    "done-chat": { "gguf": "D:/paypal/done/ml/models/done-chat-qwen06-Q4_K_M.gguf", "threads": 4, "args": ["-ngl", "99"] },
+    "done-vlm": { "gguf": "D:/paypal/done/ml/models/vlm/SmolVLM2-500M-Video-Instruct-Q8_0.gguf", "mmproj": "D:/paypal/done/ml/models/vlm/mmproj-SmolVLM2-500M-Video-Instruct-Q8_0.gguf", "threads": 4, "args": ["-ngl", "99"] } } }

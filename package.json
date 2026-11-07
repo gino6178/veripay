@@ -1,11 +1,13 @@
 {
-  "name": "cover",
+  "name": "done-and-paid",
   "private": true,
-  "description": "Cover: AI insurance for young people where every dollar moves through PayPal: a 90-second quote, claims paid in minutes, a flat fee, and what is left of the premiums given to a cause each policyholder picks.",
+  "description": "Done & Paid: your AI agent hires a local pro, writes a machine-checkable definition of done, negotiates agent-to-agent, holds the money with a PayPal authorization, checks the pro's photo and receipt evidence against each done-condition, and pays the pro and helper with one PayPal Payouts batch the moment it all passes. PayPal sandbox; Austin, TX demo; fictional pros.",
   "scripts": {
     "setup": "npm --prefix api install && npm --prefix web install && npm --prefix web run build",
     "start": "npm --prefix api start",
     "dev:web": "npm --prefix web run dev",
-    "test": "npm --prefix api test"
+    "test": "npm --prefix api test",
+    "seed": "npm --prefix api run seed",
+    "sandbox-check": "npm --prefix api run sandbox-check"
   }
 }

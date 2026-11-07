@@ -1,18 +1,16 @@
-// Verifiable receipts: proof that a policy's terms, a claim's decision, a payout or a giveback has not been changed
-// since Cover recorded it.
-//   1. When a policy starts or changes, a claim is decided or paid, or a pool's leftover is given, Cover writes a
-//      receipt: what was agreed or decided, the clauses it rests on, and the PayPal ids of every payment. People appear
-//      only as salted hashes (each person's own copy carries their salt, so they can find themselves).
-//   2. Cover signs the receipt (Ed25519; the public key is at /.well-known/cover-receipts.json).
+// Verifiable receipts: proof that a job's definition of done, its check results and every PayPal movement on it (the
+// hold, the capture, the payouts, a refund) have not been changed since VeriPay recorded them.
+//   1. When a job is agreed, held, checked, released, refunded or resolved, the platform writes a receipt: what was
+//      agreed or decided, the done-conditions it rests on, and the PayPal ids of every payment. People appear only as
+//      salted hashes (each person's own copy carries their salt, so they can find themselves).
+//   2. The platform signs the receipt (Ed25519; the public key is at /.well-known/done-receipts.json).
 //   3. Every few minutes the new receipts' hashes go into a Merkle tree (a batch). Each receipt keeps its path to the
 //      batch's root.
-//   4. Each batch is appended to Cover's transparency log, a Merkle tree exactly as Certificate Transparency defines
-//      it (RFC 6962 / RFC 9162, tlog.js). After each append Cover signs the tree head as a C2SP checkpoint (a signed
-//      note: origin, size, root hash). Witnesses fetch a consistency proof from the last checkpoint they saw, check
-//      it, and cosign the new one (c2sp.org/tlog-cosignature).
-// Anyone can then check a receipt without trusting Cover's server: a claim decision can't be quietly rewritten after
-// a complaint, and the giveback totals can't be changed after they are published.
-// What a receipt does not prove: that PayPal moved the money. That is PayPal's record, which the receipt points to by id.
+//   4. Each batch is appended to a transparency log, a Merkle tree exactly as Certificate Transparency defines it
+//      (RFC 6962 / RFC 9162, tlog.js), its tree head signed as a C2SP checkpoint that witnesses can cosign.
+// Anyone can then check a receipt without trusting the server: a check verdict or a split can't be quietly rewritten
+// after a complaint. What a receipt does not prove: that PayPal moved the money. That is PayPal's record, which the
+// receipt points to by id.
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -23,35 +21,34 @@ import * as tlog from "./tlog.js";
 const db = store(stateFile("receipts"), { receipts: [], batches: [] });
 export const receiptsStore = db;
 // the transparency log: one entry per batch, the latest checkpoint (a signed note, with witnesses' cosignatures added),
-// and the witnesses Cover accepts cosignatures from
+// and the witnesses the platform accepts cosignatures from
 const log = store(stateFile("transparency-log"), { entries: [], checkpoint: null, cosigned: [], witnesses: {} });
 export const auditLogStore = log;
-let origin = "cover.localhost/receipts";
+let origin = "done.localhost/receipts";
 export const setOrigin = (o) => { origin = o; };
 
-// Cover's signing key, made on first run and kept with the state (or in memory for tests)
+// The platform's signing key, made on first run and kept with the state (or in memory for tests)
 function signingKey() {
   const f = stateFile("receipts-key");
   if (f && fs.existsSync(f)) { const k = JSON.parse(fs.readFileSync(f, "utf8")); return { priv: crypto.createPrivateKey({ key: k.private, format: "jwk" }), pub: k.public }; }
   const { privateKey, publicKey } = crypto.generateKeyPairSync("ed25519");
-  const k = { private: privateKey.export({ format: "jwk" }), public: { ...publicKey.export({ format: "jwk" }), kid: `cover-${Date.now().toString(36)}`, alg: "EdDSA", use: "sig" } };
+  const k = { private: privateKey.export({ format: "jwk" }), public: { ...publicKey.export({ format: "jwk" }), kid: `done-${Date.now().toString(36)}`, alg: "EdDSA", use: "sig" } };
   if (f) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(k), { mode: 0o600 }); }
   return { priv: privateKey, pub: k.public };
 }
 let key = null;
 const keys = () => (key ||= signingKey());
 export const publicKey = () => keys().pub;
-// (the same key signs AP2 mandates, mandates.js; it never leaves the server)
 export const signBytes = (buf) => crypto.sign(null, buf, keys().priv);
 export const verifyBytes = (buf, sig) => { try { return crypto.verify(null, buf, crypto.createPublicKey({ key: keys().pub, format: "jwk" }), sig); } catch { return false; } };
 
 const salted = (salt, id) => sha256(`${salt}:${id}`);
 
-// A receipt: kind (policy | claim | payout | giveback | refund), the thing it is about (subject: an id), the event,
+// A receipt: kind (job | hold | check | release | refund | dispute), the thing it is about (subject: an id), the event,
 // the facts (data: never free text a person or a model wrote), and the people in it, salted.
 export function issue({ kind, subject, event, data = {}, people = [] }) {
   const salt = crypto.randomBytes(16).toString("hex");
-  const body = { type: "CoverReceipt", version: 1, kind, subject, event, issued: new Date().toISOString(), currency: "USD",
+  const body = { type: "DoneReceipt", version: 1, kind, subject, event, issued: new Date().toISOString(), currency: "USD",
     people: people.map((pid) => salted(salt, pid)), data };
   const hash = sha256(canonical(body));
   const signature = crypto.sign(null, Buffer.from(hash, "hex"), keys().priv).toString("base64url");
@@ -65,7 +62,7 @@ const entryData = (e) => canonical({ seq: e.seq, batch: e.batch, root: e.root, c
 const leaves = () => log.data.entries.map((e) => tlog.leafHash(entryData(e)));
 const b64 = (buf) => Buffer.from(buf).toString("base64");
 
-// The current checkpoint, signed by Cover; cosignatures for it are added as witnesses send them
+// The current checkpoint, signed by the platform; cosignatures for it are added as witnesses send them
 function checkpoint() {
   const size = log.data.entries.length, text = tlog.checkpointText(origin, size, tlog.treeHash(leaves()));
   log.data.checkpoint = { size, text, signature: tlog.logSignatureLine(origin, text, (buf) => crypto.sign(null, buf, keys().priv), keys().pub), at: new Date().toISOString() };
@@ -99,7 +96,7 @@ export function consistency(from, to = log.data.entries.length) {
   if (!(from >= 0 && from <= to && to <= log.data.entries.length)) return null;
   return { from, to, proof: tlog.consistencyProof(from, leaves().slice(0, to)).map(b64) };
 }
-// A witness Cover accepts cosignatures from (set up by an operator), and a cosignature for the current checkpoint
+// A witness the platform accepts cosignatures from (set up by an operator), and a cosignature for the current checkpoint
 export function addWitness(name, jwk) {
   if (!/^[^\s+]{1,255}$/.test(name) || jwk?.kty !== "OKP" || jwk?.crv !== "Ed25519" || typeof jwk?.x !== "string") return { error: "bad_witness" };
   log.data.witnesses[name] = { kty: "OKP", crv: "Ed25519", x: jwk.x }; log.save();
@@ -127,7 +124,7 @@ export function show(id, viewer = null) {
 export const forSubject = (id) => db.data.receipts.filter((r) => r.body.subject === id).map((r) => ({ id: r.id, event: r.body.event, issued: r.body.issued, batch: r.batch }));
 
 // Checks a receipt the way an outsider would (also used by the tests): the hash, the signature, the Merkle path, the
-// log entry for its batch, the entry's inclusion in the checkpoint's tree, and Cover's signature on the checkpoint
+// log entry for its batch, the entry's inclusion in the checkpoint's tree, and the platform's signature on the checkpoint
 export function verify(r) {
   const out = { hash: sha256(canonical(r.body)) === r.hash, signature: false, proof: null, log: null };
   const pub = (() => { try { return crypto.createPublicKey({ key: r.publicKey, format: "jwk" }); } catch { return null; } })();

@@ -1,25 +1,35 @@
-// Cover's icons: line drawings on a 24 x 24 grid, by name.
+// VeriPay's icons: line drawings on a 24 x 24 grid, by name.
 const G = {
-  renters: <path d="M4 20V9.5L12 4l8 5.5V20M9 20v-6h6v6M4 20h16" />,
-  home: <path d="M3 11 12 4l9 7M5.5 9.5V20h13V9.5M10 20v-5h4v5M16.5 6V4h2v3.5" />,
-  pet: <><circle cx="7" cy="9" r="1.8" /><circle cx="17" cy="9" r="1.8" /><circle cx="10" cy="5.5" r="1.6" /><circle cx="14" cy="5.5" r="1.6" /><path d="M12 11.5c-3 0-5.5 3.2-5.5 5.6 0 1.9 1.6 2.9 3.2 2.4l2.3-.7 2.3.7c1.6.5 3.2-.5 3.2-2.4 0-2.4-2.5-5.6-5.5-5.6z" /></>,
-  life: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z" />,
-  car: <><path d="M5 16.5h14v-4l-2-5H7l-2 5zM3.5 12.5h17" /><circle cx="8" cy="16.5" r="1.8" /><circle cx="16" cy="16.5" r="1.8" /></>,
-  shield: <path d="M12 3.5 5 6v5.5c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6zM9 12l2.2 2.2L15.5 10" />,
-  bolt: <path d="M13 3 5.5 13.5H11L10 21l7.5-10.5H12z" />,
-  heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z" />,
-  clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
-  agent: <><rect x="5" y="7" width="14" height="11" rx="3" /><path d="M12 3.5V7M9.5 12h.01M14.5 12h.01M9.5 15h5" /></>,
-  camera: <><path d="M4 8.5h3l1.5-2h7l1.5 2h3V18H4z" /><circle cx="12" cy="13" r="3.2" /></>,
-  doc: <path d="M7 3.5h7l4 4V20.5H7zM14 3.5v4h4M9.5 12h6M9.5 15.5h6" />,
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   x: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
+  camera: <><path d="M4 8.5h3l1.5-2h7l1.5 2h3V18H4z" /><circle cx="12" cy="13" r="3.2" /></>,
+  doc: <path d="M7 3.5h7l4 4V20.5H7zM14 3.5v4h4M9.5 12h6M9.5 15.5h6" />,
+  pen: <path d="M4.5 19.5l1-4L15.5 5.5l3 3-10 10zM13.5 7.5l3 3" />,
+  agent: <><rect x="5" y="7" width="14" height="11" rx="3" /><path d="M12 3.5V7M9.5 12h.01M14.5 12h.01M9.5 15h5" /></>,
+  clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
+  wrench: <path d="M14.5 4.5a4.5 4.5 0 0 0-4.2 6.1L4.5 16.4 7.6 19.5l5.8-5.8a4.5 4.5 0 0 0 6.1-4.2l-2.6 2.6-2.8-.6-.6-2.8z" />,
+  lock: <><rect x="5" y="10.5" width="14" height="9.5" rx="1" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14v2.5" /></>,
+  upload: <path d="M12 16V4.5M7.5 9 12 4.5 16.5 9M4.5 15v4.5h15V15" />,
   flag: <path d="M6 20.5V4M6 4.5h11l-2.5 4 2.5 4H6" />,
   next: <path d="m9 5 7 7-7 7" />,
   back: <path d="M14.5 5.5 8 12l6.5 6.5" />,
-  sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></>,
-  moon: <path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" />,
+  bolt: <path d="M13 3 5.5 13.5H11L10 21l7.5-10.5H12z" />,
+  send: <path d="M4 12 20 4.5 14.5 20l-2.8-6.7z" />,
+  receipt: <path d="M6 3.5h12v17l-2.5-1.5-2 1.5-1.5-1.5-1.5 1.5-2-1.5L6 20.5zM9 8h6M9 11.5h6M9 15h3.5" />,
+  ruler: <path d="M3.5 15.5 15.5 3.5l5 5-12 12zM7 12l2 2M10 9l2 2M13 6l2 2" />,
+  note: <path d="M5 4.5h14v10l-5 5H5zM14 19.5v-5h5M8 9h8M8 12.5h5" />,
+  star: <path d="m12 4 2.5 5.1 5.6.8-4 3.9 1 5.6L12 16.8l-5 2.6 1-5.6-4-3.9 5.6-.8z" />,
+  shield: <path d="M12 3.5 19 6v5.5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6zM9 12l2 2 4-4" />,
+  home: <path d="M4 11 12 4.5 20 11M6.5 9.5v10h11v-10M10 19.5v-5h4v5" />,
+  more: <><circle cx="6" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="18" cy="12" r="1.2" /></>,
+  chat: <path d="M4.5 5.5h15v10h-8l-4 3.5v-3.5h-3z" />,
+  list: <path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" />,
+  hold: <><rect x="4" y="6.5" width="16" height="11" rx="2" /><path d="M4 10.5h16M8 14.5h3" /></>,
+  pay: <><circle cx="12" cy="12" r="8.5" /><path d="M14.8 9.2c-.5-.9-1.6-1.4-2.8-1.4-1.6 0-2.8.8-2.8 2 0 2.8 5.6 1.5 5.6 4.3 0 1.2-1.2 2.1-2.8 2.1-1.3 0-2.4-.6-2.9-1.5M12 6v1.8M12 16.2V18" /></>,
+  people: <><circle cx="9" cy="9" r="3" /><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M16 6.5a3 3 0 0 1 0 5.6M17.5 14.6c1.6.6 2.6 2 3 4.4" /></>,
+  key: <><circle cx="8" cy="15" r="4" /><path d="m11 12 8.5-8.5M16 7l2.5 2.5M14 9l2 2" /></>,
+  eye: <><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="2.8" /></>,
 };
-export default function Icon({ name, size = 22, stroke = 1.7, ...rest }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...rest}>{G[name] || G.shield}</svg>;
+export default function Icon({ name, size = 20, stroke = 1.7, ...rest }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...rest}>{G[name] || G.check}</svg>;
 }

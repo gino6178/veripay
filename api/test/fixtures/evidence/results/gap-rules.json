@@ -1,0 +1,33 @@
+{
+ "set": "gap-set.jsonl (24 conditions)",
+ "judge": "rules (gap.js)",
+ "exact_kind": {
+  "k": 24,
+  "n": 24,
+  "rate": 1,
+  "ci95": [
+   0.862,
+   1
+  ]
+ },
+ "problem_caught": {
+  "k": 14,
+  "n": 14,
+  "rate": 1,
+  "ci95": [
+   0.785,
+   1
+  ]
+ },
+ "false_alarm_on_ok": {
+  "k": 0,
+  "n": 10,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.278
+  ]
+ },
+ "wrong": [],
+ "at": "2026-11-04T16:19:18.390Z"
+}

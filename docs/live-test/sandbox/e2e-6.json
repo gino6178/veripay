@@ -1,0 +1,196 @@
+{
+ "at": "2026-11-05T00:59:41.581Z",
+ "paypal": "sandbox",
+ "jobs": [
+  {
+   "label": "tour: hire, change order, evidence, paid",
+   "number": "DP-1001",
+   "status": "review",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "held",
+    "amount": "$247.05",
+    "order": "5F5125156A4319824",
+    "authorization": "4T835611325943443",
+    "capture": null,
+    "history": [
+     "authorized",
+     "re-held: change order +$47.05 is more than the buffer left; the hold is above your $200.00 ceiling only by approved change orders"
+    ]
+   },
+   "due": "$232.05",
+   "checks": {
+    "decision": "review",
+    "checker": "model+vlm",
+    "verdicts": [
+     "before:needs_fix",
+     "new_part:pass",
+     "no_drip:pass",
+     "receipt:pass",
+     "work_note:pass"
+    ],
+    "by": [
+     "before: rules+vlm+model (Photo ev_ea1e05df83 shows it isn't done yet: photo of the faucet or the worn part before the repair is not true.)",
+     "new_part: rules (no photo description; a person confirms)",
+     "no_drip: rules (no photo description; a person confirms)",
+     "receipt: rules+model (Receipt ev_d7550243ec lists MOEN 1225 CARTRIDGE for $47.05, within the allowance and dated in the window.)",
+     "work_note: rules+model (Note ev_fec99c37b6 shows it: note naming the part replaced and anything else found.)"
+    ],
+    "decidedFrom": "model verdicts, decided by code"
+   },
+   "money": {
+    "captured": "$0.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "balanced": true,
+    "payout": null,
+    "ledger": [
+     "hold $200.00 7J820457P1080363U",
+     "rehold $247.05 4T835611325943443"
+    ]
+   }
+  },
+  {
+   "label": "dispute settled part and part",
+   "number": "DP-1002",
+   "status": "resolved",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "captured",
+    "amount": "$200.00",
+    "order": "0FV583172A892641L",
+    "authorization": "6J691136HE4139216",
+    "capture": "67H628778D160864K",
+    "history": [
+     "authorized"
+    ]
+   },
+   "due": "$185.00",
+   "checks": null,
+   "money": {
+    "captured": "$185.00",
+    "refunded": "$74.00",
+    "paypalFee": "$0.00",
+    "split": {
+     "release": "$111.00",
+     "fee": "$11.10",
+     "pro": "$99.90",
+     "helper": "$0.00",
+     "retained": "$0.00"
+    },
+    "balanced": true,
+    "payout": {
+     "milestone": "m1",
+     "batchId": "PE6ZQSQBT73B6",
+     "status": "PENDING",
+     "items": [
+      {
+       "id": "DP-1002-pro",
+       "amount": 9990,
+       "to": "pro",
+       "status": "PENDING",
+       "transactionId": null,
+       "says": "Sent to PayPal; PayPal is processing it."
+      }
+     ],
+     "at": "2026-11-05T01:17:18.311Z",
+     "batchStatus": "PENDING",
+     "statusNote": "status is the items' (what reached the pro); batchStatus is PayPal's for the batch as a whole",
+     "says": "Sent to PayPal; PayPal is processing it.",
+     "ok": true
+    },
+    "ledger": [
+     "hold $200.00 6J691136HE4139216",
+     "capture $185.00 67H628778D160864K",
+     "buffer_released $15.00 6J691136HE4139216",
+     "refund $74.00 13N32968DF487813U",
+     "platform_fee $11.10",
+     "pro_payout $99.90"
+    ]
+   }
+  },
+  {
+   "label": "hired then cancelled: hold voided",
+   "number": "DP-1003",
+   "status": "cancelled",
+   "flow": "platform_capture_then_payouts",
+   "hold": {
+    "mode": "authorize",
+    "status": "voided",
+    "amount": "$200.00",
+    "order": "1JV15104JG2511329",
+    "authorization": "62372438SY257312C",
+    "capture": null,
+    "history": [
+     "authorized",
+     "voided: cancelled"
+    ]
+   },
+   "due": "$185.00",
+   "checks": null,
+   "money": {
+    "captured": "$0.00",
+    "refunded": "$0.00",
+    "paypalFee": "$0.00",
+    "balanced": true,
+    "payout": null,
+    "ledger": [
+     "hold $200.00 62372438SY257312C",
+     "void $200.00 62372438SY257312C"
+    ]
+   }
+  }
+ ],
+ "tourStopped": {
+  "error": "acknowledge",
+  "message": "These conditions didn't pass: before. To release anyway, send acknowledgeFailed: [\"before\"]."
+ },
+ "dispute": {
+  "escalate": {
+   "s": 409,
+   "note": "Escalating to PayPal is for a job whose payment was captured (released or settled). Before that, open a dispute with Done."
+  },
+  "sync": {
+   "s": 404,
+   "error": "No captured job."
+  }
+ },
+ "repeat": {
+  "s": 404,
+  "error": {
+   "error": "not_found",
+   "message": "No such schedule."
+  }
+ },
+ "invoice": {
+  "s": 200,
+  "number": "INV-DP-101",
+  "status": "sent",
+  "decision": "review",
+  "checker": "rules",
+  "paypal": {
+   "id": "INV2-7SWP-PYTM-QKJQ-BB72",
+   "url": "https://www.sandbox.paypal.com/invoice/p/#INV2-7SWP-PYTM-QKJQ-BB72",
+   "status": "SENT",
+   "at": "2026-11-05T01:17:25.210Z"
+  },
+  "sentBecause": "sent by staff after review: checked by staff (no model serving)"
+ },
+ "recon": {
+  "counts": {
+   "matched": 2,
+   "pending": 1
+  },
+  "summary": {
+   "text": "3 PayPal movements checked: 2 matched, 1 pending.",
+   "source": "rules"
+  },
+  "rows": [
+   "capture DP-1002 67H628778D160864K ours=18500 paypal=18500 matched (captures API)",
+   "refund DP-1002 13N32968DF487813U ours=7400 paypal=7400 matched (get_refund)",
+   "payout DP-1002 HPS59DU53FA7Q ours=9990 paypal=9990 pending (payouts API)"
+  ]
+ }
+}

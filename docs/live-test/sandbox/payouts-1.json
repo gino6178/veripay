@@ -1,0 +1,129 @@
+{
+ "checkedAt": "2026-11-05T00:39:34.255Z",
+ "note": "PayPal Payouts API (GET /v1/payments/payouts/{batch}) for every batch of runs 9 and 10, read back after the runs. Receiver: the sandbox personal account set as DONE_PRO_PAYPAL_EMAIL (masked here); the helpers are paid to the same account as their own items.",
+ "batches": {
+  "NHJJNGLTHGWB2": {
+   "batchId": "NHJJNGLTHGWB2",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-pro",
+     "itemId": "2KV9WRJRRVZXC",
+     "transactionId": "8VF99473C3233221S",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 19084,
+     "fee": 25
+    }
+   ]
+  },
+  "8GGLLU6JVXYYC": {
+   "batchId": "8GGLLU6JVXYYC",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1002-pro",
+     "itemId": "SKFWZP744L37Y",
+     "transactionId": "29A826362H182824S",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 8910,
+     "fee": 25
+    }
+   ]
+  },
+  "X6MR7FS9XJSQQ": {
+   "batchId": "X6MR7FS9XJSQQ",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-m1-pro",
+     "itemId": "BVF8PNRM5DYA2",
+     "transactionId": "5VY26631MJ335954T",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 40897,
+     "fee": 25
+    },
+    {
+     "id": "DP-1001-m1-helper",
+     "itemId": "QQEWVPQ9QXNZC",
+     "transactionId": "05C98850AC069753E",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 8019,
+     "fee": 25
+    }
+   ]
+  },
+  "YS9PWHNN2JATQ": {
+   "batchId": "YS9PWHNN2JATQ",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-m2-pro",
+     "itemId": "Y26EYX769BA42",
+     "transactionId": "0EA70408760476637",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 61345,
+     "fee": 25
+    },
+    {
+     "id": "DP-1001-m2-helper",
+     "itemId": "PLZ7FQGSMC5Z4",
+     "transactionId": "45A84181YX633822X",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 12029,
+     "fee": 25
+    }
+   ]
+  },
+  "C5MRB9WEFH4LG": {
+   "batchId": "C5MRB9WEFH4LG",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-retainage",
+     "itemId": "QQLTKP6VB27PE",
+     "transactionId": "56N5987591652563L",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 11360,
+     "fee": 25
+    }
+   ]
+  },
+  "E6YD7V35DJB46": {
+   "batchId": "E6YD7V35DJB46",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1002-m1-early",
+     "itemId": "547VP35SC2TRQ",
+     "transactionId": "869097226D877473R",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 16317,
+     "fee": 25
+    }
+   ]
+  },
+  "B5EFSV5PBNLWG": {
+   "batchId": "B5EFSV5PBNLWG",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1003-pro",
+     "itemId": "RMDSP3GTYVBCU",
+     "transactionId": "8BJ267316E4847802",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 14985,
+     "fee": 25
+    }
+   ]
+  }
+ }
+}

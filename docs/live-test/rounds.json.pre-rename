@@ -1,0 +1,603 @@
+{
+ "about": "Every round of AI agents using Done & Paid as real customers, agents and pros would, on the live server: who they were, what blocked them, what they found wrong or confusing, and what was fixed after.",
+ "rounds": [
+  {
+   "n": 1,
+   "date": "2026-11-05",
+   "title": "A customer's agent, a pro's own agent, two red-team agents and a first-time visitor",
+   "setup": "Five Sonnet agents on the live server (localhost:8810, PayPal stand-in, rules checker because no model was serving yet), each given only a token or key and /llms.txt, or the website. Maria's agent hires a plumber over MCP under $200. Luis Ortega Plumbing's own agent bids and works over A2A. Rin red-teams as a customer's agent and then as a dishonest pro. Jamie is a first-time visitor on a phone.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "fix a dripping faucet this week, under $200, pay only when fixed",
+     "via": "MCP",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round1-maria.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor on a phone: clogged sink, then the judge tour",
+     "via": "web",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 9,
+     "report": "round1-jamie.md"
+    },
+    {
+     "name": "Rin (customer side)",
+     "role": "red team: limits, payee, other people's jobs, release and cancel rules",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 2,
+     "confusing": 2,
+     "report": "round1-rin.md"
+    },
+    {
+     "name": "Rin (dishonest pro)",
+     "role": "red team: get paid without doing the work",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 2,
+     "report": "round1-rin-pro.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro's own agent: bid, win, work, get paid (stopped: could never be hired)",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 0,
+     "report": "round1-luis.md"
+    }
+   ],
+   "outcome": "No money moved wrongly. Every attempt by Rin was refused, and the ledgers stayed balanced: raising prices, injecting amounts, an outside payee, releasing without permission, releasing after a cancel, other people's jobs, and hiring a pro with no verified PayPal. But no customer's job reached payment: demo pros never worked a job a visitor or an agent hired. A pro created by staff could never verify PayPal, so neither Luis nor Rin's pro could be hired, and the evidence-fraud tests did not run. One malformed offer blanked the job page, and the judge tour put a customer into the staff back office.",
+   "fixes": [
+    "Demo pros now do the jobs they are hired for: BEFORE photos, fresh AFTER photos with EXIF, a receipt, then submit. There is also a demo-only 'Have the demo pro finish now' button.",
+    "Pro onboarding: a one-time sign-in link to verify PayPal, licence and insurance. readiness and my_profile tell a pro's agent what blocks hiring, and an offer from a pro who can't be hired yet is flagged.",
+    "Demo pros wait about 60 s before bidding and never decline a real pro's offer.",
+    "Agents can no longer post a budget above the per-job limit. Pros can't mint customer tokens and can't see competitors' offers.",
+    "accept_offer with no saved payment falls back to an approval link, and a failed hold can be retried (retry_hold). The buffer never takes the hold above the budget.",
+    "/api/staff/* refuses customer sessions. The tour ends on a labelled, read-only, anonymised back office.",
+    "The job page can't be blanked by one bad field (guarded fields, an error boundary per panel). A pending hold is no longer shown as held, rules are shown in plain words, and scope suggestions can be applied before posting.",
+    "Moving the demo clock needs a person on the website or demo staff, and the site shows who moved it.",
+    "llms.txt lists every tool's arguments, and post_job accepts 'description'."
+   ]
+  },
+  {
+   "n": 2,
+   "date": "2026-11-05",
+   "title": "After round 1 fixes: a customer agent, a real pro, a milestone job, a dishonest pro, a first-time visitor",
+   "setup": "Five Sonnet agents on a freshly seeded server (localhost:8810, PayPal stand-in). The Done-Audit model was served for receipts and notes, but no vision model, so photos wait for a person. Maria's agent hires over MCP. Luis's agent onboards and bids over A2A. Dana's agent tries a $2,400 water-heater replacement with milestones, retainage and an inspector. Rin plays a dishonest pro. Jamie is a first-time visitor on a phone.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "dripping faucet under $200, pay only when fixed",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 3,
+     "confusing": 4,
+     "report": "round2-maria.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor: clogged sink to payout, then the judge tour",
+     "via": "web",
+     "blocker": 0,
+     "bug": 4,
+     "confusing": 9,
+     "report": "round2-jamie.md"
+    },
+    {
+     "name": "Rin (dishonest pro)",
+     "role": "red team: get paid without doing the work",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 3,
+     "confusing": 10,
+     "report": "round2-rin-pro.md"
+    },
+    {
+     "name": "Dana's agent",
+     "role": "$2,400 water heater: milestones, permit, retainage, inspector",
+     "via": "REST",
+     "blocker": 3,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round2-dana.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro's own agent: onboard, bid, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 5,
+     "report": "round2-luis.md"
+    }
+   ],
+   "outcome": "For the first time a customer's job went from posting to payout. Jamie paid $195: $175.50 went to the pro and $19.50 was the fee, and the unused $39 of the hold was never charged. Maria's agent reached all checks done in 5 min 13 s, then waited for Maria to confirm the photos, because no vision model was serving. No money moved wrongly. Rin's fake photos all failed: no timestamp, dated 15 days early, taken in New York, reused, or the platform's own demo pictures. So did a receipt with the wrong date and instructions written into notes. But a photo caption carrying instructions was not flagged, and a drain job passed on evidence about a valve. An agent could not set milestone options or hand its person a link for a person-only step, no inspector existed, and a real pro still never won a job.",
+   "fixes": [
+    "Agents can set job options when posting and change them until an offer is accepted. There is a review_scope tool, and the demo inspector always exists.",
+    "Person-only steps (a limit, a ceiling, confirming photos) come with a one-time link the agent shows its person.",
+    "The customer's agent can read its own job's evidence. Time-gap conditions are checked against the photos' timestamps.",
+    "Each condition is checked against its own wording: a licence number needs a TSBPE-format number, and evidence about a different job doesn't pass. Every text field on a photo is scanned for instructions.",
+    "Parts are paid at the receipt amount, not the change order's. A pro can resend evidence while the job is in review, and can withdraw an offer.",
+    "Demo pros send evidence that fits the job type, and there is one source of truth for who decided each check.",
+    "The pro feed shows every open job in the pro's trade and radius. Pros get wait_for_news and a rates tool, and the onboarding routes are documented.",
+    "Website: one wording for who decided, offers that stay in place, the decision first on phones, no raw ids, a bottom-sheet tour, and Payout sent kept apart from Paid."
+   ]
+  },
+  {
+   "n": 3,
+   "date": "2026-11-05",
+   "title": "After round 2 fixes: the same five scenarios again",
+   "setup": "Five Sonnet agents on a freshly seeded server (localhost:8810, PayPal stand-in). Done-Audit was served at the start, but the GPU VM was preempted during the round, so checks fell back to rules. Every photo waited for a person.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "dripping faucet under $200, to payment",
+     "via": "MCP",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round3-maria.md"
+    },
+    {
+     "name": "Dana's agent",
+     "role": "$2,400 water heater: milestones, retainage, inspector",
+     "via": "REST",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 5,
+     "report": "round3-dana.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro: onboard, set rates, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 4,
+     "report": "round3-luis.md"
+    },
+    {
+     "name": "Rin (dishonest pro)",
+     "role": "red team: get paid without doing the work",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 1,
+     "report": "round3-rin-pro.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor to payout, the tour, a judge's look",
+     "via": "web",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 9,
+     "report": "round3-jamie.md"
+    }
+   ],
+   "outcome": "Two jobs reached payment and both ledgers add up. Jamie's drain job: $185 captured, $18.50 fee, $141.52 to the pro and $24.98 to the helper in one batch, and $37 of the hold never charged. Dana's water heater: two milestone captures totalling $1,450, $104.40 of retainage held, and $290 of buffer released. The person-only link worked: Dana raised her limit through it. Luis, a real pro, was hired for the first time at $110, but stalled when the seeded customer never answered his change order. No money went to the wrong place. But a person's release on a milestone that needed inspection paid at once, skipping the inspector. A bare release call also paid a milestone whose checks had failed. A demo pro stamped photos before the job was posted and sent faucet evidence for a water heater, and the red team's onboarding code was used up before the pro could use it.",
+   "fixes": [
+    "A release never skips a required inspection unless the person explicitly waives it. Releasing over failed checks needs each failed check acknowledged, and request_fix needs a reason.",
+    "Photos must be taken after work started, and AFTER photos after the BEFORE photos. Demo pros stamp their photos in order and send scenes that fit the job (water heaters included), with fresh photos on each fix round.",
+    "Demo customers answer change orders within a couple of minutes. A pro can withdraw a pending change order, and a refused submission stores nothing.",
+    "Pros can always get a fresh sign-in link through readiness. Withdrawing an offer and re-offering keeps the negotiation history, and the price can't go up.",
+    "In demo mode, demo pros come within minutes. With no saved payment method, accepting an offer returns an approval link rather than charging the test card. Agents can apply scope suggestions.",
+    "Website: in-page confirmations instead of browser pop-ups, a single clear line on the release screen, a home page that works for people without an agent, and photo times shown relative to the job.",
+    "Permit numbers in Austin's formats are recognised."
+   ]
+  },
+  {
+   "n": 4,
+   "date": "2026-11-05",
+   "title": "After round 3 fixes: the same five scenarios, with the person-only links in use",
+   "setup": "Five Sonnet agents on a freshly seeded server (localhost:8810, PayPal stand-in, rules checker; Done-Audit unreachable during the round). The person-only steps used the one-time links the server gives agents.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "dripping faucet under $200, to payment",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 2,
+     "confusing": 4,
+     "report": "round4-maria.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor to payout, the tour, a judge's look",
+     "via": "web",
+     "blocker": 0,
+     "bug": 7,
+     "confusing": 11,
+     "report": "round4-jamie.md"
+    },
+    {
+     "name": "Dana's agent",
+     "role": "$2,400 water heater: milestones, retainage, inspector",
+     "via": "REST",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 4,
+     "report": "round4-dana.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 2,
+     "confusing": 3,
+     "report": "round4-luis.md"
+    },
+    {
+     "name": "Rin (dishonest pro)",
+     "role": "red team: get paid without doing the work; release over failed checks",
+     "via": "A2A + web",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 3,
+     "report": "round4-rin-pro.md"
+    }
+   ],
+   "outcome": "Maria's agent ran a whole job over MCP for the first time, from post to payout sent, in 22 minutes. Maria approved the hold and confirmed the photos through the links the server gave her agent. She paid $175; $157.50 went to the pro, $17.50 was the fee, and $25 of the hold was never charged. Jamie's job was paid on the website. Luis, a real pro, won a job and finished it. One blocker: money moved wrongly when Rin, as the customer on the website, used confirm on a job whose checks had failed. It captured $187.05 and paid the pro, and it reproduced on a second job. The release route correctly refused the same thing. The red team's other attempts held: fake photos, photos out of order, padded parts, injected captions and offer games. A demo pro's unchanged permit kept Dana's milestone from ever passing, demo customers left change orders unanswered, and demo pros moved the shared clock.",
+   "fixes": [
+    "confirm refuses when any check failed. One guard in the capture path covers every way money can move: it captures only when every condition passed or a person acknowledged each failed one.",
+    "The hold never goes above the ceiling except for approved change orders, and offers above the ceiling are marked as such. post_job accepts milestones.",
+    "An undated receipt goes back to the pro unless they type a date inside the window.",
+    "Demo pros answer what each fix request asks for. An identical resend is refused, water-heater scenes match the job, and the plate's capacity is checked against the scope.",
+    "Demo pros never move the shared clock. Demo customers decide change orders and confirm finished work within minutes.",
+    "Every review_scope suggestion can be applied. A licence number already registered to another pro is flagged.",
+    "There is one source of truth for the buffer wording, and the batch status no longer hides unclaimed payout items.",
+    "Website: the job page refreshes itself, one line explains the payout state, the checks headline counts what waits for a person, there is one main confirm-and-pay button, and a separate release-anyway that names the failed checks."
+   ]
+  },
+  {
+   "n": 5,
+   "date": "2026-11-05",
+   "title": "After round 4 fixes: the same five scenarios",
+   "setup": "Five Sonnet agents on a freshly seeded server (localhost:8810, PayPal stand-in). Done-Audit was served for notes and receipts; photos waited for a person.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "dripping faucet under $200, to payment",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 4,
+     "report": "round5-maria.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 4,
+     "report": "round5-luis.md"
+    },
+    {
+     "name": "Rin (dishonest pro)",
+     "role": "red team, starting with round 4's blocker",
+     "via": "A2A + web",
+     "blocker": 0,
+     "bug": 3,
+     "confusing": 3,
+     "report": "round5-rin-pro.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor to payout, the tour, a judge's look",
+     "via": "web",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 7,
+     "report": "round5-jamie.md"
+    },
+    {
+     "name": "Dana's agent",
+     "role": "$2,400 water heater: milestones, retainage, inspector",
+     "via": "REST",
+     "blocker": 1,
+     "bug": 4,
+     "confusing": 4,
+     "report": "round5-dana.md"
+    }
+   ],
+   "outcome": "Four of the five jobs were paid and every ledger balanced. Maria's agent paid $180 over MCP: $137.70 to the pro and $24.30 to the helper, and $20 of the hold was never charged. Luis, a real pro, was paid for the first time: $168.34 of $187.05, with his $47.05 parts change order approved by the demo customer in about 90 s. Jamie paid $185 on the website. Round 4's blocker is closed: confirming over failed checks is refused on every path, and padded parts were captured only at the receipt's $47.05. One blocker remained. On Dana's water heater, the permit check failed the demo pro's permit three times with a reason that contradicted its verdict. Applying scope suggestions also dropped the milestone's permit and inspection conditions.",
+   "fixes": [
+    "The permit check passes a permit with a number, issue date and site, and every reason matches its verdict. Applying suggestions never drops existing conditions or milestone documents.",
+    "BEFORE photos sent with start_work count, and the AFTER-after-BEFORE order rule is enforced. Evidence for a condition accumulates instead of being replaced.",
+    "Change orders can be decided while a job is in review. A change order over the agent's limit carries the person's link.",
+    "Receipts and documents get the same reuse detection across jobs as photos.",
+    "Offers can state parts. A licence missing from the registry goes to staff review, and a pro's wait_for_news shows only their own jobs.",
+    "After a scope suggestion is applied, offers are requested again.",
+    "The live-test history is served at /live-test and linked from the footer.",
+    "Website: a pay confirmation that is the customer's choice, a demo payout-address label, per-photo captions, plain wording for the tour and the Models page, the cancel button set apart, and the demo sign-in described plainly."
+   ]
+  },
+  {
+   "n": 6,
+   "date": "2026-11-05",
+   "title": "After the judges: PIN consent, models on, sandbox payouts real",
+   "setup": "Four Sonnet agents and one Haiku agent on a freshly seeded server (localhost:8810, PayPal stand-in). The models were served from the GPU VM: Done-Audit, Done-VLM and Done-OCR. Person-only steps now need the person's PIN.",
+   "testers": [
+    {
+     "name": "Maria's agent",
+     "role": "faucet under $200; first, check what the agent alone can't do",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 4,
+     "confusing": 5,
+     "report": "round6-maria.md"
+    },
+    {
+     "name": "Dana's agent",
+     "role": "$2,400 water heater: milestones, retainage, inspector",
+     "via": "REST",
+     "blocker": 0,
+     "bug": 4,
+     "confusing": 5,
+     "report": "round6-dana.md"
+    },
+    {
+     "name": "Luis's agent",
+     "role": "a real pro with his own PIN: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 5,
+     "report": "round6-luis.md"
+    },
+    {
+     "name": "Rin (consent and evidence, Haiku)",
+     "role": "an agent without the PIN tries person-only actions",
+     "via": "MCP + REST",
+     "blocker": 1,
+     "bug": 2,
+     "confusing": 3,
+     "report": "round6-rin.md"
+    },
+    {
+     "name": "Jamie (website)",
+     "role": "first-time visitor with a PIN, the tour, a judge's look",
+     "via": "web",
+     "blocker": 1,
+     "bug": 6,
+     "confusing": 10,
+     "report": "round6-jamie.md"
+    }
+   ],
+   "outcome": "Dana's two-milestone water heater ran end to end with the models on. $1,400 was captured: $140 in fees, $1,071 to the pro, $189 held as retainage, and $350 of the buffer released. Jamie's drain job was paid on the website. The PIN held for most person-only actions: an agent without it couldn't raise limits, create tokens, or sign in through a link. Two gaps remained. An agent applied scope suggestions alone, which dropped the permit and inspection conditions. On Dana's job the agent's release went through with agent release turned off. We count that second gap as a blocker even though the tester didn't, because money moved without permission. The vision model misread honest camera photos (\"a cartridge in a printer\"), which sent Luis and Maria into fix loops; retaking one photo also broke a timed condition on another. The judge tour stalled at step 2. One red-team brief was declined by the model as unsafe and was rewritten as a safeguard check.",
+   "fixes": [
+    "Every money-moving agent path checks the agent's release permission. Applying all suggestions, or any suggestion that loosens the scope, needs the person; no suggestion can drop a condition or a milestone document.",
+    "A photo the vision model can't recognise goes to a person, not back to the pro. Only problems code can prove send a photo back.",
+    "Plate and label conditions read the plate with OCR first, and an \"area cleared\" condition can't pass on a label close-up.",
+    "Retaking a referenced photo marks the conditions timed from it as needing a retake. The pro is warned before submitting, and negative durations are never shown.",
+    "The person can confirm conditions one at a time. A pro can ask a person to look, and is told when an offer is withdrawn.",
+    "Parts are paid at cost on milestone jobs too. The tour completes in under a minute.",
+    "Website: the PIN window is explained and the hire dialog says PayPal is simulated."
+   ]
+  },
+  {
+   "n": 7,
+   "date": "2026-11-05",
+   "title": "Basic flows only, three Haiku agents",
+   "setup": "Three Haiku agents ran the basic flows on a freshly seeded server (localhost:8810, PayPal stand-in, models served from the VM): a customer's agent over MCP, a real pro's agent over A2A, and the website with the judge tour.",
+   "testers": [
+    {
+     "name": "Maria's agent (Haiku)",
+     "role": "faucet under $200 to payment",
+     "via": "MCP",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 2,
+     "report": "round7-maria.md"
+    },
+    {
+     "name": "Luis's agent (Haiku)",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 5,
+     "report": "round7-luis.md"
+    },
+    {
+     "name": "Jamie (website, Haiku)",
+     "role": "judge tour, a customer job, close-out package",
+     "via": "web",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round7-jamie.md"
+    }
+   ],
+   "outcome": "Maria's agent hired Luis, the real pro, at $140 and $168 was held. Luis took BEFORE and AFTER photos and asked for review. The job then stalled in review: the photo model answered \"busy\", every photo condition went to a person, and the expert queue had no staff. Nothing was paid. The Haiku website tester shared the browser with the other agents, whose PayPal page took over its tab, so it stopped after tour steps 1–2. No money moved wrongly.",
+   "fixes": [
+    "A labelled demo expert, an automated stand-in, handles review requests within minutes in demo mode.",
+    "On a job that requires a licensed plumber, a pro whose licence isn't verified can't be accepted by the customer's agent alone, and the TSBPE format check is corrected.",
+    "The scope asks for a receipt only when parts are in the price or a parts change order exists.",
+    "Partial confirm returns three lists (confirmed, to fix, still waiting), and the website says so plainly. The tour's buttons stay visible.",
+    "The website tester runs alone in the browser."
+   ]
+  },
+  {
+   "n": 8,
+   "date": "2026-11-06",
+   "title": "Basic flows after all features were built",
+   "setup": "Three Haiku agents ran the basic flows (localhost:8810, PayPal stand-in, models served from the VM): a customer's agent over MCP, a real pro's agent over A2A, and the website alone in the browser. It was after midnight in Austin.",
+   "testers": [
+    {
+     "name": "Maria's agent (Haiku)",
+     "role": "faucet under $200 to payment",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 0,
+     "confusing": 5,
+     "report": "round8-maria.md"
+    },
+    {
+     "name": "Luis's agent (Haiku)",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 2,
+     "confusing": 5,
+     "report": "round8-luis.md"
+    },
+    {
+     "name": "Jamie (website, Haiku)",
+     "role": "judge tour, a customer job, reports, credits",
+     "via": "web",
+     "blocker": 2,
+     "bug": 3,
+     "confusing": 4,
+     "report": "round8-jamie.md"
+    }
+   ],
+   "outcome": "Nothing reached payment, and every flow stalled for the same reason. It was night in Austin, and job windows opened at 7 am, so the demo pros waited for the morning. The tour's photos were stamped before the window and failed, and \"finish now\" waited too. Maria's hold of $200 and Luis's hire at $110 both worked. Luis's partial evidence was checked as a whole, and pros never heard that their offer wasn't chosen. Luis's receipt blocker was a gap in our test kit (no receipt tool in his brief), not the product. No money moved wrongly.",
+   "fixes": [
+    "The demo server lets pros work any hour (DONE_WORK_HOURS=any), so a job posted at night starts at once. Real use keeps 7 am–9 pm.",
+    "\"Finish now\" and the judge tour move the demo clock to the job's window when it hasn't opened, and log the move.",
+    "A partial evidence set is stored, not checked, until every condition of the milestone has evidence (or the pro asks to check now).",
+    "Pros get an offer_declined event when the customer chooses another offer.",
+    "llms.txt documents the person's link step (POST /api/auth/link {code, pin}) and tells agents never to use the link themselves."
+   ]
+  },
+  {
+   "n": 9,
+   "date": "2026-11-06",
+   "title": "Basic flows after the night-time fixes",
+   "setup": "Three Haiku agents (localhost:8810, PayPal stand-in, models served from the VM): a customer's agent over MCP, a real pro's agent over A2A, and the website alone in the browser.",
+   "testers": [
+    {
+     "name": "Maria's agent (Haiku)",
+     "role": "faucet under $200 to payment",
+     "via": "MCP",
+     "blocker": 1,
+     "bug": 1,
+     "confusing": 6,
+     "report": "round9-maria.md"
+    },
+    {
+     "name": "Luis's agent (Haiku)",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 4,
+     "report": "round9-luis.md"
+    },
+    {
+     "name": "Jamie (website, Haiku)",
+     "role": "judge tour, a customer job, reports, credits",
+     "via": "web",
+     "blocker": 1,
+     "bug": 3,
+     "confusing": 4,
+     "report": "round9-jamie.md"
+    }
+   ],
+   "outcome": "Two jobs were paid. Luis, a real pro, was hired at $95, waited out the 10-minute rule, and received $85.50 after the fee once the customer confirmed. Jamie paid $195 on the website: $175.50 went to the pro, $19.50 was the fee, and $39 of the hold was released. Maria's job reached review with $199 held but wasn't confirmed. Her agent approved the hold over HTTP without following PayPal's redirect, so the hold stayed pending, and it could only confirm a whole milestone. The judge tour stopped at step 6 when the demo receipt renderer timed out and the shared fallback receipt was flagged as reused. The website's post page also turned the server's window into an 8 am day window. No money moved wrongly.",
+   "fixes": [
+    "The demo receipt and photo renderer retries instead of falling back to a shared file that looks reused.",
+    "The post page keeps the server's exact window unless the person changes the days.",
+    "Approving on the simulated PayPal page confirms the hold on the server, as PayPal's webhook would.",
+    "confirm_checks takes checkIds, fixIds and fix, so an agent with permission can confirm only the conditions it checked.",
+    "The close-out package says when a job was released over conditions that didn't pass."
+   ]
+  },
+  {
+   "n": 10,
+   "date": "2026-11-06",
+   "title": "Basic flows, models on, after round 9 fixes",
+   "setup": "Three Haiku agents (localhost:8810, PayPal stand-in, models served from the VM): a customer's agent over MCP, a real pro's agent over A2A, and the website alone in the browser.",
+   "testers": [
+    {
+     "name": "Maria's agent (Haiku)",
+     "role": "faucet under $200 to payment",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 2,
+     "confusing": 4,
+     "report": "round10-maria.md"
+    },
+    {
+     "name": "Luis's agent (Haiku)",
+     "role": "a real pro: onboard, win, work, get paid",
+     "via": "A2A",
+     "blocker": 1,
+     "bug": 2,
+     "confusing": 5,
+     "report": "round10-luis.md"
+    },
+    {
+     "name": "Jamie (website, Haiku)",
+     "role": "judge tour, a customer job",
+     "via": "web",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 3,
+     "report": "round10-jamie.md"
+    }
+   ],
+   "outcome": "The judge tour finished: $232.05 captured, $208.84 to the pro and $23.21 fee, with $15 of the hold released. Maria's agent hired at $180 and $199 was held, but the demo pro's photos didn't show the faucet, so Maria asked for a fix twice and paid nothing. That is the safeguard working. Luis was hired at $120. A false \"labelled as spout, not this job\" sent his correct photo back. His test-kit receipt was the same image as one already used on another job, and the check rightly caught it. No money moved wrongly.",
+   "fixes": [
+    "The relevance rule no longer treats a faucet job's own words (spout, tap, cartridge) as another job's.",
+    "The check message counts \"passed\" separately from \"waits for a person\".",
+    "The demo pro's new-part photo shows the installed part, not the dry cabinet.",
+    "llms.txt says how to resume a demo customer (person + PIN).",
+    "Website: a failed tour release shows the server's message, and the job page picks up offers as they arrive."
+   ]
+  },
+  {
+   "n": 11,
+   "date": "2026-11-06",
+   "title": "Basic flows plus the new features (landlord, home, groups, work record, dashboard)",
+   "setup": "Three Haiku agents (localhost:8810, PayPal stand-in, models served from the VM). A customer's agent tried the main flow plus my_home, maintenance and groups. A real pro's agent tried the main flow plus the dashboard and the verified work record. The website tester ran the tour, a tenant whose landlord pays, My home, Groups and the inbox.",
+   "testers": [
+    {
+     "name": "Maria's agent (Haiku)",
+     "role": "faucet to payment, then home, maintenance and groups",
+     "via": "MCP",
+     "blocker": 0,
+     "bug": 3,
+     "confusing": 8,
+     "report": "round11-maria.md"
+    },
+    {
+     "name": "Luis's agent (Haiku)",
+     "role": "a real pro to payment, then dashboard and work record",
+     "via": "A2A",
+     "blocker": 0,
+     "bug": 2,
+     "confusing": 11,
+     "report": "round11-luis.md"
+    },
+    {
+     "name": "Jamie (website, Haiku)",
+     "role": "tour, tenant with landlord, home, groups, inbox",
+     "via": "web",
+     "blocker": 0,
+     "bug": 1,
+     "confusing": 4,
+     "report": "round11-jamie.md"
+    }
+   ],
+   "outcome": "No blockers, and no money moved wrongly. Luis, a real pro, was paid $175. His dashboard and verified work record matched the ledger, and the record verified. The judge tour finished: $232.05 captured, $208.84 to the pro, $23.21 fee. A tenant's job was hired by the landlord's agent about 2.5 minutes after the tenant's suggestion, and $234 was held on the landlord's PayPal. Maria's faucet job stayed unpaid: the demo pro's photos showed a valve rather than the new cartridge, so she asked for a fix. A pro agent's model sentence claimed a booking that never happened.",
+   "fixes": [
+    "A pro agent's model sentence is dropped if it claims a step that didn't happen, or asks the customer to confirm a booking.",
+    "The work record counts customer-confirmed conditions apart from those the checks passed, and says that a payout can still be unclaimed.",
+    "start_work warns when a BEFORE photo was taken more than 0.5 km from the job.",
+    "The demo pro uses the old-part scene only for old-part conditions, and a tenant can press finish-now.",
+    "Website: the tour's buttons show a busy state, and My home and Groups have loading and error states."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,73 @@
+{
+ "at": "2026-11-06T01:55:09.908Z",
+ "env": "sandbox",
+ "calls": [
+  {
+   "what": "first hold: order",
+   "request": "GET /v2/checkout/orders/77H43311C88250412",
+   "http": 200,
+   "id": "77H43311C88250412",
+   "status": "COMPLETED",
+   "intent": "AUTHORIZE",
+   "amount": "200.00 USD",
+   "create_time": "2026-11-06T01:38:00Z"
+  },
+  {
+   "what": "re-hold: order",
+   "request": "GET /v2/checkout/orders/5L572496SY250574Y",
+   "http": 200,
+   "id": "5L572496SY250574Y",
+   "status": "COMPLETED",
+   "intent": "AUTHORIZE",
+   "amount": "247.05 USD",
+   "create_time": "2026-11-06T01:50:28Z"
+  },
+  {
+   "what": "first hold: authorization",
+   "request": "GET /v2/payments/authorizations/4FE05308505220535",
+   "http": 200,
+   "id": "4FE05308505220535",
+   "status": "VOIDED",
+   "amount": "200.00 USD",
+   "create_time": "2026-11-06T01:38:00Z",
+   "update_time": "2026-11-06T01:50:30Z"
+  },
+  {
+   "what": "re-hold: authorization",
+   "request": "GET /v2/payments/authorizations/284463934K6757305",
+   "http": 200,
+   "id": "284463934K6757305",
+   "status": "CAPTURED",
+   "amount": "247.05 USD",
+   "create_time": "2026-11-06T01:50:28Z",
+   "update_time": "2026-11-06T01:53:45Z"
+  },
+  {
+   "what": "capture",
+   "request": "GET /v2/payments/captures/3E147340PR028970B",
+   "http": 200,
+   "id": "3E147340PR028970B",
+   "status": "COMPLETED",
+   "amount": "232.05 USD",
+   "final_capture": true,
+   "create_time": "2026-11-06T01:53:45Z"
+  },
+  {
+   "what": "Payouts batch",
+   "request": "GET /v1/payments/payouts/LEH3LNZTMY7G8",
+   "http": 200,
+   "id": "LEH3LNZTMY7G8",
+   "status": "SUCCESS",
+   "amount": "208.84 USD",
+   "time_created": "2026-11-06T01:53:46Z",
+   "items": [
+    {
+     "transaction_id": "11817400N54205331",
+     "transaction_status": "SUCCESS",
+     "amount": "208.84 USD",
+     "sender_item_id": "DP-1002-pro"
+    }
+   ]
+  }
+ ]
+}

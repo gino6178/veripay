@@ -1,0 +1,202 @@
+{
+ "plate00.jpg": {
+  "brand": "Demo Heat",
+  "model": "E30T066",
+  "serial": "MN16816124",
+  "capacityGal": 30,
+  "btu": null,
+  "volts": 240,
+  "watts": 5500,
+  "font": "verdana.ttf"
+ },
+ "plate01.jpg": {
+  "brand": "DemoFlow",
+  "model": "E30H406",
+  "serial": "RT37967053",
+  "capacityGal": 30,
+  "btu": 40000,
+  "volts": null,
+  "watts": null,
+  "font": "arial.ttf"
+ },
+ "plate02.jpg": {
+  "brand": "Rheem",
+  "model": "PRO30T066",
+  "serial": "HN20960767",
+  "capacityGal": 30,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arialbd.ttf"
+ },
+ "plate03.jpg": {
+  "brand": "Bradford White",
+  "model": "PRO50L123",
+  "serial": "DG49765513",
+  "capacityGal": 50,
+  "btu": 32000,
+  "volts": null,
+  "watts": null,
+  "font": "tahoma.ttf"
+ },
+ "plate04.jpg": {
+  "brand": "A.O. Smith",
+  "model": "XG50S062",
+  "serial": "PC50630316",
+  "capacityGal": 50,
+  "btu": 36000,
+  "volts": null,
+  "watts": null,
+  "font": "verdana.ttf"
+ },
+ "plate05.jpg": {
+  "brand": "State",
+  "model": "G30T066",
+  "serial": "GB46977124",
+  "capacityGal": 30,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arialbd.ttf"
+ },
+ "plate06.jpg": {
+  "brand": "Demo Heat",
+  "model": "G75H409",
+  "serial": "GP12987108",
+  "capacityGal": 75,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arial.ttf"
+ },
+ "plate07.jpg": {
+  "brand": "DemoFlow",
+  "model": "EX50T066",
+  "serial": "MB38732630",
+  "capacityGal": 50,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arial.ttf"
+ },
+ "plate08.jpg": {
+  "brand": "Rheem",
+  "model": "XG75L123",
+  "serial": "CT33809255",
+  "capacityGal": 75,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arialbd.ttf"
+ },
+ "plate09.jpg": {
+  "brand": "Bradford White",
+  "model": "XG75T066",
+  "serial": "NA20446628",
+  "capacityGal": 75,
+  "btu": 50000,
+  "volts": null,
+  "watts": null,
+  "font": "arial.ttf"
+ },
+ "plate10.jpg": {
+  "brand": "A.O. Smith",
+  "model": "EX75S069",
+  "serial": "PA39956409",
+  "capacityGal": 75,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "arialbd.ttf"
+ },
+ "plate11.jpg": {
+  "brand": "State",
+  "model": "G30H403",
+  "serial": "TC18780362",
+  "capacityGal": 30,
+  "btu": 50000,
+  "volts": null,
+  "watts": null,
+  "font": "arial.ttf"
+ },
+ "plate12.jpg": {
+  "brand": "Demo Heat",
+  "model": "EX40H407",
+  "serial": "MP41783117",
+  "capacityGal": 40,
+  "btu": 50000,
+  "volts": null,
+  "watts": null,
+  "font": "arial.ttf"
+ },
+ "plate13.jpg": {
+  "brand": "DemoFlow",
+  "model": "XG30S068",
+  "serial": "KR35479662",
+  "capacityGal": 30,
+  "btu": null,
+  "volts": 240,
+  "watts": 5500,
+  "font": "tahoma.ttf"
+ },
+ "plate14.jpg": {
+  "brand": "Rheem",
+  "model": "E50T064",
+  "serial": "BB29969076",
+  "capacityGal": 50,
+  "btu": 32000,
+  "volts": null,
+  "watts": null,
+  "font": "verdana.ttf"
+ },
+ "plate15.jpg": {
+  "brand": "Bradford White",
+  "model": "E50S062",
+  "serial": "KC30586885",
+  "capacityGal": 50,
+  "btu": 36000,
+  "volts": null,
+  "watts": null,
+  "font": "tahoma.ttf"
+ },
+ "plate16.jpg": {
+  "brand": "A.O. Smith",
+  "model": "G40L126",
+  "serial": "TN52473466",
+  "capacityGal": 40,
+  "btu": null,
+  "volts": 240,
+  "watts": 4500,
+  "font": "tahoma.ttf"
+ },
+ "plate17.jpg": {
+  "brand": "State",
+  "model": "XG30S069",
+  "serial": "TC10343365",
+  "capacityGal": 30,
+  "btu": 36000,
+  "volts": null,
+  "watts": null,
+  "font": "arial.ttf"
+ },
+ "plate18.jpg": {
+  "brand": "Demo Heat",
+  "model": "PRO50T069",
+  "serial": "CN34620211",
+  "capacityGal": 50,
+  "btu": 36000,
+  "volts": null,
+  "watts": null,
+  "font": "tahoma.ttf"
+ },
+ "plate19.jpg": {
+  "brand": "DemoFlow",
+  "model": "XG50S062",
+  "serial": "GD30452611",
+  "capacityGal": 50,
+  "btu": null,
+  "volts": 240,
+  "watts": 5500,
+  "font": "arialbd.ttf"
+ }
+}

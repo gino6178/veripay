@@ -1,0 +1,69 @@
+{
+ "checkedAt": "2026-11-05T02:21:14.419Z",
+ "note": "Payouts API read-back for run 13 (receiver masked). The milestone 2 batch was still PROCESSING when read.",
+ "batches": {
+  "W32ZJXGD4KANW": {
+   "batchId": "W32ZJXGD4KANW",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-materials-299e960725",
+     "itemId": "78RDR7SA8V2RY",
+     "transactionId": "62T50885HG302110B",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 8703,
+     "fee": 25
+    }
+   ]
+  },
+  "U88UPSFQX7X6Y": {
+   "batchId": "U88UPSFQX7X6Y",
+   "status": "SUCCESS",
+   "items": [
+    {
+     "id": "DP-1001-m1-pro",
+     "itemId": "C79QFKXMVMSM2",
+     "transactionId": "1D181559H03999734",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 43396,
+     "fee": 25
+    },
+    {
+     "id": "DP-1001-m1-helper",
+     "itemId": "TBAXPV6Z49EUC",
+     "transactionId": "5JT2408173545113R",
+     "status": "SUCCESS",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 9194,
+     "fee": 25
+    }
+   ]
+  },
+  "DNXWKYKVW73V8": {
+   "batchId": "DNXWKYKVW73V8",
+   "status": "PROCESSING",
+   "items": [
+    {
+     "id": "DP-1001-m2-pro",
+     "itemId": "Q6LMAU7TKNJUU",
+     "transactionId": null,
+     "status": "PENDING",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 67300,
+     "fee": 25
+    },
+    {
+     "id": "DP-1001-m2-helper",
+     "itemId": "W8ZDFU7WP4K6W",
+     "transactionId": null,
+     "status": "PENDING",
+     "receiver": "sb-…@personal.example.com",
+     "amount": 11876,
+     "fee": 25
+    }
+   ]
+  }
+ }
+}

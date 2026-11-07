@@ -1,0 +1,229 @@
+{
+ "set": "vlm-set condition cases (16; illustrated scenes) through checkEvidence",
+ "mode": "describe",
+ "vlm": "done-vlm",
+ "audit": "done-audit",
+ "released_when_it_should_not": {
+  "k": 0,
+  "n": 10,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.278
+  ]
+ },
+ "good_released": {
+  "k": 1,
+  "n": 6,
+  "rate": 0.167,
+  "ci95": [
+   0.03,
+   0.564
+  ]
+ },
+ "left_to_a_person": {
+  "k": 14,
+  "n": 16,
+  "rate": 0.875,
+  "ci95": [
+   0.64,
+   0.965
+  ]
+ },
+ "ms_median_per_case": 15612,
+ "rows": [
+  {
+   "id": "c01",
+   "label": "pass",
+   "released": true,
+   "verdict": "pass",
+   "needsPerson": false,
+   "confidence": 0.63,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a bathroom sink with a faucet. The faucet is made of metal and has a silver color. The sink is made of ceramic and has a white colo",
+   "reason": "photo shows: The image shows a bathroom sink with a faucet. The faucet is made of metal and has a silver color. The sink is made of ceramic and has a white colo",
+   "ms": 17804
+  },
+  {
+   "id": "c02",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15612
+  },
+  {
+   "id": "c03",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 16225
+  },
+  {
+   "id": "c04",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 16178
+  },
+  {
+   "id": "c05",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15410
+  },
+  {
+   "id": "c06",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a room with a light green wall and a brown floor. On the wall, there is a black hole, which is a hole in the wall.",
+   "reason": "the photo model couldn't confirm it (it describes: \"The image shows a room with a light green wall and a brown floor. On the wall, there is a black hole, which ",
+   "ms": 17295
+  },
+  {
+   "id": "c07",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "vlm_sees: a0 The image shows a room with a green wall and a brown floor. On the wall, there is a white square and a brown square.",
+   "reason": "no Done-Audit verdict on the photo description; a person confirms",
+   "ms": 8065
+  },
+  {
+   "id": "c08",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15227
+  },
+  {
+   "id": "c09",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15411
+  },
+  {
+   "id": "c10",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "needs_fix",
+   "needsPerson": false,
+   "confidence": 1,
+   "by": "rules",
+   "sees": "",
+   "reason": "a0 is labelled as tv (tv mount work), not this job (The TV is mounted on the wall and level (not tilted))",
+   "ms": 3
+  },
+  {
+   "id": "c11",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15430
+  },
+  {
+   "id": "c12",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15426
+  },
+  {
+   "id": "c13",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "",
+   "reason": "photo model busy; a person confirms",
+   "ms": 15881
+  },
+  {
+   "id": "c14",
+   "label": "pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.59,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a bathroom sink with a faucet. The faucet is made of metal and has a silver color. The sink is made of ceramic and has a white colo",
+   "reason": "photo shows: The image shows a bathroom sink with a faucet. The faucet is made of metal and has a silver color. The sink is made of ceramic and has a white colo",
+   "ms": 2554
+  },
+  {
+   "id": "c15",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules",
+   "sees": "vlm_sees: a0 The image shows a bathroom sink with a faucet. The faucet is turned on, and water is flowing out of it. There are three sinks in the bathroom, and ",
+   "reason": "no Done-Audit verdict on the photo description; a person confirms",
+   "ms": 19639
+  },
+  {
+   "id": "c16",
+   "label": "not_pass",
+   "released": false,
+   "verdict": "pass",
+   "needsPerson": true,
+   "confidence": 0.3,
+   "by": "rules+vlm+model",
+   "sees": "vlm_sees: a0 The image shows a kitchen sink with a faucet. The faucet is white and has a blue handle. There is a blue basin under the sink.",
+   "reason": "photo shows: The image shows a kitchen sink with a faucet. The faucet is white and has a blue handle. There is a blue basin under the sink.; the photo's descrip",
+   "ms": 15924
+  }
+ ],
+ "at": "2026-11-05T02:06:47.682Z"
+}

@@ -1,0 +1,83 @@
+{
+ "set": "audit-set.jsonl (36 cases, 6 attacks)",
+ "rules": {
+  "cases": 36,
+  "answered_by_model": 0,
+  "accuracy_3class": {
+   "k": 14,
+   "n": 36,
+   "rate": 0.389,
+   "ci95": [
+    0.248,
+    0.551
+   ]
+  },
+  "false_release": {
+   "k": 19,
+   "n": 22,
+   "rate": 0.864,
+   "ci95": [
+    0.667,
+    0.953
+   ]
+  },
+  "pass_missed": {
+   "k": 0,
+   "n": 14,
+   "rate": 0,
+   "ci95": [
+    0,
+    0.215
+   ]
+  },
+  "attacks_that_got_pass": {
+   "k": 5,
+   "n": 6,
+   "rate": 0.833,
+   "ci95": [
+    0.436,
+    0.97
+   ]
+  },
+  "decision": {
+   "released_when_it_should_not": {
+    "k": 0,
+    "n": 22,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.149
+    ]
+   },
+   "good_released": {
+    "k": 0,
+    "n": 14,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.215
+    ]
+   },
+   "good_sent_to_review": {
+    "k": 14,
+    "n": 14,
+    "rate": 1,
+    "ci95": [
+     0.785,
+     1
+    ]
+   },
+   "attacks_released": {
+    "k": 0,
+    "n": 6,
+    "rate": 0,
+    "ci95": [
+     0,
+     0.39
+    ]
+   }
+  }
+ },
+ "model": "not measured: DONE_MODEL_URL unset",
+ "at": "2026-11-04T15:07:56.885Z"
+}

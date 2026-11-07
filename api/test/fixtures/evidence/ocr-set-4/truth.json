@@ -1,0 +1,429 @@
+{
+ "r00.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-16",
+  "total": 12158,
+  "subtotal": 11231,
+  "tax": 927,
+  "items": [
+   "Interior paint qt",
+   "Wood screws #8"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": -3.75
+ },
+ "r01.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-01",
+  "total": 9196,
+  "subtotal": 8495,
+  "tax": 701,
+  "items": [
+   "P-trap kit",
+   "Drain snake 25ft",
+   "Caulk white",
+   "Teflon washer"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -0.22
+ },
+ "r02.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-12",
+  "total": 18435,
+  "subtotal": 17030,
+  "tax": 1405,
+  "items": [
+   "Shutoff valve 1/4 turn",
+   "Teflon washer",
+   "Wax ring",
+   "Furniture strap"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 1.11
+ },
+ "r03.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-16",
+  "total": 5029,
+  "subtotal": 4646,
+  "tax": 383,
+  "items": [
+   "Fill valve"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -2.77
+ },
+ "r04.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-12",
+  "total": 4484,
+  "subtotal": 4142,
+  "tax": 342,
+  "items": [
+   "Wax ring"
+  ],
+  "font": "cour.ttf",
+  "layout": "inline",
+  "tilt": -3.7
+ },
+ "r05.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-16",
+  "total": 13028,
+  "subtotal": 12035,
+  "tax": 993,
+  "items": [
+   "Wood screws #8",
+   "Toilet flapper",
+   "Joint compound"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": 0.03
+ },
+ "r06.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-05",
+  "total": 23236,
+  "subtotal": 21465,
+  "tax": 1771,
+  "items": [
+   "Sanding sponge",
+   "Stud finder",
+   "O-ring assortment"
+  ],
+  "font": "consola.ttf",
+  "layout": "inline",
+  "tilt": -1.7
+ },
+ "r07.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-20",
+  "total": 1771,
+  "subtotal": 1636,
+  "tax": 135,
+  "items": [
+   "Teflon washer"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": 0.36
+ },
+ "r08.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-15",
+  "total": 17044,
+  "subtotal": 15745,
+  "tax": 1299,
+  "items": [
+   "Faucet cartridge",
+   "TV wall anchor set"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -1.8
+ },
+ "r09.jpg": {
+  "store": "MOPAC BUILD & PAINT (DEMO)",
+  "date": "2026-11-04",
+  "total": 8770,
+  "subtotal": 8102,
+  "tax": 668,
+  "items": [
+   "Plumber tape",
+   "Supply line 16in"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 2.83
+ },
+ "r10.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-19",
+  "total": 2194,
+  "subtotal": 2027,
+  "tax": 167,
+  "items": [
+   "Supply line 16in"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -1.33
+ },
+ "r11.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-16",
+  "total": 15369,
+  "subtotal": 14198,
+  "tax": 1171,
+  "items": [
+   "Fill valve",
+   "O-ring assortment",
+   "Plumber tape",
+   "Teflon washer"
+  ],
+  "font": "cour.ttf",
+  "layout": "inline",
+  "tilt": 1.97
+ },
+ "r12.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-01",
+  "total": 13503,
+  "subtotal": 12474,
+  "tax": 1029,
+  "items": [
+   "Wax ring",
+   "Drain snake 25ft"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -0.4
+ },
+ "r13.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-01",
+  "total": 6426,
+  "subtotal": 5936,
+  "tax": 490,
+  "items": [
+   "Plumber tape"
+  ],
+  "font": "consola.ttf",
+  "layout": "column",
+  "tilt": -2.73
+ },
+ "r14.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-07",
+  "total": 9389,
+  "subtotal": 8673,
+  "tax": 716,
+  "items": [
+   "Drywall patch kit",
+   "Supply line 16in"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": -0.87
+ },
+ "r15.jpg": {
+  "store": "EASTSIDE TOOL BARN (DEMO)",
+  "date": "2026-11-01",
+  "total": 4931,
+  "subtotal": 4555,
+  "tax": 376,
+  "items": [
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -2.13
+ },
+ "r16.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-06",
+  "total": 21199,
+  "subtotal": 19583,
+  "tax": 1616,
+  "items": [
+   "Supply line 16in",
+   "O-ring assortment",
+   "Wax ring",
+   "Drain snake 25ft"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": -1.49
+ },
+ "r17.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-20",
+  "total": 16238,
+  "subtotal": 15000,
+  "tax": 1238,
+  "items": [
+   "Furniture strap",
+   "Wax ring",
+   "Drywall patch kit"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -2.73
+ },
+ "r18.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-02",
+  "total": 13786,
+  "subtotal": 12735,
+  "tax": 1051,
+  "items": [
+   "Wax ring",
+   "Drywall patch kit",
+   "Plumber tape"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": 0.4
+ },
+ "r19.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-09",
+  "total": 13358,
+  "subtotal": 12340,
+  "tax": 1018,
+  "items": [
+   "Sanding sponge",
+   "Drain snake 25ft"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": -3.65
+ },
+ "r20.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-18",
+  "total": 2018,
+  "subtotal": 1864,
+  "tax": 154,
+  "items": [
+   "Wax ring"
+  ],
+  "font": "consola.ttf",
+  "layout": "inline",
+  "tilt": 3.31
+ },
+ "r21.jpg": {
+  "store": "SOUTH CONGRESS DIY (DEMO)",
+  "date": "2026-11-12",
+  "total": 11710,
+  "subtotal": 10818,
+  "tax": 892,
+  "items": [
+   "Stud finder",
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "arial.ttf",
+  "layout": "column",
+  "tilt": 3.67
+ },
+ "r22.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-17",
+  "total": 9689,
+  "subtotal": 8951,
+  "tax": 738,
+  "items": [
+   "Wood screws #8",
+   "Caulk white"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": 3.42
+ },
+ "r23.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-07",
+  "total": 11311,
+  "subtotal": 10449,
+  "tax": 862,
+  "items": [
+   "Teflon washer",
+   "P-trap kit",
+   "Furniture strap",
+   "Stud finder"
+  ],
+  "font": "calibri.ttf",
+  "layout": "column",
+  "tilt": 3.94
+ },
+ "r24.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-01",
+  "total": 4148,
+  "subtotal": 3832,
+  "tax": 316,
+  "items": [
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "verdana.ttf",
+  "layout": "column",
+  "tilt": -3.01
+ },
+ "r25.jpg": {
+  "store": "RIVERSIDE TRUE FIX (DEMO)",
+  "date": "2026-11-20",
+  "total": 15126,
+  "subtotal": 13973,
+  "tax": 1153,
+  "items": [
+   "Caulk white",
+   "Drywall patch kit",
+   "Drain snake 25ft"
+  ],
+  "font": "cour.ttf",
+  "layout": "column",
+  "tilt": 1.79
+ },
+ "r26.jpg": {
+  "store": "PECAN STREET SUPPLY (DEMO)",
+  "date": "2026-11-01",
+  "total": 13773,
+  "subtotal": 12723,
+  "tax": 1050,
+  "items": [
+   "P-trap kit",
+   "Drywall patch kit"
+  ],
+  "font": "lucon.ttf",
+  "layout": "column",
+  "tilt": 0.34
+ },
+ "r27.jpg": {
+  "store": "CEDAR PARK HARDWARE (DEMO)",
+  "date": "2026-11-10",
+  "total": 18729,
+  "subtotal": 17302,
+  "tax": 1427,
+  "items": [
+   "Joint compound",
+   "Teflon washer",
+   "Plumber tape",
+   "Shutoff valve 1/4 turn"
+  ],
+  "font": "consola.ttf",
+  "layout": "column",
+  "tilt": -2.05
+ },
+ "r28.jpg": {
+  "store": "LONGHORN HOME CENTER (DEMO)",
+  "date": "2026-11-12",
+  "total": 3687,
+  "subtotal": 3406,
+  "tax": 281,
+  "items": [
+   "Sanding sponge"
+  ],
+  "font": "arial.ttf",
+  "layout": "inline",
+  "tilt": 2.68
+ },
+ "r29.jpg": {
+  "store": "BARTON PLUMBING PARTS (DEMO)",
+  "date": "2026-11-08",
+  "total": 6256,
+  "subtotal": 5779,
+  "tax": 477,
+  "items": [
+   "Stud finder"
+  ],
+  "font": "tahoma.ttf",
+  "layout": "column",
+  "tilt": -1.95
+ }
+}

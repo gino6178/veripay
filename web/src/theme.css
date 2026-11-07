@@ -1,46 +1,54 @@
-/* Cover's tokens (DESIGN.md): a warm graphite ground, white ink, one safety-orange signal, and hairlines for measuring.
-   One theme: Cover is used at night, on a phone, right after something went wrong. */
+/* VeriPay tokens (DESIGN.md): a bright, white-led ground; near-navy ink; a blue system (deep blue for primary
+   actions and headings, bright blue for links, focus and the active state); a rare warm yellow for the PAID stamp.
+   Muted text still reaches 4.5:1 on white. Our own brand, our own mark: this is not a PayPal page. */
 :root {
-  --ground: oklch(0.165 0.008 45);
-  --ground-2: oklch(0.205 0.009 45);
-  --ground-3: oklch(0.25 0.01 45);
-  --line: oklch(1 0 0 / 0.12);
-  --line-strong: oklch(1 0 0 / 0.26);
-  --ink: oklch(0.965 0.004 45);
-  --ink-2: oklch(0.84 0.006 45);
-  --ink-3: oklch(0.70 0.008 45);
-  --signal: oklch(0.72 0.19 42);
-  --signal-hi: oklch(0.78 0.17 48);
-  --signal-ink: oklch(0.17 0.03 42);
-  --signal-soft: oklch(0.72 0.19 42 / 0.14);
-  --ok: oklch(0.80 0.15 155);
-  --ok-soft: oklch(0.80 0.15 155 / 0.13);
-  --warn: oklch(0.85 0.14 85);
-  --warn-soft: oklch(0.85 0.14 85 / 0.13);
-  --bad: oklch(0.71 0.18 25);
-  --bad-soft: oklch(0.71 0.18 25 / 0.14);
-  --agent: oklch(0.80 0.10 280);
-  --agent-soft: oklch(0.80 0.10 280 / 0.14);
-  --scrim: oklch(0.1 0.01 45 / 0.7);
+  --ground: #F5F7FA;          /* the page */
+  --ground-2: #FFFFFF;        /* panels, cards, the tour */
+  --ground-3: #EEF2F7;        /* insets, skeletons, wells */
+  --line: #DCE3EC;
+  --line-strong: #B7C3D3;
+  --ink: #001C64;             /* near-navy: 16:1 on white */
+  --ink-2: #2E3F66;           /* 10:1 */
+  --ink-3: #56657F;           /* 5.9:1 on white, 5.5:1 on #F5F7FA */
 
-  --display: "Big Shoulders Display", "Noto Sans TC", sans-serif;
-  --font: "Schibsted Grotesk", "Noto Sans TC", system-ui, sans-serif;
-  --mono: "Martian Mono", "Noto Sans TC", ui-monospace, monospace;
+  --primary: #003087;         /* primary buttons, headings accents */
+  --primary-hi: #001C64;
+  --primary-ink: #FFFFFF;
+  --signal: #0070E0;          /* links, focus, active, progress, badges: 4.6:1 on white */
+  --signal-hi: #005BB8;
+  --signal-ink: #FFFFFF;
+  --signal-soft: #E6F0FC;     /* highlighted panels */
+  --signal-line: #9CC3F2;
+  --paid: #FFD140;            /* rare: the PAID stamp */
+  --paid-ink: #3D2E00;
+
+  --ok: #17703A;   --ok-soft: #E7F5EC;   --ok-line: #9FD4B2;     /* 6.2:1 */
+  --warn: #8A5300; --warn-soft: #FFF4DB; --warn-line: #F0C977;   /* 6.6:1 */
+  --bad: #B42318;  --bad-soft: #FDECEA;  --bad-line: #F2ADA6;    /* 6.5:1 */
+  --agent: #5531B8; --agent-soft: #F0EBFC; --agent-line: #C6B5F0; /* 7.9:1 */
+  --hover: #F0F4FA;
+  --scrim: rgba(0, 28, 100, 0.35);
+  --shadow: 0 1px 2px rgba(0, 28, 100, 0.06), 0 4px 14px rgba(0, 28, 100, 0.06);
+  --shadow-lg: 0 12px 36px rgba(0, 28, 100, 0.16);
+
+  --display: "Plus Jakarta Sans", "Schibsted Grotesk", system-ui, sans-serif;
+  --font: "Schibsted Grotesk", system-ui, sans-serif;
+  --mono: "Martian Mono", ui-monospace, monospace;
 
   --fs-11: 11px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px; --fs-24: 24px;
   --fs-h3: clamp(18px, 1.6vw, 22px);
-  --fs-h2: clamp(28px, 3.6vw, 48px);
-  --fs-h1: clamp(36px, 5.4vw, 72px);
-  --fs-hero: clamp(48px, 8.2vw, 96px);
-  --fs-num: clamp(56px, 9vw, 96px);
+  --fs-h2: clamp(26px, 3.2vw, 40px);
+  --fs-h1: clamp(32px, 4.6vw, 56px);
+  --fs-hero: clamp(40px, 6.6vw, 76px);
+  --fs-num: clamp(44px, 7vw, 76px);
 
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 80px; --s9: 128px;
   --gutter: clamp(16px, 5vw, 72px);
   --max: 1280px;
-  --r: 2px;
+  --r: 8px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --z-sticky: 10; --z-nav: 30; --z-pop: 50; --z-toast: 90;
-  color-scheme: dark;
+  color-scheme: light;
 }
 /* older names some pages still use */
-:root { --accent: var(--signal); --accent-soft: var(--signal-soft); --good: var(--ok); --card: var(--ground-2); --surface: var(--ground-2); --surface-2: var(--ground-3); --rule: var(--line); --rule-strong: oklch(1 0 0 / 0.26); }
+:root { --accent: var(--signal); --accent-soft: var(--signal-soft); --good: var(--ok); --card: var(--ground-2); --surface: var(--ground-2); --surface-2: var(--ground-3); --rule: var(--line); --rule-strong: var(--line-strong); }

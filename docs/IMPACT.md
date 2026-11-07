@@ -1,192 +1,249 @@
-# Cover: potential impact
+# VeriPay: potential impact
 
-Research note for the "Potential Impact" criterion of the PayPal AI Hackathon. Cover is aimed at young US renters,
-pet owners, drivers and riders. Every figure below was checked on 2026-11-04 against the source linked next to it.
-"Primary" means we read it in the publisher's own release, report, filing or data. "Reported" means a news report of
-someone else's figure, because the original was blocked to us. Figures we could not verify are listed at the end and
-are not used in the argument. The earlier Taiwan version is kept in `IMPACT-tw.md`.
+Research note for the "Potential Impact" criterion of the PayPal AI Hackathon. VeriPay lets a person's AI agent
+hire a local pro (plumber, cleaner, handyman): it writes a checkable definition of done, negotiates with the pro's
+agent, holds the money with a PayPal authorization, checks the pro's photo and receipt evidence, and pays the pro with
+PayPal the moment every check passes. Every figure below was checked on 2026-11-04 against the source linked next to
+it. "Primary" means we read it in the publisher's own release, report, filing, statute or help page. "Reported" means
+we could only read it in someone else's write-up, because the original was blocked to us. Anything marked
+"estimate" or "our arithmetic" is ours, not the source's. Figures we could not verify are listed at the end and are not
+used in the argument. The demo city is Austin, TX; every pro and company in the demo is fictional.
 
 ## The problem, numbers first
 
-There are 46.3 million renter households in the US, and 63% of householders under 35 rent. About half of renters
-have no renters insurance (49% had it in 2023), so a fire, a burglary or a burst pipe upstairs means replacing
-everything out of pocket, and a kitchen fire that spreads leaves the tenant personally liable. Of the 163.6 million
-dogs and cats in US homes, 4.27% are insured, and only 2.29% of cats. On the road, 15.4% of drivers had no insurance
-in 2023 and one in three (33.4%) were uninsured or underinsured. People who do claim wait: homeowners waited 40.7
-days on average for final payment in 2025. Claims are what people complain about most: in 2025 the three most common
-reasons for confirmed complaints to state regulators were claim delays (22.2%), unsatisfactory settlements (13.3%)
-and denials (12.1%). And young people are walking away: 26% of Gen Z policyholders say they have avoided filing a
-claim because the digital process was too hard, and 28% have switched insurers over it. The money involved is small
-(the average renters policy costs $171 a year) but the losses are frequent and real, and the process is what keeps
-young people out.
+Homeowners spend about $520 billion a year on improvements and repairs, and most of the people doing the work are
+tiny businesses: over 1.9 million specialty trade contractors (79% of all such establishments) have no employees at
+all. Both sides of a small job take a risk on the other.
+
+**The homeowner pays first and hopes.** In 2024 the FTC received 81,925 reports in its "Home Improvement, Repair, and
+Solar" category. In BBB Scam Tracker's 2025 data, home improvement was the fifth riskiest scam type: 69.1% of the people
+who reported one lost money, the median loss was $1,405, and the worst tenth of cases had a median loss of $14,050.
+BBB describes the pattern in one line: solicitors "take payment without returning, do shoddy work", or invent problems
+that raise the price. The FTC's own advice is the rule VeriPay automates: "Don't pay the full amount for the
+project up front" and "never make the final payment until the work is done and you're satisfied with it."
+
+**The pro does the work first and waits.** In Intuit QuickBooks' 2026 report, 59% of US small businesses had invoices
+overdue by 30 days or more (up from 47% a year earlier), those with unpaid invoices were owed $17.7K on average, and
+49% said standard payment processing times create cash-flow gaps. In construction, about half of payments (49%) are not
+made on time. Angi, the largest US home services marketplace, charges its pros for leads "regardless of whether the Pro
+ultimately provides the requested service", and none of the marketplaces we checked pays the pro the moment a
+documented checklist is met.
+
+**And the buyer is changing.** Traffic from generative AI tools to US retail sites rose 693.4% in the 2025 holiday
+season. PayPal launched agentic commerce services in October 2025, and Thumbtack announced an app inside ChatGPT so users
+can "hire skilled professionals" without leaving the chat. Agents can now find and book a pro. What is missing is a
+machine-readable definition of "done" and a neutral party that holds the money until it is met.
 
 ## Sourced facts
 
-### Renters and renters insurance
+### Market size and who does the work
 
 | Fact | Figure | Year | Source | Quoted line |
 |---|---|---|---|---|
-| Renter-occupied homes | 46,251,000 (30.9% of all housing units) | Q3 2026 | Primary: [Census Bureau, Housing Vacancy Survey release CB26-161, 2026-10-28](https://www.census.gov/housing/hvs/files/currenthvspress.pdf) | "renter-occupied units made up 30.9 percent of the inventory" (table: Renter 46,251 thousand) |
-| Homeownership rate, all households | 65.5% | Q3 2026 | Same | "The homeownership rate of 65.5 percent was not statistically different from the rate in the third quarter 2025 (65.3 percent)" |
-| Homeownership rate, householders under 35 | 36.6%, the lowest of any age group; so about 63% of young householders rent (our arithmetic) | Q3 2026 | Same | "lowest for those householders under 35 years of age (36.6 percent)" |
-| Renters with renters insurance | 49% (2023); 45% in a 2024 survey | 2023 to 2024 | Primary: [Financial Health Network, "Climate Disaster and Renters Insurance: Who's Protected?", 2024-12-09](https://finhealthnetwork.org/research/climate-disaster-and-renters-insurance-whos-protected/) (5,509 households, 1,556 renters) | "less than half (49%) of renters held renters insurance in 2023" |
-| Renters insurance by financial health | 71% of financially healthy renters, 32% of financially vulnerable renters | 2023 | Same | "Seventy-one percent of Financially Healthy renters have renters insurance" |
-| Renters insurance by race | 57% white, 40% Latinx, 37% Black renters | 2023 | Same | |
-| Triple-I's own poll, for comparison | 57% (2020), 42% (2018) | 2020 | Primary: [Triple-I 2020 Consumer Poll](https://www.iii.org/sites/default/files/docs/pdf/2020_triple-i_consumer_poll_091620.pdf) | "In 2020, 57 percent of renters said they have renters insurance, compared with 42 percent in 2018." |
-| Average renters premium (HO-4) | $171 a year | 2022 (latest NAIC data shown) | Triple-I table of NAIC data: [Facts + Statistics: Homeowners and renters insurance](https://www.iii.org/fact-statistic/facts-statistics-homeowners-and-renters-insurance) | "The average renters insurance premium rose by 0.6 percent in 2022" |
-| Average homeowners premium (HO-3) | $1,569 a year | 2022 | Same page | "The average homeowners insurance premium rose by 11.2 percent in 2022 from 2021" |
-| Average homeowners claim paid | $20,062 | 2023 | Same page (table of average amount paid per claim) | |
+| Homeowner spending on improvements and repairs (owner-occupied homes) | about $525 billion a year, flat through 2027-Q3 | projection made Oct 2026 | Reported: [Harvard JCHS, Leading Indicator of Remodeling Activity, "Remodeling Spending Continues to Stagnate"](https://www.jchs.harvard.edu/press-releases/remodeling-spending-continues-stagnate). JCHS is behind a bot check, so we read the quote through a search engine's extract, not the page | "We expect annual spending to hover around $525 billion through the third quarter of next year." |
+| Same index, earlier release | $522 billion projected for 2026 | Jan 2026 | Reported: [Composite Panel Association, 2026-01-30](https://www.compositepanel.org/harvard-lira-predicts-remodeling-softening-through-2026/), reporting the JCHS release | "totaling a projected $522 billion for the year"; the LIRA "provides a short-term outlook on U.S. home improvement and repair spending for owner-occupied homes" |
+| Specialty trade contractors with no employees | over 1.9 million, 79% of all specialty trade establishments, 9% of the trades' revenue | 2022 | Primary: [NAHB Eye on Housing, "Most Home Builders are Small Businesses", Aug 2025](https://eyeonhousing.org/2025/08/most-home-builders-are-small-businesses/), from the 2022 Economic Census and Census Nonemployer Statistics | "Over 1.9 million specialty trade independent contractors make up 79% of all STC establishments" |
+| Plumbers | about 510,600 jobs, 8% self-employed, median pay $63,800 | 2025 | Primary: [BLS Occupational Outlook Handbook, Plumbers](https://www.bls.gov/ooh/construction-and-extraction/plumbers-pipefitters-and-steamfitters.htm) | "Plumbers, pipefitters, and steamfitters held about 510,600 jobs in 2025." "Most states require plumbers to be licensed." |
+| Carpenters | about 889,700 jobs, 25% self-employed | 2025 | Primary: [BLS Occupational Outlook Handbook, Carpenters](https://www.bls.gov/ooh/construction-and-extraction/carpenters.htm) | "Carpenters held about 889,700 jobs in 2025." |
+| Angi's network | about 111,000 average monthly active pros; about 16 million projects | 2025 | Primary: [Angi Inc. 10-K for 2025](https://www.sec.gov/Archives/edgar/data/1705110/000170511026000011/angi-20251231.htm) | "There were approximately 111,000 Average Monthly Active Pros ... during the three months ended December 31, 2025." |
+| Thumbtack's network | about 300,000 service providers | 2025 | Primary: [Thumbtack release on Business Wire, 2025-10-06](https://www.businesswire.com/news/home/20251006760229/en/Thumbtack-Partners-with-OpenAI-to-Power-Home-Services-in-ChatGPT) | "Thumbtack's 300,000-strong community of service providers" |
 
-No source we could reach gives renters insurance take-up by age. The Financial Health Network brief has no age split.
+The JCHS figure covers owner-occupied homes only; landlords' and renters' spending on repairs is not in it.
 
-### Pets
+### Homeowner side: scams, complaints and losses
 
 | Fact | Figure | Year | Source | Quoted line |
 |---|---|---|---|---|
-| Households with a pet | 95 million | 2025 | Primary: [APPA industry trends page](https://www.americanpetproducts.org/industry-trends-and-stats), citing its 2025 National Pet Owners Survey | "95 million U.S. households own a pet." |
-| Dogs and cats in US homes | 87.3 million dogs, 76.3 million cats | 2025 | Reported: AVMA Pet Owner Survey 2025, as cited in the NAPHIA report below | "There were approximately 87.3 million dogs and 76.3 million cats owned in the U.S." |
-| Pets insured (penetration) | 4.27% overall; 5.99% of dogs, 2.29% of cats | 2025 | Primary: [NAPHIA 2026 State of the Industry Report highlights, 2026-06-21](https://naphia.org/wp-content/uploads/2026/06/NAPHIA_SOI2026_Report_HIGHLIGHTS_26-06-24.pdf) | "4.27% PENETRATION RATE" |
-| US pet insurance premium | about $5.7 billion, up 19.7% | 2025 | Same | "The total premium volume in the U.S. … amounted to about $5.7 billion at year-end 2025." |
-| Insured pets in the US | up 9.0% | 2025 | Same | "Results for 2025 show a 9.0% increase in Total Insured Pets in-force in the U.S." |
-| Average accident and illness premium | $836 a year per dog, $435 per cat | 2025 | Same (US average annual premium table) | |
+| FTC reports, Home Improvement, Repair, and Solar | 81,925 reports, rank 16 of 29 categories, 1.27% of 6,471,708 Sentinel reports | 2024 | Primary: [FTC Consumer Sentinel Network Data Book 2024, March 2025](https://www.ftc.gov/system/files/ftc_gov/pdf/csn-annual-data-book-2024.pdf), p. 7 | table "Report Categories": "16 Home Improvement, Repair, and Solar 81,925 1.27%" |
+| What the FTC category covers | includes "problems with home repair services and contractors", but also appliances, warranties and solar, so not every report is about a contractor | 2024 | Same, Appendix B1 | "problems with home repair services and contractors" |
+| All fraud reported to the FTC | 3 million fraud reports, $15.9 billion lost | 2025 | Primary: [FTC prepared statement to the Joint Economic Committee, 2026-03-25](https://www.ftc.gov/system/files/ftc_gov/pdf/ftc-testimony-jec-hearing-on-the-rising-scam-economy.pdf) | "In 2025, consumers submitted 3 million fraud reports to CSN and reported $15.9 billion" |
+| BBB riskiest scams | home improvement No. 5 riskiest (No. 5 in 2024 too) | 2025 | Primary: [BBB Institute, 2025 BBB Scam Tracker Risk Report](https://bbbmarketplacetrust.org/wp-content/uploads/2026/08/Risk-Report-2025-US.pdf), Table 1 (more than 146,000 reported scams) | Table 1: "5 5 Home improvement 96.2 0.9% 1.4% 69.1% 70.1% $1,405 $1,800" |
+| Share of people targeted who lost money | 69.1% | 2025 | Same | (susceptibility column, Table 1) |
+| Median loss | $1,405 (2024: $1,800); the median for all scam types was $93 | 2025 | Same | (median loss column, Table 1) |
+| Median loss in the worst 10% of cases | $14,050, third highest of any scam type after investment and romance scams | 2025 | Same, Table 2 | "3 Home improvement $14,050" |
+| The pay-then-disappear pattern | taking payment and not returning, shoddy work, invented problems; often after storms | 2025 | Same, Appendix A definition | "Door-to-door solicitors offer quick, low-cost repairs and then either take payment without returning, do shoddy work, or 'find' issues that dramatically raise the price." |
+| What the FTC tells homeowners to do | do not pay in full up front; hold the final payment until the work is done; some states cap down payments | current | Primary: [FTC, "How To Avoid a Home Improvement Scam"](https://consumer.ftc.gov/articles/how-avoid-home-improvement-scam) | "never make the final payment until the work is done and you're satisfied with it." |
 
-### Drivers and riders
+FTC and BBB figures are reports people chose to file, not a count of all incidents. Both agencies say most losses go
+unreported.
 
-| Fact | Figure | Year | Source | Quoted line |
-|---|---|---|---|---|
-| Uninsured drivers | 15.4% countrywide | 2023 | Primary: [Insurance Research Council release, 2025-02-20](https://insurance-research.org/sites/default/files/2025-03/PR%20_IRC%20%20Uninsured-Underinsured%20Motorist.pdf), report *Uninsured and Underinsured Motorists: 2017–2023* | "In 2023, more than one in seven drivers countrywide (15.4%) were uninsured" |
-| Uninsured or underinsured | 33.4%, up 10 points since 2017 | 2023 | Same | "One in three drivers (33.4%) were either uninsured or underinsured in 2023" |
-| Highest state | Mississippi 28.2%, then New Mexico 24.1%, DC 23.1% | 2023 | Same | |
-
-IRC estimates the uninsured rate from the ratio of uninsured-motorist claims to bodily-injury claims; it is not a
-count of drivers.
-
-### Claims, complaints and trust
+### Pro side: getting paid late or not at all
 
 | Fact | Figure | Year | Source | Quoted line |
 |---|---|---|---|---|
-| Days to final payment, homeowners claims | 40.7 days (44.1 the year before) | study fielded Dec 2024 to Dec 2025 | Primary: [J.D. Power 2026 U.S. Property Claims Satisfaction Study, 2026-03-17](https://www.jdpower.com/business/press-releases/2026-us-property-claims-satisfaction-study) (5,093 homeowners who claimed in the previous nine months) | "the average amount of time before customers receive final payment is 40.7 days, down 3.4 days from last year" |
-| Days to complete a repair | 29.6 days | same | Same | "The average amount of time required to complete a repair is 29.6 days" |
-| Claims satisfaction | 702 out of 1,000, up 20 points; 34% say their policy did not fully meet expectations | same | Same | "34% of customers say their policy did not fully meet expectations" |
-| Top reasons for confirmed complaints to state regulators | claim delays 16,236 (22.21%); unsatisfactory settlement or offer 9,756 (13.34%); denial of claim 8,866 (12.12%); adjuster handling 4,125 (5.64%); prompt pay 2,754 (3.77%) | 2025 | Primary: [NAIC Consumer Insurance Search, closed confirmed complaints by reason](https://content.naic.org/cis_agg_reason.htm) (all lines of insurance; states report voluntarily, so not every complaint is counted) | table on the page, year 2025 |
-| Gen Z who avoided filing a claim because the digital process was too hard | 26% (Millennials 21%) | 2025 | Reported: Insurity 2025 Digital Experience Index, via [Insurance Business, 2025-07-24](https://www.insurancebusinessmag.com/us/news/cyber/insurers-risk-losing-millennials-gen-z-over-poor-digital-experiences-survey-543743.aspx) (Insurity's own release was blocked to us) | "Twenty-six percent (26%) of Gen Z and 21% of Millennials said they have avoided filing a claim altogether" |
-| Gen Z who switched insurers over a poor digital experience | 28% (Millennials 21%) | 2025 | Same | "28% of Gen Z and 21% of Millennials reported switching insurers" |
+| Small businesses with invoices 30+ days overdue | 59%, up from 47% the year before | survey Dec 2025, published 2026-07-07 | Primary: [Intuit QuickBooks, 2026 Small Business Late Payments Report](https://quickbooks.intuit.com/r/small-business-data/small-business-late-payments-report-2026/) (1,305 US business owners, plus its quarterly survey of about 5,000) | "Nearly 3 in 5 businesses (59%) have invoices overdue by 30+ days, up from 47% last year." |
+| Average amount owed | $17.7K, among businesses with unpaid invoices | same | Same | "Businesses with unpaid invoices are owed $17.7K on average." |
+| Payment speed hurts cash flow | 49% say processing times cause critical or moderate cash-flow gaps; 59% paid extra fees to reach money already earned | same | Same | "49% of owners say standard payment processing times create critical or moderate cash-flow gaps." |
+| Construction payments made late | 49% | survey Aug 2019 (503 construction professionals) | Primary: [Levelset with QuickBooks, 2019 National Construction Payments Report](https://levelset.com/blog/2019-national-construction-payments-report) | "About half (49%) of construction payments are not made on time." |
+| Freelancers not paid at all for some work | 34% in the past year; 81% paid late; average unpaid $5,968 | 2015 (5,358 freelancers) | Reported: Freelancers Union 2015 nonpayment survey, as summarised in search results; we did not open the original report. Old and not trades-specific, so background only | |
 
-### Lemonade, the model Cover follows (from its 10-K filings)
+The QuickBooks report has no breakdown for construction or trades. The Levelset figure is mostly commercial
+construction, where subcontractors wait on general contractors; a homeowner job is simpler, but no source we found
+measures how fast residential pros are paid by homeowners.
+
+### Why now: AI agents and PayPal
 
 | Fact | Figure | Year | Source | Quoted line |
 |---|---|---|---|---|
-| Customers | 2,984,513 (2,430,056 a year earlier) | 2025-12-31 | Primary: [Lemonade 10-K for 2025](https://www.sec.gov/Archives/edgar/data/1691421/000169142126000016/lmnd-20251231.htm) | "Customers (end of period) 2,984,513 2,430,056" |
-| In-force premium | $1,236.5 million | 2025-12-31 | Same | |
-| First notice of loss taken by the bot with no human | 96% | 2025-12-31 | Same | "96% of the time, it is AI Jim that will take the first notice of loss from a Lemonade customer without human intervention" |
-| Claims automated end to end | roughly 55% | 2025-12-31 | Same | "roughly 55% of our claims were automated, resulting in instant or near-instant processing from start to finish" |
-| Speed | "within seconds" for many claims; many others reviewed by a human | 2025 | Same | "Claims are often paid or declined through our claims bot, AI Jim, within seconds." |
-| Gross loss ratio | 79% (2019), 71% (2020), 90% (2021), 90% (2022), 85% (2023), 73% (2024), 64% (2025) | 2019 to 2025 | Primary: 10-Ks for [2020](https://www.sec.gov/Archives/edgar/data/1691421/000169142121000024/lmda-20201231.htm), [2021](https://www.sec.gov/Archives/edgar/data/1691421/000169142122000015/lmnd-20211231.htm), [2023](https://www.sec.gov/Archives/edgar/data/1691421/000169142124000026/lmnd-20231231.htm), [2025](https://www.sec.gov/Archives/edgar/data/1691421/000169142126000016/lmnd-20251231.htm), each giving that year and the one before | "Gross loss ratio 64 % 73 %" (2025 10-K) |
-| Customers under 35 | about 70% (2020), about 65% (2021); not reported in later 10-Ks | 2020 to 2021 | Primary: 2020 and 2021 10-Ks | "Approximately 70% of our current customers are under the age of 35, and about 90% of our customers said they were not switching from another carrier." (2020) |
-| First-time buyers | about 90% of home and renters customers were not switching from another carrier | 2023 | Primary: 2023 10-K | "About 90% of our current home and renters customers said that they were not switching to Lemonade from another carrier." |
-| How it started | first customer in New York, late 2016; about 7% of the New York renters market within three and a half years | 2016 to 2020 | Primary: 2020 10-K | "We acquired our first customer in New York in late 2016, and within three-and-a-half-years captured approximately 7% of the New York renters insurance market" |
-| Its own carrier | Lemonade Insurance Company, domiciled in New York and regulated by NYDFS | 2025 | Primary: 2025 10-K | "Since LIC is a New York State-domiciled insurance company, LIC's primary insurance regulator … is the NYDFS." |
-| Fixed fee | 25% of premiums (2020 and 2021); later 10-Ks describe a fixed fee without a percentage | 2020 to 2021 | Primary: 2020 and 2021 10-Ks | "we typically retain a fixed fee, currently 25% of premiums" |
-| Giveback, 2025 | $2,104,557 to 45 nonprofits | 2025 | Primary: [Lemonade release, 2025-07-14](https://www.lemonade.com/investor/news/2025-giveback) | "$2,104,557" to "45 nonprofit organizations across the US and EU" |
-| Giveback, all time | over $12 million since 2017 | as of the 2025 10-K | Primary: 2025 10-K | "Since 2017, we have donated over $12 million to causes chosen by our customers under our Giveback program." |
-| Giveback is discretionary | paid only if the board approves; not owed to anyone | 2025 | Same | "The Giveback is not a contractual obligation to any customer or to any cause" |
-| California exposure | January 2025 Los Angeles fires: about $19.6 million net losses and a $6.9 million FAIR Plan assessment; CA, NY and TX were about 45% of 2025 gross written premium | 2025 | Same | "the January 2025 California Wildfires resulted in net incurred losses of $19.6 million and a California FAIR Plan assessment of $6.9 million" |
+| Generative AI referrals to US retail sites | up 693.4% year on year, Nov 1 to Dec 31 2025 | 2025 holiday | Primary: [Adobe release, 2026-01-07](https://news.adobe.com/news/downloads/pdfs/2026/01/010726-2025-holiday-shopping-season.pdf) (the PDF's dateline misprints the year as 2025) | "traffic to retail sites from generative AI tools (shoppers clicking on a link to a retail site) increased by 693.4% compared to the year prior" |
+| The base is still small | Adobe's own caveat | same | Same | "While the base of users remains modest, the uptick shows the value AI can deliver as a shopping assistant." |
+| Consumers ready to let an agent complete a purchase alone | 9%; 74% would delegate routine tasks on instruction | Jan 2026 (25,590 consumers, 16 countries, US included, no US split) | Primary: [Accenture, Consumer Pulse Research 2026](https://www.accenture.com/nz-en/insights/consulting/talk-my-ai-agent) | "surveyed a representative sample of 25,590 consumers in 16 countries" |
+| PayPal agentic commerce services | agent ready (payments on AI surfaces for existing PayPal merchants) and store sync; agent ready due early 2026 | 2025-10-28 | Primary: [PayPal newsroom](https://newsroom.paypal-corp.com/2025-10-28-PayPal-Launches-Agentic-Commerce-Services-to-Power-AI-Driven-Shopping) | agent ready "instantly unlocks for the millions of existing PayPal merchants the ability to accept payments on AI surfaces" |
+| PayPal in other agents | Copilot Checkout (Microsoft), Perplexity Instant Buy, Cymbio acquisition | Nov 2025 to Jan 2026 | Primary: PayPal newsroom, [Copilot Checkout 2026-01-08](https://newsroom.paypal-corp.com/2026-01-08-PayPal-Powers-Microsofts-Launch-of-Copilot-Checkout), [Cymbio 2026-01-22](https://newsroom.paypal-corp.com/2026-01-22-PayPal-to-Acquire-Cymbio,-Accelerating-Agentic-Commerce-Capabilities) | (headlines) |
+| PayPal's reach on both sides | 440 million active accounts | Q3 2026 | Primary: [PayPal Q3 2026 earnings release, 8-K, 2026-10-27](https://www.sec.gov/Archives/edgar/data/0001633917/000163391726000086/pypl3q-26earningsrelease.htm) | "Active accounts increased 0.6% to 440 million." |
+| Home services inside an AI assistant | Thumbtack app in ChatGPT for US users | 2025-10-06 | Primary: [Thumbtack on Business Wire](https://www.businesswire.com/news/home/20251006760229/en/Thumbtack-Partners-with-OpenAI-to-Power-Home-Services-in-ChatGPT) | users "will soon be able to seamlessly ask home questions and discover, connect with, and hire skilled professionals" |
 
-**Corrections to the FIND article (2023) that inspired Cover**, checked against the filings:
+PayPal's agentic launches so far are about buying goods from merchants' catalogues. Services that are paid only after
+someone checks the work are not covered by them; that is the gap VeriPay fills, on PayPal's own rails.
 
-- *"A flat 20% fee."* Lemonade's 2020 and 2021 10-Ks say 25%. Cover's 20% is our own choice, not Lemonade's number.
-- *"Stopped its California business."* The filings describe no exit. The 2023 10-K calls California "our largest
-  market for car insurance", and the 2025 10-K still lists it among the three biggest states. FIND's source, an S&P
-  Global article headlined "Lemonade presses pause in California", is paywalled and we could not read it; at most it
-  supports a pause in growth, not an exit.
-- *"Over $8 million donated by 2023."* Now over $12 million since 2017, per the 2025 10-K.
-- *"Paid in 3 minutes."* The 10-K says many claims are paid or declined "within seconds" and about 55% are automated
-  end to end; the rest involve a person.
-- *"Q1 2023 net loss rose from 8% to 94%."* We could not check this; that shareholder letter is filed as images.
-  Full-year gross loss ratios are in the table above.
+### What comparable products do about the money
 
-### Path to market: the rules
+| Product | Holds money until done? | Verifies completion? | Source | Quoted line |
+|---|---|---|---|---|
+| Angi | Mostly a lead marketplace: pros pay per match; consumers can pay on-platform for "pre-priced" services | No checklist; a guarantee covers bookings paid through Angi | Primary: [Angi 10-K for 2025](https://www.sec.gov/Archives/edgar/data/1705110/000170511026000011/angi-20251231.htm). Angi's guarantee page blocked us | lead revenue "comprises fees paid by Pros for consumer matches (regardless of whether the Pro ultimately provides the requested service)" |
+| Thumbtack | No; the customer pays the pro. Thumbtack refunds afterwards, up to $2,500, if the job isn't done as agreed and you notify it within 45 days | No; it asks you to "get everything in writing" and first mediates | Primary: [Thumbtack Guarantee](https://www.thumbtack.com/guarantee) | "If a pro takes payment and does not perform any work, the Money-Back Guarantee can cover up to $2500." |
+| TaskRabbit | Card on file, charged after the task (some web bookings take a one-hour deposit) | The Tasker marks the job complete; no evidence check | Primary: [TaskRabbit Support, "Why Do You Need My Credit Card?"](https://support.taskrabbit.com/hc/en-us/articles/360035345851-Why-Do-You-Need-My-Credit-Card) | "you won't be charged until after the task is completed." |
+| Upwork (fixed-price) | Yes, through a licensed escrow subsidiary; funds release automatically 14 days after the freelancer submits unless the client acts | The client approves; no automated check | Primary: [Upwork Legal Center, Fixed-Price Escrow Instructions and Payment Escrow Inc.](https://www.upwork.com/legal#fp) | "This escrow company holds California Department of Financial Protection and Innovation License No. 963 5086." |
+| Upwork escrow is business-only | Not offered for household purposes | | Same | escrow services are "not for consumer, personal, family, or household purposes." |
+| Escrow.com | Yes, as a licensed escrow company; aimed at goods, domains and vehicles | The buyer inspects and approves | Reported: BBB business profile lists a California DFPI escrow licence; we could not confirm it in DFPI's own search | |
+
+The pattern: the companies that truly hold funds (Upwork, Escrow.com) do it with a state escrow licence and leave
+approval to a human; the home services marketplaces don't hold funds and compensate after the fact. None writes the
+definition of done up front or checks evidence against it.
+
+### The rules
 
 | Fact | Source | Quoted line |
 |---|---|---|
-| An MGA manages an insurer's business as its agent, and must be a licensed producer in each state | Primary: [NAIC Managing General Agents Act, Model #225](https://content.naic.org/sites/default/files/model-law-225.pdf), §2 and §3 | "No person shall act in the capacity of an MGA with respect to risks located in this state for an insurer licensed in this state unless such person is a licensed producer in this state." |
-| Kentucky runs an insurance regulatory sandbox, open to applications until 2030-12-31, filing fee $750, with a time-limited beta test (KRS 304.3-705 and 304.3-720) | Primary: [Kentucky 2025 Acts ch. 67 (HB 184)](https://apps.legislature.ky.gov/law/acts/25RS/documents/0067.pdf) | "on or before December 31, 2030[2025], a person may apply to the department for admission to the sandbox"; "(a) A filing fee of seven hundred fifty dollars ($750)" |
-| Kentucky's sandbox, the first in the US, gives a one-year beta under a limited no-action letter, needs $25,000 in assets, and is open to non-insurers | Reported: [Crowell & Moring, 2019](https://www.crowell.com/en/insights/client-alerts/kentucky-enacts-first-us-insurtech-sandbox) | |
+| Federal definition of a money transmitter | Primary: [31 CFR 1010.100(ff)(5)](https://www.ecfr.gov/current/title-31/subtitle-B/chapter-X/part-1010/subpart-A/section-1010.100) | "money transmission services" means "the acceptance of currency, funds, or other value that substitutes for currency from one person and the transmission of ... to another location or person by any means." |
+| Federal payment processor exception | Same, (ff)(5)(ii)(B) | a person who "Acts as a payment processor to facilitate the purchase of, or payment of a bill for, a good or service through a clearance and settlement system by agreement with the creditor or seller" |
+| Texas: licence needed to transmit money | Primary: [Texas Finance Code §152.101](https://statutes.capitol.texas.gov/Docs/FI/htm/FI.152.htm) (Money Services Modernization Act, in force 2023-09-01) | "A person may not engage in the business of money transmission ... unless the person is licensed under this chapter." |
+| Texas: agent-of-payee exemption, and its conditions | Same, §152.004(2) | exempt if there is a written agreement with the payee, the payee holds the agent out as accepting payments, and payment "is treated as received by the payee on receipt by the agent, the payor's obligation is extinguished, and there is no risk of loss to the payor if the agent fails to remit" |
+| A PayPal authorization holds funds without capturing them | Primary: [PayPal Developer, Authorize a payment](https://developer.paypal.com/docs/checkout/standard/customize/authorization/) | "An authorization places a hold on the funds and is valid for 29 days." "capture the payment within the 3-day honor period." |
+| PayPal can hold a marketplace payment for the seller | Primary: [PayPal Developer, Multiparty delayed disbursement](https://developer.paypal.com/docs/multiparty/checkout/delayed-disbursement/) | "Hold funds from a buyer before disbursing to the seller with delayed disbursement." "Funds are automatically disbursed to the seller after 28 days" |
+| Marketplace fees on PayPal | Primary: [PayPal Developer, Multiparty](https://developer.paypal.com/docs/multiparty/) | partner fees let partners "charge commissions or brokerage fees for each transaction" |
+| Payouts reach a pro by email or phone | Primary: [PayPal Developer, Payouts](https://developer.paypal.com/docs/payouts/) | "Recipients can claim payments through PayPal or Venmo with just an email or phone number." |
+| Texas plumbing needs a licence and a responsible master plumber | Primary: [Texas Occupations Code §1301.351](https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1301.htm) | "A person that advertises or otherwise offers to perform or provide plumbing must secure the services of a responsible master plumber." |
+| Texas homeowners may do their own plumbing | Same, §1301.051 | "A property owner is not required to be licensed under this chapter to perform plumbing in the property owner's homestead." |
 
-## Who Cover serves
+**How VeriPay stays out of custody.** In the demo, the money sits as a PayPal authorization on the employer's own
+payment method until the checks pass; VeriPay never receives it during the job. On release it is captured and paid
+out. Today's demo captures into the platform's PayPal account and then pays the pro and helper with Payouts, which
+means the platform briefly holds the pro's money; that step is what money transmission law looks at (see Honest
+limits). The production design removes it: use PayPal's marketplace (Multiparty) flow with the pro as the payee, so the
+capture lands in the pro's own PayPal account and VeriPay's 10% arrives as a partner fee. PayPal, a licensed money
+transmitter, holds and moves the money; VeriPay acts for the pro under a written agreement, which is the shape of
+both the federal processor exception and Texas's agent-of-payee exemption. This is our reading, not legal advice, and
+needs counsel's sign-off before launch.
 
-**Jordan, 26, a nurse renting a one-bedroom in Houston.** Jordan is one of the 63% of under-35 householders who
-rent and one of the roughly half of renters with no renters insurance. Jordan's lease asks for it, but the quotes
-online meant a call with an agent, and $171 a year felt like money for nothing. Jordan has a cat, one of the 97.7% of
-US cats with no insurance, and rides a 150cc scooter to the hospital, in a country where about one driver in seven carries no
-insurance at all. When a friend's apartment was burgled last year, the claim took
-weeks and the settlement felt arbitrary, which is exactly what the complaint data shows: delays, low offers and
-denials are the top three reasons people complain to regulators. Like 26% of Gen Z policyholders, Jordan would rather
-not claim at all than fight a portal.
+## Who VeriPay serves
 
-Every number in that sketch is a row above. The audience is narrow on purpose: people roughly 20 to 35 who rent,
-keep a pet and drive or ride, whose possessions are worth thousands of dollars, not hundreds of thousands, and whose
-losses are small, frequent and easy to document (a stolen laptop, a dropped phone, a vet visit, a scraped bumper).
-Those are the claims a rules engine can decide in seconds, which is where Lemonade has shown automation works: about
-55% of its claims, with roughly two in three customers under 35 in its early years.
+**Maria, 41, a homeowner in East Austin, TX.** Her kitchen faucet has been dripping for a week. She has read about
+"pay half up front" handymen who never come back, which is the No. 5 riskiest scam in BBB's 2025 data, where 69.1% of
+people targeted lost money and the median loss was $1,405. She tells her AI agent: "kitchen faucet leaks, fix it this
+week, under $200." The agent writes the definition of done (new cartridge fitted, no drip after 10 minutes with the
+water on, a receipt for the part), gets offers from three pros' agents, accepts one, and holds $200 on her PayPal. She
+pays nothing until every item is checked, which is exactly the FTC's advice turned into software. If the pro never
+shows, the authorization is voided and nothing was ever charged.
+
+**Luis, 34, a licensed master plumber who runs a one-truck business in Austin with a part-time helper.** He is one of
+the 1.9 million specialty trade businesses with no payroll. He does the job, then chases the invoice: like the 59% of
+small businesses with invoices more than 30 days overdue, and the 49% who say payment timing squeezes their cash, he
+floats parts and his helper's wages while he waits. On VeriPay he knows before he drives over that the money is
+already held, and what "done" means. When his photos and the parts receipt pass the checks, he and his helper are paid
+in the same minute, each to their own PayPal, with the platform's 10% shown on the receipt. No lead fees for jobs he
+doesn't win.
+
+Both personas are fictional; every number in them is a row above.
 
 ## How what the demo shows answers each pain
 
 | Pain (from the numbers) | What the demo does | Where to see it |
 |---|---|---|
-| Half of renters are uninsured, and buying feels like a sales call | A renters policy quoted in a short chat, with the price shown as its parts; your own AI agent can quote, buy, change and claim for you over MCP within a spending cap you set | `api/src/products/renters.json`, `api/src/mcp.js` |
-| 97.7% of cats and 94% of dogs are uninsured | Pet cover for accidents and illness, with vet visits up to $500 and accidents up to $800 paid at once | `api/src/products/pet.json` |
-| Riders and drivers carry the minimum, or nothing | Car, motorcycle and scooter (50cc to 250cc or electric) cover in the same flow; a parked scrape up to $1,500 is paid at once | `api/src/products/car.json` |
-| 40.7 days to final payment; delays are the top complaint | Small, documented claims under a cap per claim type (a renters theft claim up to $1,500, a dropped phone up to $800) are paid in the same session through PayPal Payouts, with the payout id shown. Fire, liability, injury and every life claim go to a human adjuster | `instantMax` per claim type in `api/src/products/*.json`; payout ids in the demo |
-| Unsatisfactory settlements and denials are the next two complaints | Every claim is decided by numbered policy clauses (for example RT-2.1, belongings) and shows each check it passed or failed, so the person can see which clause paid what and why | claim page and adjuster desk in the demo |
-| Distrust of how premiums are priced and kept | A fixed 20% fee; the other 80% goes into a claims pool shared by everyone who picked the same cause, posted to a public ledger | `api/src/pool.js`, transparency page |
-| "If I don't claim, the insurer keeps it" | What a cause's pool doesn't need for claims is paid to that cause with PayPal Payouts, so Cover cannot gain from paying less | `api/src/pool.js`, giveback ledger |
+| Homeowners pay up front and the pro disappears (BBB No. 5, median $1,405) | Money is held as a PayPal authorization, not paid. No pass, no capture; if the job is cancelled or expires, the hold is voided | job state machine `held → released / cancelled / expired` |
+| "Done as agreed" is argued after the fact (Thumbtack and Angi compensate later) | The agent writes the definition of done before any offer; each item names the evidence that proves it. The work order is the contract | the scope page and work order |
+| Fake or reused evidence | Each photo is checked for capture time and place (EXIF), reuse on another job (dHash), and receipt amounts (OCR); text inside evidence is treated as data, never as instructions | Done-Audit result per item |
+| An AI deciding about money | The model only grades each item pass / needs fix / fail with a reason and confidence. A fixed rule decides payment: all pass pays, any needs-fix goes back to the pro, any fail or low confidence goes to the employer | check results and the release rule |
+| Pros wait 30+ days to be paid | Release captures and pays the pro and helper with PayPal at once, each their own share, with ids on screen | release receipt with PayPal ids |
+| Surprise extras ("we found another problem") | Change orders with photos; within the employer's cap the agent may approve, above it the employer must click | change-order flow |
+| Agents need a way in | Employer's agent over MCP, pros' agents negotiate agent-to-agent, both within limits set by the person on the website | MCP and A2A endpoints |
 
-The time from filing to payout should be quoted from a recorded demo run (`docs/live-test`), not from a target. At
-the time of writing, `docs/live-test/rounds.json` has no recorded rounds yet.
+Times from submission to payout should be quoted from recorded demo runs (`docs/live-test`), not from a target. At the
+time of writing, `docs/live-test` has no recorded rounds yet.
 
 ## Honest limits
 
-- **Not a licensed insurer or producer.** Cover sells no real insurance. It runs on PayPal's sandbox, and the causes
-  are sandbox accounts standing in for real nonprofits.
-- **Prices are not actuarial or filed.** Base rates and factors were set for the demo. A real product needs rates
-  filed and, in prior-approval states such as California and New York, approved before use.
-- **Risk data is rough.** Hazard levels are by state from public hazard maps, sharpened for a few metro ZIP prefixes
-  (`api/src/zones.js`). Cover's own models are trained on synthetic data (`ml/README.md`) and show only that they
-  learned Cover's rules, not that they price real risk.
-- **Instant payment needs fraud control.** Lemonade, with years of data, automates about 55% of claims, and its gross
-  loss ratio was 85% to 90% from 2021 to 2023 before falling to 64% in 2025. Cover's instant caps are deliberately low.
-- **The giveback depends on the pool.** In a bad year there may be nothing to give, and Lemonade itself treats its
-  Giveback as discretionary.
-- **Catastrophes.** Lemonade lost about $19.6 million net in the January 2025 Los Angeles fires. Cover's demo models
-  reinsurance in its back office, but a live Cover would depend on a carrier's reinsurance.
+- **Sandbox only, and not legal advice.** VeriPay runs on PayPal's sandbox with fictional pros. The regulatory
+  reading above is ours and needs a lawyer before real money moves.
+- **The demo's payout step touches the money.** Capturing into the platform's account and then sending Payouts means
+  the platform receives funds for a moment. A live product should use Multiparty with the pro as payee (or prove an
+  exemption state by state). Payouts also needs PayPal's approval to use in production.
+- **Authorizations are short.** An authorization lasts 29 days, with a 3-day honor period that needs reauthorizing.
+  That fits a faucet or a cleaning, not a kitchen remodel; longer jobs need milestones, each held and released
+  separately, or Multiparty delayed disbursement (up to 28 days).
+- **Evidence checks can be fooled.** EXIF can be edited and photos staged. The checks raise the cost of cheating; they
+  don't remove it. Low confidence goes to a person, and PayPal's dispute process remains the backstop.
+- **"Done" is not "done well."** A photo shows a new cartridge, not that it will last a year. Warranties and
+  workmanship disputes still need a human, and a check that fails a good pro unfairly hurts the pro side we want to
+  serve.
+- **Licensing.** Texas requires a licence and a responsible master plumber for plumbing for hire. A live product must
+  verify each pro's licence (TSBPE for plumbing) and city permits where needed; the demo does neither for real.
+- **The data has gaps.** FTC and BBB counts are self-reported. The QuickBooks late-payment figures cover all small
+  businesses, not trades, and the construction figure is from 2019 and mostly commercial work.
+- **Agent buying is early.** Only 9% of consumers in Accenture's 2026 survey would let an agent finish a purchase
+  alone. That is why the employer sets the limits on the website and confirms anything above them.
 
 ## Realistic path to market
 
-1. **Start as a licensed agency, then an MGA, on a licensed carrier's paper.** Cover takes a resident producer
-   licence in one state and non-resident licences elsewhere. A carrier holds the risk, the reserves and the rate
-   filings. Once Cover underwrites and settles claims for that carrier, it is an MGA under the NAIC model, which
-   requires a producer licence in each state and a written contract with the insurer (Model #225, §3 and §4).
-2. **Launch in one state with renters and pet cover.** These are the cheapest products and the most frequent small
-   claims, so instant settlement can be shown on real losses. Lemonade did the same: renters and homeowners in New York
-   in late 2016, about 7% of the New York renters market within three and a half years.
-3. **Use a sandbox where a rule blocks something new.** An outside AI agent buying insurance for a person, and a
-   giveback paid from the claims pool, may not fit existing rules everywhere. Kentucky's sandbox takes applications
-   until the end of 2030.
-4. **Own a carrier only later.** Lemonade runs its own New York-domiciled carrier. That needs capital and years of
-   loss data, so it is the last step, not the first.
+1. **Start as a PayPal marketplace in one city.** Austin, with jobs under about $500 that finish in a day: plumbing
+   repairs, cleaning, handyman tasks, appliance installs. Short jobs fit inside one authorization, and photos plus a
+   receipt can prove most of them.
+2. **Use PayPal Multiparty from day one in production.** Pros onboard as PayPal sellers (PayPal handles their KYC), the
+   capture goes straight to the pro, VeriPay takes a disclosed 10% partner fee. The platform never holds customer
+   funds, which keeps it out of escrow and money-transmitter licensing for this flow.
+3. **Recruit pros on payment speed, not leads.** No lead fees; paid the minute the checks pass. The pitch rests on the
+   QuickBooks numbers (59% with invoices 30+ days overdue) and on Angi charging for matches whether or not the pro gets
+   the job.
+4. **Be the checkout agents call.** Expose the scope-hold-check-pay flow over MCP so any personal agent can hire
+   through it, and pursue PayPal's agentic commerce channels for discovery.
+5. **Grow by trade and by proof.** Add trades whose completion can be shown with evidence, add milestone holds for
+   larger jobs, and publish the check pass rates and dispute rates so homeowners and pros can see the system works.
+6. **Only if needed, license.** Holding funds beyond PayPal's windows, for months-long projects, would mean an escrow
+   or money transmission licence (as Upwork does through a licensed subsidiary). That is a later choice, not the
+   first step.
 
 ## What we could not verify
 
-- **Renters insurance take-up by age.** No source we could reach splits it by age. The Harvard Joint Center for
-  Housing Studies has an estimate from the American Housing Survey, but its page was behind a bot check.
-- **ACS renter age profile.** We used the Housing Vacancy Survey homeownership rate by age instead of ACS tables.
-- **A current Triple-I renters figure.** Its latest poll we found is from 2020 (57%).
-- **Average renters claim size.** Triple-I shows average homeowners claims ($20,062 in 2023), but we found no
-  renters-only figure from NAIC or Triple-I.
-- **Insurity's survey method** (sample size and dates). Its release was blocked to us, so the 26% and 28% figures are
-  marked as reported.
-- **Motorcycle and scooter insurance rates.** We found no national figure for riders specifically.
-- **Trust in insurers among young adults, as such.** The closest reputable measures are the J.D. Power claims study
-  (all ages) and Insurity's survey of digital behaviour by generation.
-- **FIND's "8% to 94%" and "California exit" claims**, as explained above.
+- **The JCHS page itself.** It is behind a bot check; the $525 billion quote comes from a search engine's extract and
+  the $522 billion from a trade-press report of the earlier release.
+- **The FTC's 2025 Data Book category table.** We found 2025 totals (testimony) but not the 2025 home improvement row,
+  so the category count is from 2024.
+- **Census Nonemployer Statistics directly.** The Census API now requires a key; we used NAHB's analysis of the same
+  2022 data. Austin- or Texas-level counts of nonemployer plumbers are not in this note.
+- **Angi's Happiness Guarantee terms.** angi.com blocked us; we describe Angi from its 10-K only.
+- **Escrow.com's licence.** Seen only on a BBB profile, not in DFPI's licensee search.
+- **How fast residential pros are paid by homeowners.** No reputable source we found measures it; the payment figures
+  are for small businesses in general or for commercial construction.
+- **Freelancers Union figures.** We did not open the 2015 report itself, and it is old; it is background only.
+- **A US-only figure for consumers letting agents buy.** Accenture's survey includes the US but gives no US split.
+- **Texas handyman and general contractor licensing.** We confirmed plumbing law only; we found no statewide source on
+  handyman work in the time available, so the demo makes no claim about it.
+
+## The paperwork burden (added 2026-11-05)
+
+Trades businesses report spending a working day or more every week on paperwork. Every figure below comes from an
+industry or software-vendor survey, not a government statistic, so we treat them as indications:
+
+- **Small HVAC owners (1–10 employees):** an average of 15.4 hours a week, from a WorkHero survey run with HVAC School
+  (WorkHero sells software), per [WorkHero](https://workhero.pro/about).
+- **Heating and plumbing business owners:** an average of 7.1 hours a week on admin, from the 2025 Heating & Plumbing
+  Report (UK) by
+  [Gas Engineer Software](https://gasengineersoftware.co.uk/blog/heating-business-owners-spend-one-day-on-admin-time/).
+- **Offshore help:** many US trades businesses buy back that time from offshore virtual assistants, mostly in the
+  Philippines, at roughly $6.50/hr and up. These are vendor price lists, e.g.
+  [VA Masters](https://vamasters.com/construction-admin-virtual-assistants/) and
+  [Stealth Agents](https://stealthagents.com/virtual-assistant-for-contractors).
+
+**What VeriPay does about it:** every job already holds the evidence, the checks and the money trail. From those,
+the progress reports, the close-out package, the lien waivers and a bookkeeping export are generated, with nothing to
+re-type.
