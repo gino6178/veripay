@@ -142,3 +142,24 @@ v6 的全部內容都留著（鏡 1 痛點動畫、鏡 2–13 的 v5 畫面與�
 
 4. **1.5 倍語速：** 全片統一 1.5 倍（照你說的），還是新增的 4 鏡也用 1.5 倍、舊的用 1.4 倍，讓舊鏡畫面多留一點時間？全片 1.4 倍約 2:42，一樣塞得下。
 5. **鏡 10 的更正：** 把「在 CPU 上約 3 秒」改成現在 GPU 上的「約 0.3 秒」（建議），還是保留原句？
+
+---
+
+## 製作後的修正（2026-11-08，獨立審查之後）
+
+成片做完後請一個沒參與製作的 agent 從頭審過一次，依它的意見改了這些：
+
+| 問題 | 改法 |
+|---|---|
+| 鏡 11a 說「91 項已驗證，包括 Subscriptions、Disputes」，但這兩項只有部分實測 | 旁白改成 "…including Orders, the Vault, Payouts, Invoicing and PayPal's own MCP server"（都是 sandbox 實測通過的） |
+| 鏡 11a 的產品標籤亮了 Log in with PayPal，但鏡 12b 說它還沒做 | 拿掉這個標籤 |
+| 片尾字幕蓋住 repo 網址 | 片尾不放字幕，片尾卡放慢到約 5.2 秒 |
+| 鏡 2a「1.9 million one-person businesses run the market」超出出處（它們只占 9% 營收） | 旁白改成 "where four in five trade businesses are one-person shops"，字卡改成 79% |
+| 鏡 3b 出現兩家真實店家名稱和地址 | 名稱和地址加模糊 |
+| 鏡 12a 角色標籤蓋住頁面標題、每頁太短 | 標籤移到左上角；全鏡加長到 9 秒 |
+| 兩張數據字卡停留太短 | 各停約 2 秒 |
+| 開頭旁白比後面小聲約 2.5 dB | 開頭旁白音量提高 2 dB |
+| 鏡 8a 的說法沒有出處 | 加小字 "Compared with the leading home-services and freelance marketplaces · sources in docs/IMPACT.md"（不點名品牌） |
+| docs/MODELS.md 還寫 CPU 2.9 秒 | 開頭加「現在的服務」一段：L4、約 0.3 秒 |
+
+全片 2:37.5，響度 −16 LUFS。

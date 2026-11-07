@@ -33,9 +33,9 @@ const PLAN: Plan[] = [
   { id: 'hood', label: '11 Under the hood: PayPal', kind: 'v5', src: 'hood', voLead: 0.6, vo: 'hood' },
   { id: 'features', label: '11a 219 PayPal features', kind: 'new', voLead: 0.5, tail: 1.0, vo: 'features' },
   { id: 'scale', label: '12 Scale + back office + tests', kind: 'v5', src: 'scale', voLead: 0.5, vo: 'scale' },
-  { id: 'product', label: '12a A complete product', kind: 'new', voLead: 0.4, tail: 0.9, vo: 'product', minDur: 7.6 },
+  { id: 'product', label: '12a A complete product', kind: 'new', voLead: 0.4, tail: 0.9, vo: 'product', minDur: 9.0 },
   { id: 'vision', label: '12b Vision (not built yet)', kind: 'v5', src: 'vision', voLead: 0.6, vo: 'vision' },
-  { id: 'end', label: '13 End card', kind: 'v5', src: 'end', voLead: 0.9, rate: 1, vo: 'end' },
+  { id: 'end', label: '13 End card', kind: 'v5', src: 'end', voLead: 0.9, rate: 0.72, vo: 'end' },
 ];
 export const PAIN_FRAMES = 402; // out/pain15-a5-1.5x.mp4, 13.385 s at 24 fps
 export const PAIN_VO = [{ id: 'pain1', at: 0.6 }, { id: 'pain2', at: 7.0 }];
@@ -88,7 +88,7 @@ const captionsOf = (voFrom: number, lines: Line[], endBy: number) => {
 };
 export const CAPTIONS7 = [
   ...PAIN_VO.flatMap((p, i) => captionsOf(S7.pain.from + Math.round(p.at * FPS), VO[p.id], S7.pain.from + (i ? PAIN_FRAMES - 4 : Math.round(6.7 * FPS)))),
-  ...SHOTS7.filter((s) => s.vo && s.voFrom != null).flatMap((s) => captionsOf(s.voFrom!, s.vo!, s.from + s.duration - 4)),
+  ...SHOTS7.filter((s) => s.vo && s.voFrom != null && s.id !== 'end').flatMap((s) => captionsOf(s.voFrom!, s.vo!, s.from + s.duration - 4)),
 ];
 // every frame where a voice is speaking (the music ducks under it)
 export const VOICE_SPANS = [

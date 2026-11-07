@@ -11,6 +11,8 @@ import { SFX5 } from '../v5/Film5';
 import { SHOTS7, S7, CAPTIONS7, TOTAL7, PAIN_VO, VOICE_SPANS, fromV5, FPS } from './timeline7';
 import { V7Pain, V7Impact, V7Novel, V7Features, V7Product } from './new7';
 
+// 3b shows two real Austin businesses (not on VeriPay) with their addresses; their names and addresses are blurred
+const RealNames: React.FC = () => <Sequence durationInFrames={106}><div style={{ position: 'absolute', left: 236, top: 588, width: 326, height: 114, backdropFilter: 'blur(9px)', WebkitBackdropFilter: 'blur(9px)', borderRadius: 6 }} /></Sequence>;
 const NEW: Record<string, React.ReactNode> = { impact: <V7Impact />, novel: <V7Novel />, features: <V7Features />, product: <V7Product /> };
 
 // v5's sound effects at their pictures' new times (the replaced S1 problem shot's are dropped), plus the new shots'
@@ -31,11 +33,11 @@ export const Film7: React.FC<{ bgm?: boolean; captions?: boolean; sfx?: boolean 
     {SHOTS7.map((s) => (
       <Sequence key={s.id} from={s.from} durationInFrames={s.duration} name={s.label}>
         {s.kind === 'pain' ? <V7Pain music /> : s.kind === 'new' ? NEW[s.id]
-          : <OffthreadVideo src={staticFile('v7/v5-picture.mp4')} trimBefore={Math.round(s.srcFrom)} playbackRate={s.rate} muted style={{ width: 1920, height: 1080 }} />}
+          : <><OffthreadVideo src={staticFile('v7/v5-picture.mp4')} trimBefore={Math.round(s.srcFrom)} playbackRate={s.rate} muted style={{ width: 1920, height: 1080 }} />{s.id === 'find' && <RealNames />}</>}
       </Sequence>
     ))}
     {captions && CAPTIONS7.map((c, i) => <Sequence key={'c' + i} from={c.from} durationInFrames={c.duration}><CaptionBand duration={c.duration} text={c.text} /></Sequence>)}
-    {PAIN_VO.map((p) => <Sequence key={p.id} from={S7.pain.from + Math.round(p.at * FPS)} durationInFrames={S7.pain.duration}><Audio src={staticFile(`audio/vo9/${p.id}.wav`)} /></Sequence>)}
+    {PAIN_VO.map((p) => <Sequence key={p.id} from={S7.pain.from + Math.round(p.at * FPS)} durationInFrames={S7.pain.duration}><Audio src={staticFile(`audio/vo9/${p.id}.wav`)} volume={1.26} /></Sequence>)}
     {SHOTS7.filter((s) => s.voFile && s.voFrom != null).map((s) => <Sequence key={'v' + s.id} from={s.voFrom!} durationInFrames={s.duration}><Audio src={staticFile(s.voFile!)} /></Sequence>)}
     {bgm && <Sequence from={BGM_FROM}><Audio src={staticFile('audio/bgm/bgm-film.mp3')} volume={(f) => (voiceOn(f + BGM_FROM) ? 0.04 : 0.1) * interpolate(f, [0, 20, TOTAL7 - BGM_FROM - 60, TOTAL7 - BGM_FROM], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })} /></Sequence>}
     {sfx && F_SFX.map((x, i) => <Sequence key={'s' + i} from={x.from} durationInFrames={x.durationInFrames ?? 90}><Audio src={staticFile('audio/sfx/' + x.src)} volume={x.volume} /></Sequence>)}

@@ -223,14 +223,14 @@
  ],
  "impact": [
   {
-   "text": "Home repair is a $525 billion a year market, run mostly by 1.9 million one-person trade businesses.",
+   "text": "Home repair is a $525 billion a year market, where four in five trade businesses are one-person shops.",
    "start": 0,
-   "end": 4.701
+   "end": 4.215
   },
   {
    "text": "69 percent of people targeted by a repair scam lose money, and PayPal already has 440 million accounts on both sides.",
-   "start": 4.903,
-   "end": 9.736
+   "start": 4.418,
+   "end": 9.251
   }
  ],
  "novel": [
@@ -279,9 +279,9 @@
    "end": 2.215
   },
   {
-   "text": "188 are built, and 91 are verified in the real sandbox, from Orders and the Vault to Invoicing, Subscriptions, Disputes and PayPal's own MCP server.",
+   "text": "188 are built, and 91 are verified in the real sandbox, including Orders, the Vault, Payouts, Invoicing and PayPal's own MCP server.",
    "start": 2.358,
-   "end": 8.61
+   "end": 8.238
   }
  ],
  "product": [

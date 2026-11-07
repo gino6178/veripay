@@ -27,15 +27,15 @@ const DataCard: React.FC<{ from: number; to: number; big: string; text: string; 
 export const V7Pain: React.FC<{ music: boolean }> = ({ music }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <OffthreadVideo src={staticFile('v7/pain.mp4')} muted={!music} volume={(f) => (VOICE_SPANS.some(([a, b]) => f + S7.pain.from >= a - 6 && f + S7.pain.from <= b + 6) ? 0.2 : 0.55) * interpolate(f, [S7.pain.duration - 20, S7.pain.duration], [1, 0.4], cl)} style={{ width: 1920, height: 1080 }} />
-    <DataCard from={sec(5.0)} to={sec(6.7)} big="$1,405" text="median loss to a home-improvement scam" source="BBB Scam Tracker Risk Report 2025" />
-    <DataCard from={sec(11.5)} to={sec(13.35)} big="59%" text="of small businesses have invoices 30+ days overdue" source="Intuit QuickBooks, 2026" />
+    <DataCard from={sec(4.9)} to={sec(7.0)} big="$1,405" text="median loss to a home-improvement scam" source="BBB Scam Tracker Risk Report 2025" />
+    <DataCard from={sec(11.2)} to={sec(13.35)} big="59%" text="of small businesses have invoices 30+ days overdue" source="Intuit QuickBooks, 2026" />
   </AbsoluteFill>
 );
 
 // ── 2a impact: four sourced numbers, each lands with the words that say it ───────────────────────────────────────────
 const STATS = [
   { v: '$525B', l: 'a year on US home improvement and repair', s: 'Harvard JCHS', t: 0.0 },
-  { v: '1.9M', l: 'one-person trade businesses do the work', s: 'NAHB, 2025', t: 0.24 },
+  { v: '79%', l: 'of specialty trade businesses are one-person shops', s: 'NAHB, 2025', t: 0.24 },
   { v: '69.1%', l: 'of people targeted by a repair scam lost money', s: 'BBB Scam Tracker, 2025', t: 0.5 },
   { v: '440M', l: 'PayPal accounts, on both sides of the job', s: 'PayPal Q3 2026', t: 0.78 },
 ];
@@ -91,14 +91,14 @@ export const V7Novel: React.FC = () => {
         })}
       </div>
       <div style={{ position: 'absolute', left: 110, bottom: 60, font: `500 20px/1.3 ${F.mono}`, color: C.ink3, opacity: interpolate(f, [voiceAt('novel', 0.8), voiceAt('novel', 0.8) + 10], [0, 1], cl) }}>
-        Compared with Angi, Thumbtack, TaskRabbit, Upwork and Escrow.com · docs/IMPACT.md
+        Compared with the leading home-services and freelance marketplaces · sources in docs/IMPACT.md
       </div>
     </AbsoluteFill>
   );
 };
 
 // ── 11a 219 PayPal features: three numbers count up, the product names light in turn ────────────────────────────────
-const PRODUCTS = ['Orders', 'Payments', 'Vault', 'Payouts', 'Invoicing', 'Payment Links', 'Subscriptions', 'Disputes', 'Webhooks', 'Partner Referrals', 'Risk', 'Log in with PayPal', 'JS SDK v6', 'Agent Toolkit', 'PayPal MCP'];
+const PRODUCTS = ['Orders', 'Payments', 'Vault', 'Payouts', 'Invoicing', 'Payment Links', 'Subscriptions', 'Disputes', 'Webhooks', 'Partner Referrals', 'Risk', 'JS SDK v6', 'Agent Toolkit', 'PayPal MCP'];
 export const V7Features: React.FC = () => {
   const f = useCurrentFrame();
   const n = [{ v: '219', l: 'PayPal features evaluated', c: C.primary, t: 0.08 }, { v: '188', l: 'built in code', c: C.signal, t: 0.28 }, { v: '91', l: 'verified in the real sandbox', c: C.ok, t: 0.42 }];
@@ -146,8 +146,8 @@ export const V7Product: React.FC = () => {
       {p.phone
         ? <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 430, height: 930, borderRadius: 48, padding: 14, background: '#0B1533', boxShadow: SHADOW_LG, transform: `scale(${push})` }}><Img src={staticFile('v7/pro.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: 36 }} /></div></AbsoluteFill>
         : <Img src={staticFile(`v7/${p.img}.jpg`)} style={{ width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', transform: `scale(${push})`, transformOrigin: '50% 30%' }} />}
-      <div style={{ position: 'absolute', left: 64, top: 110, padding: '16px 26px', borderRadius: 14, background: C.ink, color: '#fff', font: `700 32px/1 ${F.text}`, boxShadow: SHADOW_LG, ...rise(lf, 2, 14) }}>{p.role}</div>
-      <div style={{ position: 'absolute', right: 64, top: 116, font: `700 26px/1 ${F.mono}`, color: p.phone ? '#fff' : C.ink3 }}>{i + 1} / {PAGES.length} · 28 pages</div>
+      <div style={{ position: 'absolute', left: 40, top: 18, padding: '12px 22px', borderRadius: 12, background: C.ink, color: '#fff', font: `700 28px/1 ${F.text}`, boxShadow: SHADOW_LG, ...rise(lf, 2, 14) }}>{p.role}</div>
+      <div style={{ position: 'absolute', right: 40, top: 30, padding: '8px 14px', borderRadius: 10, background: p.phone ? 'transparent' : 'rgba(255,255,255,0.92)', font: `700 24px/1 ${F.mono}`, color: p.phone ? '#fff' : C.ink3 }}>{i + 1} / {PAGES.length} · 28 pages</div>
     </AbsoluteFill>
   );
 };

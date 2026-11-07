@@ -4,6 +4,13 @@ Models write wording and give verdicts with reasons and confidence. Code decides
 from (`source: "model" | "rules"`, `by` on each check, `by` on each receipt). The app holds no Claude, GPT or other
 hosted-AI key; models are served through an Ollama-compatible endpoint set by env.
 
+**Serving now (2026-11-07).** All four remote models run on one NVIDIA L4 (GCP, Tokyo) behind a single HTTPS endpoint
+with a token (`ml/serve.mjs`): Done-Chat and Done-Audit as Q8_0 GGUF on llama.cpp (CUDA), Done-VLM with its projector,
+and Done-OCR on PyTorch CUDA. Measured through the website on that day: Done-Audit 0.23–0.36 s per call (p50 about
+0.36 s in the L4 sweep, `ml/RESULTS.md`), Done-Chat about 0.4 s, Done-VLM about 0.6 s, Done-OCR 1.5–2.2 s per receipt;
+a full judge tour runs in about 23 s with every condition decided by the models. The CPU timings further down this
+file (for example 2.9 s per audit) are the earlier CPU serving, kept as a record.
+
 | Part | File | Does | When the model is missing |
 |---|---|---|---|
 | Done-Chat | `api/src/scope.js` (+ `llm.js`) | Turns one sentence into a work order: title, items, done-conditions (checks) with the evidence each needs | The rules template's order, labelled `rules` |
