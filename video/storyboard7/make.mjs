@@ -28,7 +28,7 @@ const INFO = {
   features: ["11a 219 項 PayPal 功能", "219 評估 · 188 寫了程式 · 91 在真實 sandbox 驗證；14 個產品標籤依序亮起。旁白縮短，不再重複 11 的內容。", "原速"],
   scale: ["12 規模、AG Grid 後台、測試", "材料款、Pay Later、房東、鄰居團購 → AG Grid 後台停留 4 秒、推近 1.3 倍，右側列出功能 → 45 次代理人測試。", "1.25 倍＋AG Grid 慢放"],
   product: ["12a 完整產品", "3×2 便當格：客戶 · 師傅手機（西班牙文）· 房東 · 爭議 · 後台 · 評審 /demo，大角色標籤，依序亮起，最後全亮。", "原速"],
-  vision: ["12b 願景（還沒做）", "Log in with PayPal、即時付款給每位師傅、任何能用照片證明的工作。畫面標示尚未完成。", "1.25 倍"],
+  vision: ["12b 下一步願景", "標題「Next, our vision」：Log in with PayPal、即時付款給每位師傅、任何能用照片證明的工作。虛線框表示是下一步。", "1.25 倍"],
   end: ["13 片尾卡", "VeriPay、The money waits for the proof、PayPal 與 AI 清單、github.com/gino6178/veripay、Try it: Demo → Judge tour。不放字幕，避免蓋住網址。", "0.72 倍"],
 };
 const NEW = new Set(["impact", "novel", "features", "product"]);

@@ -57,6 +57,8 @@ const V5Shot: React.FC<{ s: Shot }> = ({ s }) => {
         {g ? <>{video(0, s.rate, g.a)}{video(g.from, (g.to - g.from) / g.b, g.b, g.a)}{video(g.to, s.rate, s.duration - g.a - g.b, g.a + g.b)}</> : video(0, s.rate, s.duration)}
         {s.id === 'find' && <Sequence durationInFrames={Math.round(140 / s.rate)}><FakeNames /></Sequence>}
       </AbsoluteFill>
+      {/* the vision card's "VISION · NOT BUILT YET" tag is covered: the title "Next, our vision" says it */}
+      {s.id === 'vision' && <div style={{ position: 'absolute', left: 705, top: 70, width: 430, height: 100, background: '#F4F5F9' }} />}
       {s.id === 'scale' && g && <Sequence from={g.a + 24} durationInFrames={g.b - 30}><GridLabels dur={g.b - 30} /></Sequence>}
     </AbsoluteFill>
   );

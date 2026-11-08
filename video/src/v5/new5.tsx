@@ -97,7 +97,7 @@ export const V5Chat: React.FC = () => {
   );
 };
 
-// ── S12b the vision: what comes next, plainly marked as not built yet ────────────────────────────────────────────────
+// ── S12b the vision: what comes next ────────────────────────────────────────────────
 const NEXT = [
   { t: 'Log in with PayPal', d: 'one sign-in for customers and pros' },
   { t: 'Live payouts to every pro', d: 'out of the sandbox, to real PayPal accounts' },
@@ -109,7 +109,6 @@ export const V5Vision: React.FC = () => {
     <AbsoluteFill style={{ background: C.ground }}>
       <div style={{ position: 'absolute', left: 140, top: 90, display: 'flex', alignItems: 'center', gap: 22, ...rise(f, 4) }}>
         <div style={{ font: `800 76px/1 ${F.display}`, color: C.ink, letterSpacing: '-0.02em' }}>Next, our vision</div>
-        <div style={{ font: `600 22px/1 ${F.mono}`, letterSpacing: '0.06em', color: C.agent, border: `2px solid ${C.agentLine}`, background: C.agentSoft, borderRadius: 10, padding: '10px 14px' }}>VISION · NOT BUILT YET</div>
       </div>
       <div style={{ position: 'absolute', left: 140, right: 140, top: 260, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 30 }}>
         {NEXT.map((x, i) => (
