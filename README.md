@@ -33,7 +33,7 @@ The demo video is on the Devpost page.
 ## How it fits together
 
 ```mermaid
-flowchart LR
+flowchart TD
   subgraph Agents
     C[Customer's agent] <-->|A2A / MCP| P[Pros' agents]
   end
