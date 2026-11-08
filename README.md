@@ -177,20 +177,6 @@ API reference: [docs/API.md](docs/API.md). Models and their measured numbers: [d
 matters, with sources: [docs/IMPACT.md](docs/IMPACT.md). Real sandbox runs and agent test rounds:
 [docs/live-test/](docs/live-test/).
 
-## AI, honestly
-
-- The app holds no hosted AI key. Its models are small open models we trained or tuned, served from one NVIDIA L4
-  behind a single HTTPS endpoint with a token (`DONE_MODEL_URL`, `DONE_VLM_URL`, `DONE_OCR_URL`, see `.env.example`;
-  `ml/serve.mjs` is the server). Run without them and every condition that needs judgment goes to a person.
-- Models never move money. They return verdicts with reasons and confidence; code rules decide, and every result is
-  labelled MODEL or RULES.
-- When a model is slow or down, any condition that needs judgment goes to a person. Nothing is released on rules alone
-  unless code can decide the condition itself.
-
-**AI tools used to build this:** the code was written with Claude Code (Anthropic). Training labels for our models
-come from code and from Muse Glimmer, an open-weights 30B teacher we served ourselves. No Claude or GPT outputs were
-used as training data.
-
 ## Not real
 
 The PayPal sandbox and its stand-in; the demo pros, their agents and their addresses; the demo clock that can move
