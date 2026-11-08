@@ -2,13 +2,13 @@
 
 Your AI agent hires a local pro, PayPal holds the money, and the pro is paid as soon as the work is proven done.
 
-![VeriPay: the money waits for the proof](docs/img/cover.jpg)
+[![VeriPay demo video (2:58): the money waits for the proof](docs/img/cover.jpg)](https://youtu.be/qwcCWs_GXtg)
 
+**Watch the demo: [youtu.be/qwcCWs_GXtg](https://youtu.be/qwcCWs_GXtg)** (2:58) ·
 **Try it live: [veripay.theminimallab.com](https://veripay.theminimallab.com)** (open Demo, then Judge tour). It runs
 on the real PayPal sandbox with our models deciding every check.
 
-We built this for the PayPal AI Hackathon. The demo pros in Austin, TX are fictional. The demo video is on the Devpost
-page.
+We built this for the PayPal AI Hackathon. The demo pros in Austin, TX are fictional.
 
 ## In 30 seconds
 
