@@ -23,35 +23,6 @@
    "end": 7.494
   }
  ],
- "offers": [
-  {
-   "text": "Eastside's agent comes down to $185, and hers hires inside a signed mandate capped at $200.",
-   "start": 0,
-   "end": 5.059
-  },
-  {
-   "text": "A lower cap, or a replay, is refused.",
-   "start": 5.302,
-   "end": 6.878
-  }
- ],
- "chat": [
-  {
-   "text": "No new app needed:",
-   "start": 0,
-   "end": 0.771
-  },
-  {
-   "text": "from a chat, she can post a job, compare offers and bargain.",
-   "start": 0.943,
-   "end": 3.314
-  },
-  {
-   "text": "Hiring still comes back to VeriPay, and her PIN.",
-   "start": 3.557,
-   "end": 5.532
-  }
- ],
  "hold": [
   {
    "text": "PayPal authorizes $200:",
@@ -103,57 +74,6 @@
    "text": "code captures exactly $232.05, one Payouts batch pays the pro, and an agent reconciles both with PayPal.",
    "start": 0.918,
    "end": 6.373
-  }
- ],
- "arch": [
-  {
-   "text": "Any agent can drive it, over MCP, A2A or REST.",
-   "start": 0,
-   "end": 2.438
-  },
-  {
-   "text": "But every money move passes one guard in our code:",
-   "start": 2.681,
-   "end": 4.533
-  },
-  {
-   "text": "limits, PIN, signed mandates.",
-   "start": 4.704,
-   "end": 5.865
-  },
-  {
-   "text": "The money itself runs on PayPal.",
-   "start": 6.108,
-   "end": 7.325
-  }
- ],
- "hood": [
-  {
-   "text": "Under the hood it's all PayPal:",
-   "start": 0,
-   "end": 1.177
-  },
-  {
-   "text": "Orders authorizes, the Vault re-holds, a partial capture takes what's due, Payouts pays the pro, and the Agent Toolkit reconciles.",
-   "start": 1.349,
-   "end": 6.686
-  }
- ],
- "scale": [
-  {
-   "text": "It scales to materials, Pay Later, landlords and neighbors, with an AG Grid back office.",
-   "start": 0,
-   "end": 3.65
-  },
-  {
-   "text": "AI agents tested it in forty-five runs over eleven rounds;",
-   "start": 3.892,
-   "end": 6.478
-  },
-  {
-   "text": "every blocker was fixed.",
-   "start": 6.65,
-   "end": 7.584
   }
  ],
  "vision": [
@@ -216,9 +136,9 @@
    "end": 4.919
   },
   {
-   "text": "Built for homeowners and the small pros they hire.",
+   "text": "It's for homeowners and the small pros they hire.",
    "start": 5.161,
-   "end": 6.959
+   "end": 6.904
   }
  ],
  "impact": [
@@ -230,19 +150,14 @@
  ],
  "novel": [
   {
-   "text": "What we did not find anywhere else in agentic commerce:",
+   "text": "We didn't find these anywhere else in agentic commerce:",
    "start": 0,
-   "end": 1.884
+   "end": 1.921
   },
   {
-   "text": "an open agent-to-agent platform for local work.",
-   "start": 2.056,
-   "end": 4.118
-  },
-  {
-   "text": "Agents do it all by default, bargain in rounds, and AI checks every payment step, while only code moves the money.",
-   "start": 4.361,
-   "end": 9.144
+   "text": "an open agent-to-agent platform for local work, agents that do it all by default and bargain in rounds, and AI checks at every payment step, while only code moves the money.",
+   "start": 2.092,
+   "end": 9.377
   }
  ],
  "models": [
@@ -252,19 +167,14 @@
    "end": 3.424
   },
   {
-   "text": "Code writes every label;",
+   "text": "Code writes every label, and the teacher only writes the wording.",
    "start": 3.667,
-   "end": 4.61
-  },
-  {
-   "text": "the teacher only the wording.",
-   "start": 4.781,
-   "end": 5.801
+   "end": 6.076
   },
   {
    "text": "On held-out tests, the audit model gets 99.9% of verdicts right, and it runs on one GPU in about a third of a second.",
-   "start": 6.044,
-   "end": 11.939
+   "start": 6.319,
+   "end": 12.214
   }
  ],
  "features": [
@@ -281,14 +191,74 @@
  ],
  "product": [
   {
-   "text": "And it's a complete product:",
+   "text": "It's also a complete product, with 28 pages for five roles:",
    "start": 0,
-   "end": 0.972
+   "end": 2.655
   },
   {
-   "text": "28 pages for five roles, from the customer's agent and the pro's phone, in English or Spanish, to landlords, inspectors and the back office.",
-   "start": 1.144,
-   "end": 7.289
+   "text": "the customer's agent, the pro's phone in English or Spanish, landlords, inspectors and the back office.",
+   "start": 2.826,
+   "end": 6.913
+  }
+ ],
+ "chat": [
+  {
+   "text": "She doesn't need a new app.",
+   "start": 0,
+   "end": 0.786
+  },
+  {
+   "text": "From a chat she can post a job, compare offers and bargain, but hiring still goes through VeriPay and her PIN.",
+   "start": 1.029,
+   "end": 5.514
+  }
+ ],
+ "offers": [
+  {
+   "text": "Eastside's agent comes down to $185, and hers hires inside a signed mandate capped at $200.",
+   "start": 0,
+   "end": 5.059
+  },
+  {
+   "text": "VeriPay refuses a lower cap or a replayed mandate.",
+   "start": 5.302,
+   "end": 7.474
+  }
+ ],
+ "arch": [
+  {
+   "text": "Any agent can drive it, over MCP, A2A or REST.",
+   "start": 0,
+   "end": 2.438
+  },
+  {
+   "text": "Every payment still passes one check in our code, for limits, the PIN and signed mandates, and PayPal moves the money.",
+   "start": 2.681,
+   "end": 7.38
+  }
+ ],
+ "hood": [
+  {
+   "text": "Every step runs on PayPal:",
+   "start": 0,
+   "end": 1.109
+  },
+  {
+   "text": "Orders authorizes the hold, the Vault re-holds it, a partial capture takes what's due, Payouts pays the pro, and the Agent Toolkit reconciles.",
+   "start": 1.28,
+   "end": 7.094
+  }
+ ],
+ "scale": [
+  {
+   "text": "It also covers materials, Pay Later, landlords and neighbors, with an AG Grid back office.",
+   "start": 0,
+   "end": 3.815
+  },
+  {
+   "text": "AI agents tested it in forty-five runs over eleven rounds, and we fixed every blocker they found.",
+   "start": 4.058,
+   "end": 8.085
   }
  ]
 }
