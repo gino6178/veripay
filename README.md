@@ -2,15 +2,54 @@
 
 **Your AI agent hires a local pro. PayPal holds the money. It's paid the second the work is proven done.**
 
-Tell your agent "the kitchen faucet keeps dripping, fix it this week, under $200". VeriPay turns that sentence into a
-work order with a written *definition of done*: each condition names the photo, receipt or note that proves it. Your
-agent and the pros' agents negotiate the price agent-to-agent. PayPal places a hold on your saved payment method, an
-authorization rather than a charge. The pro sends before and after photos and the parts receipt from the job. Every condition is
-checked: when and where each photo was taken, whether it was reused from another job, what the photo shows, and whether
-the receipt matches the approved change orders. The moment every condition passes, code captures exactly what's due and
-one PayPal Payouts batch pays the pro and their helper.
+![VeriPay: the money waits for the proof](docs/img/cover.jpg)
 
 Built for the PayPal AI Hackathon. A demonstration on PayPal's sandbox; the demo pros in Austin, TX are fictional.
+The demo video is on the Devpost page.
+
+## In 30 seconds
+
+1. **One sentence.** You tell your agent "the kitchen faucet keeps dripping, fix it this week, under $200".
+2. **A definition of done.** VeriPay turns it into a work order whose every condition names the photo, receipt or note
+   that will prove it.
+3. **Agents negotiate.** Your agent and the pros' agents bargain agent-to-agent, never over your ceiling.
+4. **PayPal holds, not charges.** An authorization on your saved PayPal or card; nothing is captured yet.
+5. **The evidence is checked.** Before and after photos and the parts receipt: when and where each was taken, whether
+   it was reused, what it shows, whether the receipt matches the approved change orders.
+6. **Paid the moment it passes.** Code captures exactly what's due and one PayPal Payouts batch pays the pro and their
+   helper. Anything that can't be decided goes to a person.
+
+## Why it needs PayPal
+
+| What the job needs | How PayPal does it |
+|---|---|
+| Hold the money until the work is done, without a licensed escrow account | Orders `intent: AUTHORIZE`, then capture, partial capture per milestone, void, reauthorize |
+| Let an agent pay without ever seeing a card number | Vault v3 saved PayPal or card, merchant-initiated holds within limits only the person sets |
+| Pay the pro and their helper in seconds, to an email, with no bank details | Payouts, one batch, one item per payee |
+| Settle a disagreement fairly | Partial refunds, PayPal Disputes with the checks as evidence |
+| Bill work found off-platform with the same checks | Invoicing, sent only after the checks pass |
+| Both sides already have accounts | 440 million active PayPal accounts |
+
+## How it fits together
+
+```mermaid
+flowchart LR
+  subgraph Agents
+    C[Customer's agent] <-->|A2A / MCP| P[Pros' agents]
+  end
+  C -->|MCP · REST · A2A| J[Job state machine<br/>limits · PIN · mandates]
+  P --> J
+  J -->|authorize · void · reauthorize| PP[(PayPal<br/>Orders · Vault)]
+  E[Photos · receipt · notes] --> M[Our models<br/>Risk · OCR · VLM · Audit]
+  M -->|verdicts + reasons| R{Code rules}
+  R -->|all pass| PC[Capture + Payouts]
+  R -->|unsure| H[A person decides]
+  PC --> PP
+  PP --> K[Agent Toolkit<br/>reconciliation]
+```
+
+Models only return verdicts with reasons and a confidence. Code decides, and every result on screen is labelled MODEL
+or RULES.
 
 ## For the judges
 
@@ -19,15 +58,20 @@ Presentation, is the video.
 
 ### Technological implementation: 219 PayPal features, tracked one by one
 
-We listed every PayPal capability that could serve a job paid on proof, and kept a status for each one in
-[docs/PAYPAL-整合總表.md](docs/PAYPAL-整合總表.md) (rounds 1–8, 61 items) and
-[docs/PAYPAL-候選清單.md](docs/PAYPAL-候選清單.md) (round 10, 158 more).
+We listed every PayPal capability that could serve a job paid on proof and kept a status for each one.
+
+| | |
+|---|---|
+| PayPal features evaluated | **219** |
+| Implemented in code | **188** |
+| Verified against the real PayPal sandbox by VeriPay's own client (`api/src/pay/paypal.js`) | **91** |
+
+<details>
+<summary>Full breakdown of the 219</summary>
 
 | Status | Items |
 |---|---|
-| Evaluated | **219** |
-| Implemented in code | **188** |
-| Verified against the real PayPal sandbox by VeriPay's own client (`api/src/pay/paypal.js`) | **91** |
+| Verified against the real sandbox | 91 |
 | Partly verified: PayPal accepted the call; the effect needs a buyer account, a phone or a real event | 37 |
 | Built in the web app, waiting for a browser check | 29 |
 | Only in the PayPal stand-in (e.g. the sandbox has no disputes to test against) | 16 |
@@ -36,8 +80,11 @@ We listed every PayPal capability that could serve a job paid on proof, and kept
 | Docs, copy or switches only | 6 |
 | Not built, each with a reason (retired product, native app only, no developer docs) | 25 |
 
-The browser checks on the evening of 2026-11-07 (card fields, Fastlane, a saved PayPal hold with no approval screen, the
-Pay Later banner) are not counted in the 91 yet.
+Item-by-item lists (written in Chinese, one row per PayPal feature with its status and evidence):
+[docs/PAYPAL-整合總表.md](docs/PAYPAL-整合總表.md) (the first 61 items) and
+[docs/PAYPAL-候選清單.md](docs/PAYPAL-候選清單.md) (158 more).
+
+</details>
 
 PayPal products in the code: Orders v2 (authorize, confirm-payment-source, capture, tracking), Payments v2 (capture,
 reauthorize, void, refund, eligible methods), Vault v3, Payouts and Referenced Payouts, Invoicing v2, Payment Links,
@@ -58,9 +105,11 @@ The AI side is our own: five models, served from one GPU (an NVIDIA L4) with no 
 
 The judge tour runs end to end in about 23 seconds of server time with every condition decided by the models. 390 API
 tests pass, and 11 rounds of scripted AI-agent users (first-time visitor, judge, dishonest pro) are recorded in
-[docs/live-test/](docs/live-test/).
+[docs/live-test/](docs/live-test/). Models and their measured numbers: [docs/MODELS.md](docs/MODELS.md).
 
 ### Design: a complete product, not a proof of concept
+
+![Six real pages, one per role](docs/img/bento.jpg)
 
 About 28 pages for five roles, all working against the same jobs and the same money:
 
@@ -103,8 +152,7 @@ draft). We did not find a deployed product for local services that does these fo
    card at `/.well-known/agent-card.json`) and MCP (48 tools). Anyone can bring their own agent; VeriPay is not the only
    agent on the platform.
 2. **Agent-only by default.** The person says one sentence and confirms. Their agent writes the work order, gathers
-   offers, hires, approves change orders and releases the money, all inside dollar limits only the person can change
-   (with a PIN the agent never sees).
+   offers, hires, approves change orders and releases the money, all inside dollar limits only the person can change.
 3. **A negotiation layer.** Price, visit time and extra costs are negotiated agent to agent, counter by counter, toward
    the typical price and never over the customer's ceiling. Every move is shown in a process view.
 4. **AI checks at every payment step.** The hold is sized by a risk model, change orders and materials advances are
@@ -112,20 +160,28 @@ draft). We did not find a deployed product for local services that does these fo
    audit models. Models give verdicts with reasons; code moves the money; anything the models can't decide goes to a
    person.
 
+![A note that tries to instruct the checker is flagged, and the money waits](docs/img/checks.jpg)
+
 Marketplaces that truly hold funds (Upwork, Escrow.com) leave approval to a human; home-services marketplaces don't
 hold funds and compensate after the fact. None writes a definition of done up front and checks evidence against it.
 Details and sources: [docs/IMPACT.md](docs/IMPACT.md).
 
-## Why it needs PayPal
+## Safety: what an agent can and cannot do
 
-| What the job needs | How PayPal does it |
-|---|---|
-| Hold the money until the work is done, without a licensed escrow account | Orders `intent: AUTHORIZE`, then capture, partial capture per milestone, void, reauthorize |
-| Let an agent pay without ever seeing a card number | Vault v3 saved PayPal or card, merchant-initiated holds within limits only the person sets |
-| Pay the pro and their helper in seconds, to an email, with no bank details | Payouts, one batch, one item per payee |
-| Settle a disagreement fairly | Partial refunds, PayPal Disputes with the checks as evidence |
-| Bill work found off-platform with the same checks | Invoicing, sent only after the checks pass |
-| Both sides already have accounts | 440 million active PayPal accounts |
+An agent can do the work; it can't act as its person.
+
+- **Limits are set in dollars by the person,** on the website. The agent can't raise them or change who gets paid.
+- **A PIN the agent never sees** guards everything only the person may do: limits and permissions, agent tokens, the
+  price ceiling, confirming, releasing, waiving, approving a change order, applying a scope revision, and a dispute
+  settlement.
+- **The PIN** has 4 to 6 digits, is set at demo sign-up and is stored only as a hash; 5 wrong tries lock it for 15
+  minutes. In production this step-up is Log in with PayPal.
+- **Links don't sign anyone in.** An askPerson link opens the page but signs nobody in, and resuming a demo customer
+  needs the PIN too.
+- **Signed mandates.** When the person requires it, their agent moves money only under an AP2-style mandate they
+  signed; each one is checked and logged (`api/src/proof/mandates.js`).
+- **Evidence can't give orders.** Text in a note or receipt that tries to instruct the checker is removed before any
+  model reads it, flagged, and sent to a person.
 
 ## Try it
 
@@ -133,24 +189,26 @@ Details and sources: [docs/IMPACT.md](docs/IMPACT.md).
     npm run seed         # a believable demo month (stand-in PayPal)
     npm start            # http://localhost:8810
 
-Without `api/.env` the server uses a PayPal stand-in that follows PayPal's rules, and every id it makes is tagged
-SIMULATED on screen. With sandbox keys in `api/.env` (see `api/.env.example`), every call goes to the real PayPal
-sandbox. Open **Demo → Judge tour** for the three-minute path: post a job, agents negotiate, hold, evidence, checks, payout,
+Open **Demo → Judge tour** for the three-minute path: post a job, agents negotiate, hold, evidence, checks, payout,
 back office.
 
-Connect your own agent (Claude Code, Claude Desktop, or any MCP or A2A client): see **Connect your agent** on the site
-or `/llms.txt`. Limits are set in dollars by the person on the website; the agent can't raise them or change who gets paid.
+**What you'll see on your machine.** Two parts of our setup are not public:
 
-Consent: an agent can't act as its person. Everything only the person may do needs their website session and a step-up
-with a PIN the agent never sees. That covers limits and permissions, agent tokens, the price ceiling, confirming,
-releasing, waiving, approving a change order, applying a scope revision, and a dispute settlement. The PIN has 4 to 6
-digits, is set at demo sign-up and is stored only as a hash; 5 wrong tries lock it for 15 minutes. An askPerson link
-opens the page but signs nobody in, and resuming a demo customer needs the PIN too. In production this step-up is Log
-in with PayPal.
+- **PayPal:** without `api/.env` the server uses a PayPal stand-in that follows PayPal's rules, and every id it makes
+  is tagged SIMULATED on screen. With your own sandbox keys in `api/.env` (see `api/.env.example`), every call goes to
+  the real PayPal sandbox.
+- **Our models** run on our own GPU behind a token, so a fresh checkout has none. The app still runs end to end: what
+  code can decide on its own (when and where a photo was taken, reused photos, a receipt total that matches the
+  approved change orders) is still checked, and every condition that needs judgment goes to **Review**, where you
+  confirm it as the customer. Nothing is ever released on wording nobody judged. The demo video shows the same tour
+  with the models deciding.
+
+Connect your own agent (Claude Code, Claude Desktop, or any MCP or A2A client): see **Connect your agent** on the site
+or `/llms.txt`.
 
     npm test             # api tests (node --test)
 
-## How it works
+## Code map
 
 - `api/src/jobs.js`: the job state machine, from draft through scoped, offered, agreed, held, working, submitted and
   checking to released, with needs_fix, review, disputed, resolved, cancelled and expired. It covers holds and
@@ -162,22 +220,18 @@ in with PayPal.
   models judge what the evidence shows; code decides.
 - `api/src/mcp.js`, `tools.js`: the agent tools over MCP, REST and A2A. `pros.js` holds the demo pros and their
   negotiating agents.
-- `api/src/proof/`: signed receipts in an append-only transparency log; `proof/mandates.js` checks AP2-style mandates
-  the person signs before their agent moves money (when they require it), and logs each one.
-- Second batch (PLAN §15): landlords and tenants (the tenant posts, the landlord's PayPal pays), Pay Later on holds of
-  $300+, Venmo payouts (the sandbox refuses Venmo wallets, so they fall back to PayPal and say so), tips (100% to the
-  pro), scheduling (`calendar.js`), an inbox with a simulated email/SMS outbox (`inbox.js`, nothing is sent), Spanish
-  for pros (`i18n.js`), and an insurance claim package for leak jobs (`reports.js`). See docs/API.md. The seed adds one
-  of each: a tenant's leak paid by the demo landlord, a tipped job, a moved visit, and an agent hiring with a signed
-  mandate.
+- `api/src/proof/`: signed receipts in an append-only transparency log, and the mandate checks.
+- More roles and payment options: landlords and tenants (the tenant posts, the landlord's PayPal pays), Pay Later on
+  holds of $300+, Venmo payouts (the sandbox refuses Venmo wallets, so they fall back to PayPal and say so), tips (100%
+  to the pro), scheduling (`calendar.js`), an inbox with a simulated email/SMS outbox (`inbox.js`, nothing is sent),
+  Spanish for pros (`i18n.js`), and an insurance claim package for leak jobs (`reports.js`). The seed adds one of each.
 - `web/`: the site (React + Vite). The back office uses AG Grid and AG Charts.
 - `ml/`: our own small models, distilled from an open-weights teacher.
 
-API reference: [docs/API.md](docs/API.md). Models and their measured numbers: [docs/MODELS.md](docs/MODELS.md). Why it
-matters, with sources: [docs/IMPACT.md](docs/IMPACT.md). Real sandbox runs and agent test rounds:
-[docs/live-test/](docs/live-test/).
+API reference: [docs/API.md](docs/API.md). Why it matters, with sources: [docs/IMPACT.md](docs/IMPACT.md). Real
+sandbox runs and agent test rounds: [docs/live-test/](docs/live-test/).
 
-## Not real
+## What's simulated
 
 The PayPal sandbox and its stand-in; the demo pros, their agents and their addresses; the demo clock that can move
 forward. VeriPay is not a licensed money transmitter. See "Honest limits" in [docs/IMPACT.md](docs/IMPACT.md) for
