@@ -4,8 +4,11 @@ Your AI agent hires a local pro, PayPal holds the money, and the pro is paid as 
 
 ![VeriPay: the money waits for the proof](docs/img/cover.jpg)
 
-We built this for the PayPal AI Hackathon. It runs on PayPal's sandbox, and the demo pros in Austin, TX are
-fictional. The demo video is on the Devpost page.
+**Try it live: [veripay.theminimallab.com](https://veripay.theminimallab.com)** (open Demo, then Judge tour). It runs
+on the real PayPal sandbox with our models deciding every check.
+
+We built this for the PayPal AI Hackathon. The demo pros in Austin, TX are fictional. The demo video is on the Devpost
+page.
 
 ## In 30 seconds
 
@@ -183,6 +186,11 @@ An agent can do the work, but it can't act as its person.
 
 ## Try it
 
+The quickest way is the live site, [veripay.theminimallab.com](https://veripay.theminimallab.com): the real PayPal
+sandbox and our models, nothing to install. It is served from our own machine, so it can be a little slow at times.
+
+To run it yourself:
+
     npm run setup        # installs api/ and web/, builds the site
     npm run seed         # a believable demo month (stand-in PayPal)
     npm start            # http://localhost:8810
@@ -190,7 +198,7 @@ An agent can do the work, but it can't act as its person.
 Open **Demo → Judge tour** for the three-minute path: post a job, agents negotiate, hold, evidence, checks, payout,
 back office.
 
-Two parts of our setup aren't public, so a fresh checkout behaves a little differently:
+On your own machine, two parts of our setup aren't included, so a fresh checkout behaves a little differently:
 
 - PayPal: without `api/.env` the server uses a PayPal stand-in that follows PayPal's rules, and every id it makes
   is tagged SIMULATED on screen. With your own sandbox keys in `api/.env` (see `api/.env.example`), every call goes to
@@ -198,7 +206,7 @@ Two parts of our setup aren't public, so a fresh checkout behaves a little diffe
 - Our models run on our own GPU behind a token, so a fresh checkout has none. The app still runs end to end. Code
   still checks what it can decide on its own (when and where a photo was taken, reused photos, a receipt total that
   matches the approved change orders). Every condition that needs judgment goes to Review, where you confirm it as the
-  customer, so no money is released on a condition nobody judged. The demo video shows the same tour with the models
+  customer, so no money is released on a condition nobody judged. The live site runs the same tour with the models
   deciding.
 
 Connect your own agent (Claude Code, Claude Desktop, or any MCP or A2A client): see **Connect your agent** on the site

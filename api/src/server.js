@@ -943,7 +943,9 @@ app.get("/api/stats", (req, res) => {
     last: last ? { number: last.number, title: last.scope.title, pro: last.agreed.proName, checks: last.checks.at(-1).checks.map((c) => ({ id: c.id, what: c.what, verdict: c.verdict })), checker: last.checks.at(-1).checker, release: J.money(last.money.split.release), payout: last.money.payout?.batchId || null, capture: last.hold.capture, at: last.paidAt } : null });
 });
 // what the models are, truthfully: configured or not, live by a probe (?probe=0 skips it), the last replies' source and ms
-app.get("/api/models/status", async (req, res) => res.json({ ...(await modelStatus({ probe: req.query.probe !== "0", timeoutMs: 1500 })), risk: await (await import("./risk.js")).riskStatus(), lastCheck: J.lastCheck(), rule: "lastCheck is what the last evidence check in this server actually used; a model or VLM is named only when its verdict came back." }));
+// the model server's address stays private (the site may be public): every URL in the status reads "the model server"
+const hideUrls = (o) => JSON.parse(JSON.stringify(o).replace(/https?:\/\/[^"\s)]+/g, "the model server"));
+app.get("/api/models/status", async (req, res) => res.json(hideUrls({ ...(await modelStatus({ probe: req.query.probe !== "0", timeoutMs: 1500 })), risk: await (await import("./risk.js")).riskStatus(), lastCheck: J.lastCheck(), rule: "lastCheck is what the last evidence check in this server actually used; a model or VLM is named only when its verdict came back." })));
 // one full example job for the home page: the latest paid demo job, as anyone may see it (no names, emails, street or
 // person ids; ZIP only), with its synthetic demo photos served below
 // which paid demo job the home page shows: the one whose checks the models decided with the fewest conditions left to a
