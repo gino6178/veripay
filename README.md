@@ -1,23 +1,23 @@
 # VeriPay
 
-**Your AI agent hires a local pro. PayPal holds the money. It's paid the second the work is proven done.**
+Your AI agent hires a local pro, PayPal holds the money, and the pro is paid as soon as the work is proven done.
 
 ![VeriPay: the money waits for the proof](docs/img/cover.jpg)
 
-Built for the PayPal AI Hackathon. A demonstration on PayPal's sandbox; the demo pros in Austin, TX are fictional.
-The demo video is on the Devpost page.
+We built this for the PayPal AI Hackathon. It runs on PayPal's sandbox, and the demo pros in Austin, TX are
+fictional. The demo video is on the Devpost page.
 
 ## In 30 seconds
 
-1. **One sentence.** You tell your agent "the kitchen faucet keeps dripping, fix it this week, under $200".
-2. **A definition of done.** VeriPay turns it into a work order whose every condition names the photo, receipt or note
+1. You tell your agent "the kitchen faucet keeps dripping, fix it this week, under $200".
+2. VeriPay turns that into a work order with a definition of done. Each condition names the photo, receipt or note
    that will prove it.
-3. **Agents negotiate.** Your agent and the pros' agents bargain agent-to-agent, never over your ceiling.
-4. **PayPal holds, not charges.** An authorization on your saved PayPal or card; nothing is captured yet.
-5. **The evidence is checked.** Before and after photos and the parts receipt: when and where each was taken, whether
-   it was reused, what it shows, whether the receipt matches the approved change orders.
-6. **Paid the moment it passes.** Code captures exactly what's due and one PayPal Payouts batch pays the pro and their
-   helper. Anything that can't be decided goes to a person.
+3. Your agent bargains with the pros' agents and never goes over your ceiling.
+4. PayPal authorizes the amount on your saved PayPal or card. Nothing is captured yet.
+5. The pro sends before and after photos and the parts receipt. VeriPay checks when and where each photo was taken,
+   whether it was reused, what it shows, and whether the receipt matches the approved change orders.
+6. When every condition passes, code captures exactly what's due and one PayPal Payouts batch pays the pro and their
+   helper. Anything the checks can't decide goes to a person.
 
 ## Why it needs PayPal
 
@@ -48,17 +48,17 @@ flowchart TD
   PP --> K[Agent Toolkit<br/>reconciliation]
 ```
 
-Models only return verdicts with reasons and a confidence. Code decides, and every result on screen is labelled MODEL
-or RULES.
+The models return a verdict, a reason and a confidence for each condition. Code makes the decision, and the screen
+labels every result MODEL or RULES.
 
 ## For the judges
 
-The hackathon scores five criteria equally. Four of them are answered here with what is built and measured; the fifth,
-Presentation, is the video.
+The hackathon scores five criteria equally. The sections below cover four of them with what we built and measured.
+The fifth, Presentation, is the video.
 
 ### Technological implementation: 219 PayPal features, tracked one by one
 
-We listed every PayPal capability that could serve a job paid on proof and kept a status for each one.
+We listed every PayPal capability that could help pay for a job on proof, and tracked the status of each one.
 
 | | |
 |---|---|
@@ -93,7 +93,7 @@ API (Set Transaction Context), Disputes, Webhooks (with signature verification a
 and Balances, the JS SDK v6 (buttons, card fields, Fastlane, Google Pay, Pay Later messages), the PayPal Agent Toolkit
 and PayPal's hosted MCP server. Every POST carries a `PayPal-Request-Id` so a retried call is the same call.
 
-The AI side is our own: five models, served from one GPU (an NVIDIA L4) with no hosted AI key.
+The AI is our own: five models served from one NVIDIA L4 GPU, with no hosted AI key.
 
 | Model | Job | Measured on held-out sets |
 |---|---|---|
@@ -103,24 +103,24 @@ The AI side is our own: five models, served from one GPU (an NVIDIA L4) with no 
 | Done-OCR (our own detector + recogniser) | reads receipts and invoices | 27 / 30 receipt totals read to the cent |
 | Done-Risk (LightGBM, not an LLM) | dispute and overrun probability, sizes the hold's buffer | within 0.003 AUC of the ceiling |
 
-The judge tour runs end to end in about 23 seconds of server time with every condition decided by the models. 390 API
-tests pass, and 11 rounds of scripted AI-agent users (first-time visitor, judge, dishonest pro) are recorded in
+With the models deciding every condition, the judge tour takes about 23 seconds of server time. 390 API tests pass,
+and 11 rounds of scripted AI-agent users (first-time visitor, judge, dishonest pro) are recorded in
 [docs/live-test/](docs/live-test/). Models and their measured numbers: [docs/MODELS.md](docs/MODELS.md).
 
 ### Design: a complete product, not a proof of concept
 
 ![Six real pages, one per role](docs/img/bento.jpg)
 
-About 28 pages for five roles, all working against the same jobs and the same money:
+There are about 28 pages for five roles, all working on the same jobs and the same money.
 
-- **Customer:** one conversation with their agent (with a side panel for the job in focus on wide screens), job pages
+- Customer: one conversation with their agent (with a side panel for the job in focus on wide screens), job pages
   with offers, the hold, each condition's verdict and the money to the cent, groups of neighbours, a home record with
   warranties, and the page where they connect their own AI agent and set its limits in dollars.
-- **Pro:** a phone-first job flow in English or Spanish (one photo prompt at a time, scan a receipt), earnings, payouts,
+- Pro: a phone-first job flow in English or Spanish (one photo prompt at a time, scan a receipt), earnings, payouts,
   invoices, onboarding with Log in with PayPal.
-- **Landlord and tenant:** the tenant posts, the landlord's agent hires within the landlord's limits.
-- **Inspector and arbiter:** confirm a milestone, settle a dispute with the evidence in front of them.
-- **Back office:** every job, hold and payout in AG Grid and AG Charts, with reconciliation against PayPal's records.
+- Landlord and tenant: the tenant posts, the landlord's agent hires within the landlord's limits.
+- Inspector and arbiter: confirm a milestone, settle a dispute with the evidence in front of them.
+- Back office: every job, hold and payout in AG Grid and AG Charts, with reconciliation against PayPal's records.
 
 A `/demo` page opens any step as the person it belongs to, and **Demo → Judge tour** walks the whole path in about
 three minutes.
@@ -138,8 +138,8 @@ three minutes.
 | Reach | **440 million** active PayPal accounts on both sides of the job | [PayPal Q3 2026 earnings](https://www.sec.gov/Archives/edgar/data/0001633917/000163391726000086/pypl3q-26earningsrelease.htm) |
 
 The FTC's own advice to homeowners is not to pay in full up front and to hold the final payment until the work is done.
-VeriPay makes that the default: the money is authorized, not charged, and it moves the moment the proof passes, so the
-pro is paid in minutes instead of chasing an invoice. Every figure, with its quoted line, is in
+VeriPay makes that the default. The money is authorized but not charged, and it moves when the proof passes, so the
+pro is paid in minutes and doesn't have to chase an invoice. Every figure, with its quoted line, is in
 [docs/IMPACT.md](docs/IMPACT.md), including what we could not verify and a realistic path to market.
 
 ### Innovation: what we did not find anywhere else
@@ -148,17 +148,17 @@ We looked at the marketplaces (Angi, Thumbtack, TaskRabbit, Upwork, Escrow.com) 
 Research proposals for "verify, then pay" exist, mostly as crypto escrow contracts (TessPay, ERC-8183, the IETF PACT
 draft). We did not find a deployed product for local services that does these four things:
 
-1. **An open agent-to-agent platform for local work.** The customer's agent and each pro's agent talk over A2A (agent
+1. An open agent-to-agent platform for local work. The customer's agent and each pro's agent talk over A2A (agent
    card at `/.well-known/agent-card.json`) and MCP (48 tools). Anyone can bring their own agent; VeriPay is not the only
    agent on the platform.
-2. **Agent-only by default.** The person says one sentence and confirms. Their agent writes the work order, gathers
+2. Agents do everything by default. The person says one sentence and confirms. Their agent writes the work order, gathers
    offers, hires, approves change orders and releases the money, all inside dollar limits only the person can change.
-3. **A negotiation layer.** Price, visit time and extra costs are negotiated agent to agent, counter by counter, toward
+3. A negotiation layer. Price, visit time and extra costs are negotiated agent to agent, counter by counter, toward
    the typical price and never over the customer's ceiling. Every move is shown in a process view.
-4. **AI checks at every payment step.** The hold is sized by a risk model, change orders and materials advances are
+4. AI checks at every payment step. The hold is sized by a risk model, change orders and materials advances are
    matched against a receipt read by our OCR, and the release waits for each condition's verdict from our vision and
-   audit models. Models give verdicts with reasons; code moves the money; anything the models can't decide goes to a
-   person.
+   audit models. The models give verdicts with reasons, code moves the money, and anything the models can't decide
+   goes to a person.
 
 ![A note that tries to instruct the checker is flagged, and the money waits](docs/img/checks.jpg)
 
@@ -168,20 +168,18 @@ Details and sources: [docs/IMPACT.md](docs/IMPACT.md).
 
 ## Safety: what an agent can and cannot do
 
-An agent can do the work; it can't act as its person.
+An agent can do the work, but it can't act as its person.
 
-- **Limits are set in dollars by the person,** on the website. The agent can't raise them or change who gets paid.
-- **A PIN the agent never sees** guards everything only the person may do: limits and permissions, agent tokens, the
-  price ceiling, confirming, releasing, waiving, approving a change order, applying a scope revision, and a dispute
-  settlement.
-- **The PIN** has 4 to 6 digits, is set at demo sign-up and is stored only as a hash; 5 wrong tries lock it for 15
-  minutes. In production this step-up is Log in with PayPal.
-- **Links don't sign anyone in.** An askPerson link opens the page but signs nobody in, and resuming a demo customer
-  needs the PIN too.
-- **Signed mandates.** When the person requires it, their agent moves money only under an AP2-style mandate they
-  signed; each one is checked and logged (`api/src/proof/mandates.js`).
-- **Evidence can't give orders.** Text in a note or receipt that tries to instruct the checker is removed before any
-  model reads it, flagged, and sent to a person.
+- The person sets the limits in dollars on the website. The agent can't raise them or change who gets paid.
+- Everything only the person may do needs a PIN the agent never sees: limits and permissions, agent tokens, the price
+  ceiling, confirming, releasing, waiving, approving a change order, applying a scope revision, and settling a dispute.
+- The PIN has 4 to 6 digits, is set at demo sign-up and is stored only as a hash. Five wrong tries lock it for 15
+  minutes. In production this step-up would be Log in with PayPal.
+- An askPerson link opens the page but signs nobody in, and resuming a demo customer needs the PIN too.
+- When the person requires it, their agent moves money only under an AP2-style mandate they signed. Each mandate is
+  checked and logged (`api/src/proof/mandates.js`).
+- If a note or receipt contains text that tries to instruct the checker, that text is removed before any model reads
+  it, and the job is flagged and sent to a person.
 
 ## Try it
 
@@ -192,16 +190,16 @@ An agent can do the work; it can't act as its person.
 Open **Demo → Judge tour** for the three-minute path: post a job, agents negotiate, hold, evidence, checks, payout,
 back office.
 
-**What you'll see on your machine.** Two parts of our setup are not public:
+Two parts of our setup aren't public, so a fresh checkout behaves a little differently:
 
-- **PayPal:** without `api/.env` the server uses a PayPal stand-in that follows PayPal's rules, and every id it makes
+- PayPal: without `api/.env` the server uses a PayPal stand-in that follows PayPal's rules, and every id it makes
   is tagged SIMULATED on screen. With your own sandbox keys in `api/.env` (see `api/.env.example`), every call goes to
   the real PayPal sandbox.
-- **Our models** run on our own GPU behind a token, so a fresh checkout has none. The app still runs end to end: what
-  code can decide on its own (when and where a photo was taken, reused photos, a receipt total that matches the
-  approved change orders) is still checked, and every condition that needs judgment goes to **Review**, where you
-  confirm it as the customer. Nothing is ever released on wording nobody judged. The demo video shows the same tour
-  with the models deciding.
+- Our models run on our own GPU behind a token, so a fresh checkout has none. The app still runs end to end. Code
+  still checks what it can decide on its own (when and where a photo was taken, reused photos, a receipt total that
+  matches the approved change orders). Every condition that needs judgment goes to Review, where you confirm it as the
+  customer, so no money is released on a condition nobody judged. The demo video shows the same tour with the models
+  deciding.
 
 Connect your own agent (Claude Code, Claude Desktop, or any MCP or A2A client): see **Connect your agent** on the site
 or `/llms.txt`.
