@@ -3,297 +3,297 @@
   {
    "text": "Maria asks in her own words.",
    "start": 0,
-   "end": 0.892
+   "end": 0.956
   },
   {
    "text": "Our model writes the definition of done, with a typical price range.",
-   "start": 1.095,
-   "end": 3.221
+   "start": 1.173,
+   "end": 3.451
   }
  ],
  "find": [
   {
    "text": "Her agent finds the pros nearby and reads their reviews.",
    "start": 0,
-   "end": 1.963
+   "end": 2.104
   },
   {
    "text": "The agents bargain in rounds, and VeriPay shows where each price sits in the market, and warns her when a deal isn't coming together.",
-   "start": 2.165,
-   "end": 6.245
+   "start": 2.32,
+   "end": 6.691
   }
  ],
  "offers": [
   {
    "text": "Eastside's agent comes down to $185, and hers hires inside a signed mandate capped at $200.",
    "start": 0,
-   "end": 4.216
+   "end": 4.517
   },
   {
    "text": "A lower cap, or a replay, is refused.",
-   "start": 4.419,
-   "end": 5.732
+   "start": 4.734,
+   "end": 6.141
   }
  ],
  "chat": [
   {
    "text": "No new app needed:",
    "start": 0,
-   "end": 0.643
+   "end": 0.689
   },
   {
    "text": "from a chat, she can post a job, compare offers and bargain.",
-   "start": 0.786,
-   "end": 2.761
+   "start": 0.842,
+   "end": 2.959
   },
   {
    "text": "Hiring still comes back to VeriPay, and her PIN.",
-   "start": 2.964,
-   "end": 4.61
+   "start": 3.176,
+   "end": 4.939
   }
  ],
  "hold": [
   {
    "text": "PayPal authorizes $200:",
    "start": 0,
-   "end": 1.297
+   "end": 1.389
   },
   {
    "text": "held, not charged.",
-   "start": 1.439,
-   "end": 2.126
+   "start": 1.542,
+   "end": 2.278
   },
   {
    "text": "On site, a $47.05 valve is over her agent's limit, so only Maria's PIN can approve it, and PayPal re-holds $247.05 on her saved card.",
-   "start": 2.329,
-   "end": 8.186
+   "start": 2.495,
+   "end": 8.771
   }
  ],
  "phone": [
   {
    "text": "The plumber sends photos and the receipt from his phone.",
    "start": 0,
-   "end": 1.651
+   "end": 1.769
   }
  ],
  "checks": [
   {
    "text": "Our models read the photos and the receipt;",
    "start": 0,
-   "end": 1.207
+   "end": 1.293
   },
   {
    "text": "code checks when and where each was taken.",
-   "start": 1.349,
-   "end": 2.664
+   "start": 1.446,
+   "end": 2.854
   },
   {
    "text": "A note hiding an instruction is flagged, and the money waits for a person.",
-   "start": 2.866,
-   "end": 5.156
+   "start": 3.071,
+   "end": 5.524
   }
  ],
  "paid": [
   {
    "text": "Every check passed:",
    "start": 0,
-   "end": 0.622
+   "end": 0.666
   },
   {
    "text": "code captures exactly $232.05, one Payouts batch pays the pro, and an agent reconciles both with PayPal.",
-   "start": 0.765,
-   "end": 5.311
+   "start": 0.819,
+   "end": 5.69
   }
  ],
  "arch": [
   {
    "text": "Any agent can drive it, over MCP, A2A or REST.",
    "start": 0,
-   "end": 2.031
+   "end": 2.176
   },
   {
    "text": "But every money move passes one guard in our code:",
-   "start": 2.234,
-   "end": 3.777
+   "start": 2.394,
+   "end": 4.047
   },
   {
    "text": "limits, PIN, signed mandates.",
-   "start": 3.92,
-   "end": 4.887
+   "start": 4.2,
+   "end": 5.236
   },
   {
    "text": "The money itself runs on PayPal.",
-   "start": 5.09,
-   "end": 6.104
+   "start": 5.454,
+   "end": 6.54
   }
  ],
  "hood": [
   {
    "text": "Under the hood it's all PayPal:",
    "start": 0,
-   "end": 0.981
+   "end": 1.051
   },
   {
    "text": "Orders authorizes, the Vault re-holds, a partial capture takes what's due, Payouts pays the pro, and the Agent Toolkit reconciles.",
-   "start": 1.124,
-   "end": 5.572
+   "start": 1.204,
+   "end": 5.97
   }
  ],
  "scale": [
   {
    "text": "It scales to materials, Pay Later, landlords and neighbors, with an AG Grid back office.",
    "start": 0,
-   "end": 3.041
+   "end": 3.259
   },
   {
    "text": "AI agents tested it in forty-five runs over eleven rounds;",
-   "start": 3.243,
-   "end": 5.398
+   "start": 3.475,
+   "end": 5.784
   },
   {
    "text": "every blocker was fixed.",
-   "start": 5.541,
-   "end": 6.32
+   "start": 5.937,
+   "end": 6.771
   }
  ],
  "vision": [
   {
    "text": "Next, our vision:",
    "start": 0,
-   "end": 0.542
+   "end": 0.581
   },
   {
    "text": "Log in with PayPal, live payouts to every pro, and any job a photo can prove.",
-   "start": 0.685,
-   "end": 3.631
+   "start": 0.734,
+   "end": 3.89
   }
  ],
  "end": [
   {
    "text": "VeriPay.",
    "start": 0,
-   "end": 0.428
+   "end": 0.459
   },
   {
    "text": "The money waits for the proof.",
-   "start": 0.631,
-   "end": 1.401
+   "start": 0.676,
+   "end": 1.501
   }
  ],
  "pain1": [
   {
    "text": "Maria paid the plumber up front.",
    "start": 0,
-   "end": 0.926
+   "end": 0.992
   },
   {
    "text": "He took the cash, and her faucet still drips.",
-   "start": 1.129,
-   "end": 2.465
+   "start": 1.209,
+   "end": 2.642
   }
  ],
  "pain2": [
   {
    "text": "Luis fixed a leak first.",
    "start": 0,
-   "end": 0.808
+   "end": 0.865
   },
   {
    "text": "The client said \"later,\" and he's still waiting to get paid.",
-   "start": 1.01,
-   "end": 2.671
+   "start": 1.082,
+   "end": 2.862
   }
  ],
  "solution": [
   {
    "text": "VeriPay:",
    "start": 0,
-   "end": 0.428
+   "end": 0.459
   },
   {
    "text": "PayPal holds the money without charging it, AI checks the work, and the pro is paid the moment it passes.",
-   "start": 0.571,
-   "end": 4.099
+   "start": 0.612,
+   "end": 4.392
   },
   {
    "text": "Built for homeowners and the small pros they hire.",
-   "start": 4.301,
-   "end": 5.799
+   "start": 4.608,
+   "end": 6.214
   }
  ],
  "impact": [
   {
    "text": "Home repair is a $525 billion a year market, where four in five trade businesses are one-person shops.",
    "start": 0,
-   "end": 4.215
+   "end": 4.517
   },
   {
    "text": "69 percent of people targeted by a repair scam lose money, and PayPal already has 440 million accounts on both sides.",
-   "start": 4.418,
-   "end": 9.251
+   "start": 4.733,
+   "end": 9.911
   }
  ],
  "novel": [
   {
    "text": "What we did not find anywhere else:",
    "start": 0,
-   "end": 0.913
+   "end": 0.978
   },
   {
    "text": "an open agent-to-agent platform for local work.",
-   "start": 1.056,
-   "end": 2.775
+   "start": 1.131,
+   "end": 2.973
   },
   {
    "text": "Agents do it all by default, bargain in rounds, and AI checks every payment step, while only code moves the money.",
-   "start": 2.977,
-   "end": 6.963
+   "start": 3.19,
+   "end": 7.46
   }
  ],
  "models": [
   {
    "text": "We fine-tuned 0.6-billion-parameter models from a 30-billion open teacher.",
    "start": 0,
-   "end": 2.854
+   "end": 3.057
   },
   {
    "text": "Code writes every label;",
-   "start": 3.056,
-   "end": 3.842
+   "start": 3.274,
+   "end": 4.116
   },
   {
    "text": "the teacher only the wording.",
-   "start": 3.985,
-   "end": 4.834
+   "start": 4.269,
+   "end": 5.179
   },
   {
    "text": "On held-out tests, the audit model gets 99.9% of verdicts right, and it runs on one GPU in about a third of a second.",
-   "start": 5.036,
-   "end": 9.949
+   "start": 5.396,
+   "end": 10.66
   }
  ],
  "features": [
   {
    "text": "In all, we tracked 219 PayPal features one by one:",
    "start": 0,
-   "end": 2.215
+   "end": 2.373
   },
   {
    "text": "188 are built, and 91 are verified in the real sandbox, including Orders, the Vault, Payouts, Invoicing and PayPal's own MCP server.",
-   "start": 2.358,
-   "end": 8.238
+   "start": 2.526,
+   "end": 8.827
   }
  ],
  "product": [
   {
    "text": "And it's a complete product:",
    "start": 0,
-   "end": 0.81
+   "end": 0.868
   },
   {
    "text": "28 pages for five roles, from the customer's agent and the pro's phone, in English or Spanish, to landlords, inspectors and the back office.",
-   "start": 0.953,
-   "end": 6.074
+   "start": 1.021,
+   "end": 6.508
   }
  ]
 }

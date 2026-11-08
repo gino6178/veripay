@@ -6,6 +6,7 @@ import VO9 from '../vo9-timings.json';
 import { S5 } from '../v5/timeline5';
 
 export const FPS = 30;
+export const SPEED = 1.4; // v5 pictures and voice both play this much faster (vo/make-vo9.mjs uses the same)
 type Line = { text: string; start: number; end: number };
 const VO = VO9 as Record<string, Line[]>;
 const voEnd = (id: string) => VO[id]?.at(-1)?.end ?? 0;
@@ -50,7 +51,7 @@ export const SHOTS7 = PLAN.map((p) => {
     voFrom = from + Math.round(p.voLead * FPS);
   } else {
     const s = S5[p.src]; srcFrom = s.from; srcDur = s.duration;
-    rate = p.rate ?? 1.5;
+    rate = p.rate ?? SPEED;
     duration = Math.round(srcDur / rate);
     // the voice starts where it started in v5's picture (scaled), and the shot keeps 0.5 s after it
     if (p.vo) {
