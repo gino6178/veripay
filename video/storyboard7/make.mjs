@@ -1,5 +1,5 @@
-// The v7 storyboard as a PDF: two frames per shot from the final cut (out/veripay-v7-final.mp4), with the shot's
-// time, what's on screen and the narration as spoken. node storyboard7/make.mjs → storyboard7/VeriPay-分鏡-v7.pdf
+// The v8 storyboard as a PDF: two frames per shot from the final cut (out/veripay-v8-final.mp4), with the shot's
+// time, what's on screen and the narration as spoken. node storyboard7/make.mjs → storyboard7/VeriPay-分鏡-v8.pdf
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -11,24 +11,24 @@ const PAIN = ["Maria paid the plumber up front. He took the cash, and her faucet
 const INFO = {
   cover: ["封面", "VeriPay 封面圖，PAID 章在 1 秒時蓋下。沒有旁白。", "原速"],
   pain: ["1 痛點動畫", "Maria 先付錢被跑了 → Luis 先做完收不到錢。動畫原本的配樂保留。數據卡：$1,405 home-improvement scam 中位損失（BBB 2025）；59% 小企業有逾期 30 天以上的帳款（QuickBooks 2026）。", "原速"],
-  solution: ["2 解法＋給誰用", "PayPal 凍結、AI 檢查、檢查通過就付款。", "1.06 倍"],
-  impact: ["2a 潛在影響", "四張數字卡：$525B 美國居家修繕年支出（Harvard JCHS）· 79% 專業工程行是一人經營（NAHB 2025）· 69.1% 被修繕詐騙鎖定的人真的賠錢（BBB 2025）· 440M PayPal 帳戶（PayPal Q3 2026）。", "原速"],
-  ask: ["3 她的話 → 工單", "Maria 用自己的話發案，模型寫出完工定義和行情區間。", "1.4 倍"],
-  find: ["3b 找師傅、議價", "附近師傅、評價、多輪議價、行情條、談不攏的警告。兩家真實店家名稱已模糊。", "1.4 倍"],
-  offers: ["4 報價、授權上限", "Eastside 降到 $185，在簽章授權上限 $200 內雇用；更低上限或重放被拒。", "1.4 倍"],
-  chat: ["4b 在聊天軟體裡", "從聊天發案、比價、議價；雇用仍回到 VeriPay 和她的 PIN。", "1.4 倍"],
-  hold: ["5 凍結、追加、PIN", "PayPal 凍結 $200 → 現場追加 $47.05 超過代理人額度 → Maria 用 PIN 核准 → 重新凍結 $247.05。", "1.4 倍"],
-  phone: ["6 師傅的手機", "師傅用手機傳照片和收據。", "1.4 倍"],
-  checks: ["7 AI 檢查", "模型讀照片和收據，程式核對時間地點；藏指令的備註被抓出來，錢等人看。", "1.4 倍"],
-  paid: ["8 放款", "程式收 $232.05，一批 Payouts 付給師傅，PAID 章，對帳代理人。", "1.4 倍"],
-  novel: ["8a 創新", "四格依序亮起：開放的代理人對代理人平台 · 預設全由代理人處理 · 議價層 · 每個付款節點都有 AI 檢查（錢只由程式移動）。", "原速"],
-  arch: ["9 架構", "任何代理人都能透過 MCP、A2A、REST 操作；每次動錢都經過同一道程式關卡。", "1.4 倍"],
-  models: ["10 模型設計", "30B 開源老師 → 0.6B 學生 → GGUF Q8 · 639 MB → L4 GPU。99.9% 判對、0.4% 攻擊得逞、100% 議價在上限內、0.51% OCR 錯字率。", "1.4 倍"],
-  hood: ["11 底層全是 PayPal", "Orders 授權、Vault 重新凍結、部分請款、Payouts 付款、Agent Toolkit 對帳。", "1.4 倍"],
-  features: ["11a 219 項 PayPal 功能", "219 評估 · 188 寫了程式 · 91 在真實 sandbox 驗證；下方 14 個 PayPal 產品標籤依序亮起。", "原速"],
-  scale: ["12 規模、後台、測試", "材料款、Pay Later、房東、鄰居團購、AG Grid 後台、45 次代理人測試。", "1.4 倍"],
-  product: ["12a 完整產品", "六張真實頁面快切：客戶 Agent 頁 · 師傅手機（西班牙文）· 房東 · 爭議 · 後台 · 評審 /demo。", "原速"],
-  vision: ["12b 願景（還沒做）", "Log in with PayPal、即時付款給每位師傅、任何能用照片證明的工作。畫面標示尚未完成。", "1.4 倍"],
+  impact: ["2 市場有多大", "三張數字卡，隨旁白落下：$525B 美國居家修繕年支出（Harvard JCHS）· 79% 專業工程行是一人經營（NAHB 2025）· 440M PayPal 帳戶（PayPal Q3 2026）。詐騙數據已在痛點卡上，不再重複。", "原速"],
+  solution: ["2a 解法＋給誰用", "PayPal 凍結、AI 檢查、檢查通過就付款。", "0.96 倍"],
+  ask: ["3 她的話 → 工單", "Maria 用自己的話發案，模型寫出完工定義和行情區間。", "1.25 倍"],
+  find: ["3b 找師傅、議價", "鏡頭推近名單（1.3 倍）→ 拉回看評價 → 再推近議價卡。名單裡兩家真實店家換成虛構名稱 Westside Plumbing、Riverbend Pipe Co.。", "1.25 倍"],
+  chat: ["4b 在聊天軟體裡", "從聊天發案、比價、議價；雇用仍回到 VeriPay 和她的 PIN。移到 3b 之後，讓授權→凍結→追加這條金流線不中斷。", "1.25 倍"],
+  offers: ["4 報價、授權上限", "Eastside 降到 $185，在簽章授權上限 $200 內雇用；更低上限或重放被拒。", "1.25 倍"],
+  hold: ["5 凍結、追加、PIN", "先看 PayPal API 面板的 HELD → 鏡頭推近左側卡片（1.4 倍）：+$47.05 超過代理人額度 → PIN → 重新凍結 $247.05 → 拉回看 API 面板。", "1.25 倍"],
+  phone: ["6 師傅的手機", "師傅用手機傳照片和收據。", "1.25 倍"],
+  checks: ["7 AI 檢查", "模型讀照片和收據，程式核對時間地點；藏指令的備註出現時鏡頭推近（1.35 倍），紅色警示和 captured $0.00 放大。", "1.25 倍"],
+  paid: ["8 放款", "推近 Paid $208.84 卡（1.5 倍）→ 拉回 → 推近 PayPal API 面板的 Payouts 和 Agent Toolkit 對帳（1.3 倍）。", "1.25 倍"],
+  novel: ["8a 創新：agentic commerce", "標題「Not found anywhere else in agentic commerce.」四格依序亮起：開放的代理人對代理人平台 · 預設全由代理人處理 · 議價層 · 每個付款節點都有 AI 檢查（錢只由程式移動）。間距加大。", "原速"],
+  arch: ["9 架構", "任何代理人都能透過 MCP、A2A、REST 操作；每次動錢都經過同一道程式關卡。", "1.25 倍"],
+  models: ["10 模型設計", "30B 開源老師 → 0.6B 學生 → GGUF Q8 · 639 MB → L4 GPU。99.9% 判對、0.4% 攻擊得逞、100% 議價在上限內、0.51% OCR 錯字率。", "1.25 倍"],
+  hood: ["11 底層全是 PayPal", "Orders 授權、Vault 重新凍結、部分請款、Payouts 付款、Agent Toolkit 對帳。", "1.25 倍"],
+  features: ["11a 219 項 PayPal 功能", "219 評估 · 188 寫了程式 · 91 在真實 sandbox 驗證；14 個產品標籤依序亮起。旁白縮短，不再重複 11 的內容。", "原速"],
+  scale: ["12 規模、AG Grid 後台、測試", "材料款、Pay Later、房東、鄰居團購 → AG Grid 後台停留 4 秒、推近 1.3 倍，右側列出功能 → 45 次代理人測試。", "1.25 倍＋AG Grid 慢放"],
+  product: ["12a 完整產品", "3×2 便當格：客戶 · 師傅手機（西班牙文）· 房東 · 爭議 · 後台 · 評審 /demo，大角色標籤，依序亮起，最後全亮。", "原速"],
+  vision: ["12b 願景（還沒做）", "Log in with PayPal、即時付款給每位師傅、任何能用照片證明的工作。畫面標示尚未完成。", "1.25 倍"],
   end: ["13 片尾卡", "VeriPay、The money waits for the proof、PayPal 與 AI 清單、github.com/gino6178/veripay、Try it: Demo → Judge tour。不放字幕，避免蓋住網址。", "0.72 倍"],
 };
 const NEW = new Set(["impact", "novel", "features", "product"]);
@@ -83,22 +83,22 @@ p b { display: block; font-size: 8pt; color: var(--signal); letter-spacing: .04e
 .muted { color: var(--ink3); }
 </style></head><body>
 <div class="cover">
-  <h1>VeriPay 影片分鏡 v7 <span>定稿</span></h1>
+  <h1>VeriPay 影片分鏡 v8 <span>依審稿意見修訂</span></h1>
   <div class="facts">
     <div><b>${fmt(total)}</b><span>全片長度（上限 3:00）</span></div>
-    <div><b>21 鏡</b><span>含 4 個新鏡，對應評分項目</span></div>
-    <div><b>1.4 倍</b><span>旁白和 v5 畫面一起加速</span></div>
-    <div><b>−16 LUFS</b><span>響度；峰值 −1.6 dBFS</span></div>
+    <div><b>21 鏡</b><span>順序調整：痛點 → 市場 → 解法</span></div>
+    <div><b>1.25 倍</b><span>旁白統一語速，比 v7 慢</span></div>
+    <div><b>−16.6 LUFS</b><span>響度；峰值 −2.6 dBFS</span></div>
   </div>
   <table>
     <tr><th>評分項</th><th>對應的鏡</th></tr>
-    <tr><td>技術實作</td><td>5 凍結、7 AI 檢查、8 放款、10 模型、11 底層 PayPal、11a 219／188／91</td></tr>
+    <tr><td>技術實作</td><td>5 凍結、7 AI 檢查、8 放款、10 模型、11 底層 PayPal、11a 219／188／91、12 AG Grid</td></tr>
     <tr><td>設計</td><td>3–8 整條實機流程、12a 五種角色的真實頁面</td></tr>
-    <tr><td>潛在影響</td><td>1 痛點動畫與數據卡、2「給誰用」、2a 市場與受害數據</td></tr>
-    <tr><td>創新</td><td>3b、4 代理人議價、8a 別處找不到的四件事</td></tr>
-    <tr><td>簡報</td><td>問題 → 對象 → 解法 → 實機流程 → 為什麼重要 → 片尾試用方式</td></tr>
+    <tr><td>潛在影響</td><td>1 痛點動畫與數據卡、2 市場數據、2a「給誰用」</td></tr>
+    <tr><td>創新</td><td>3b、4 代理人議價、8a agentic commerce 裡別處找不到的四件事</td></tr>
+    <tr><td>簡報</td><td>問題 → 市場 → 解法 → 實機流程 → 為什麼重要 → 片尾試用方式；單行字幕、關鍵卡片推近</td></tr>
   </table>
-  <p class="muted">畫面取自成片 video/out/veripay-v7-final.mp4，每鏡兩格（約 35% 與 80% 處）。片中不出現模型名稱；兩家真實店家名稱已模糊。</p>
+  <p class="muted">畫面取自成片 video/out/veripay-v8-final.mp4，每鏡兩格（約 35% 與 80% 處）。片中不出現模型名稱；名單裡兩家真實店家換成虛構名稱。</p>
 </div>
 ${rows}
 </body></html>`;
@@ -108,7 +108,7 @@ const b = await launch();
 const p = await b.newPage();
 await p.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle0", timeout: 120000 });
 await p.evaluateHandle("document.fonts.ready");
-const out = path.join(HERE, "VeriPay-分鏡-v7.pdf");
+const out = path.join(HERE, "VeriPay-分鏡-v8.pdf");
 await p.pdf({ path: out, format: "A4", landscape: true, printBackground: true, preferCSSPageSize: true });
 await b.close();
 console.log(out, fs.statSync(out).size);

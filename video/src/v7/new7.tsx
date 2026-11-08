@@ -32,26 +32,25 @@ export const V7Pain: React.FC<{ music: boolean }> = ({ music }) => (
   </AbsoluteFill>
 );
 
-// ── 2a impact: four sourced numbers, each lands with the words that say it ───────────────────────────────────────────
+// ── 2 impact: three sourced numbers, each lands with the words that say it (the scam figure is on the pain card) ──
 const STATS = [
-  { v: '$525B', l: 'a year on US home improvement and repair', s: 'Harvard JCHS', t: 0.0 },
-  { v: '79%', l: 'of specialty trade businesses are one-person shops', s: 'NAHB, 2025', t: 0.24 },
-  { v: '69.1%', l: 'of people targeted by a repair scam lost money', s: 'BBB Scam Tracker, 2025', t: 0.5 },
-  { v: '440M', l: 'PayPal accounts, on both sides of the job', s: 'PayPal Q3 2026', t: 0.78 },
+  { v: '$525B', l: 'a year on US home improvement and repair', s: 'Harvard JCHS', t: 0.05 },
+  { v: '79%', l: 'of specialty trade businesses are one-person shops', s: 'NAHB, 2025', t: 0.3 },
+  { v: '440M', l: 'PayPal accounts, on both sides of the job', s: 'PayPal Q3 2026', t: 0.72 },
 ];
 export const V7Impact: React.FC = () => {
   const f = useCurrentFrame();
   return (
-    <AbsoluteFill style={{ background: C.ground, padding: '110px 120px' }}>
-      <div style={{ font: `800 64px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em', ...rise(f, 2, 24) }}>A real problem, <span style={{ color: C.signal }}>at real scale.</span></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 28, marginTop: 90 }}>
-        {STATS.map((x, i) => {
+    <AbsoluteFill style={{ background: C.ground, padding: '0 140px 120px', justifyContent: 'center' }}>
+      <div style={{ font: `800 66px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em', ...rise(f, 2, 24) }}>A real problem, <span style={{ color: C.signal }}>at real scale.</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40, marginTop: 90 }}>
+        {STATS.map((x) => {
           const at = voiceAt('impact', x.t);
           return (
-            <div key={x.v} style={{ background: C.panel, border: `1px solid ${C.line}`, borderRadius: 20, padding: '40px 34px', minHeight: 420, display: 'flex', flexDirection: 'column', ...rise(f, at, 36), boxShadow: i === 2 ? `0 0 0 3px ${C.signalLine}` : undefined }}>
-              <div style={{ height: 112 }}><Odo value={x.v} delay={at + 4} size={96} color={i === 2 ? C.bad : C.primary} /></div>
-              <div style={{ font: `600 32px/1.3 ${F.text}`, color: C.ink, marginTop: 26, flex: 1 }}>{x.l}</div>
-              <div style={{ font: `500 20px/1.3 ${F.mono}`, color: C.ink3 }}>{x.s}</div>
+            <div key={x.v} style={{ background: C.panel, border: `1px solid ${C.line}`, borderRadius: 22, padding: '48px 44px 40px', minHeight: 470, display: 'flex', flexDirection: 'column', ...rise(f, at, 36) }}>
+              <div style={{ height: 136 }}><Odo value={x.v} delay={at + 4} size={120} color={C.primary} /></div>
+              <div style={{ font: `600 36px/1.3 ${F.text}`, color: C.ink, marginTop: 28, flex: 1 }}>{x.l}</div>
+              <div style={{ font: `500 22px/1.3 ${F.mono}`, color: C.ink3, marginTop: 24 }}>{x.s}</div>
             </div>
           );
         })}
@@ -60,37 +59,37 @@ export const V7Impact: React.FC = () => {
   );
 };
 
-// ── 8a what is new: four tiles light in turn, each with the real screen behind it ────────────────────────────────────
+// ── 8a what is new in agentic commerce: four tiles light in turn, each with the real screen behind it ────────────────────────────────────
 const Ico: React.FC<{ d: string }> = ({ d }) => <svg width={44} height={44} viewBox="0 0 24 24" fill="none" stroke={C.signal} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>;
 const NOVEL = [
-  { t: 'Open agent-to-agent platform', d: 'Any agent joins over A2A or MCP. VeriPay is not the only agent here.', img: 'shot-connect', ico: 'M4 12h6m4 0h6M10 12a2 2 0 1 0 4 0 2 2 0 1 0-4 0M4 7v10M20 7v10', t0: 0.14 },
-  { t: 'Agent-only by default', d: 'One sentence and one confirm. The agent does the rest, inside limits only the person sets.', img: 'shot-ask', ico: 'M12 3a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zM5 21a7 7 0 0 1 14 0', t0: 0.42 },
-  { t: 'A negotiation layer', d: 'Price, time and extras bargained agent to agent, never over the ceiling.', img: 'shot-offers', ico: 'M4 7h12l-3-3M20 17H8l3 3', t0: 0.6 },
-  { t: 'AI at every payment step', d: 'Risk sizes the hold, OCR matches the receipt, vision and audit release it. Code moves the money.', img: 'shot-needsfix', ico: 'M5 12l4 4 10-10', t0: 0.76 },
+  { t: 'Open agent-to-agent platform', d: 'Any agent joins over A2A or MCP. VeriPay is not the only agent here.', img: 'shot-connect', ico: 'M4 12h6m4 0h6M10 12a2 2 0 1 0 4 0 2 2 0 1 0-4 0M4 7v10M20 7v10', t0: 0.25 },
+  { t: 'Agent-only by default', d: 'One sentence and one confirm. The agent does the rest, inside limits only the person sets.', img: 'shot-ask', ico: 'M12 3a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zM5 21a7 7 0 0 1 14 0', t0: 0.48 },
+  { t: 'A negotiation layer', d: 'Price, time and extras bargained agent to agent, never over the ceiling.', img: 'shot-offers', ico: 'M4 7h12l-3-3M20 17H8l3 3', t0: 0.63 },
+  { t: 'AI at every payment step', d: 'Risk sizes the hold, OCR matches the receipt, vision and audit release it. Code moves the money.', img: 'shot-needsfix', ico: 'M5 12l4 4 10-10', t0: 0.74 },
 ];
 export const V7Novel: React.FC = () => {
   const f = useCurrentFrame();
   return (
-    <AbsoluteFill style={{ background: C.ground, padding: '90px 110px' }}>
-      <div style={{ font: `800 60px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em', ...rise(f, 2, 24) }}>What we didn't find <span style={{ color: C.signal }}>anywhere else.</span></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 26, marginTop: 64 }}>
+    <AbsoluteFill style={{ background: C.ground, padding: '80px 120px 130px' }}>
+      <div style={{ font: `800 58px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em', ...rise(f, 2, 24) }}>Not found anywhere else in <span style={{ color: C.signal }}>agentic commerce.</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 36, marginTop: 52, flex: 1 }}>
         {NOVEL.map((x) => {
           const at = voiceAt('novel', x.t0), lit = interpolate(f, [at, at + 12], [0, 1], { ...cl, easing: snappy });
           return (
             <div key={x.t} style={{ background: C.panel, borderRadius: 20, overflow: 'hidden', border: `1px solid ${lit > 0.5 ? C.signalLine : C.line}`, boxShadow: lit > 0.5 ? SHADOW_LG : 'none', opacity: 0.35 + 0.65 * lit, transform: `translateY(${(1 - lit) * 18}px)` }}>
-              <div style={{ height: 250, overflow: 'hidden', borderBottom: `1px solid ${C.line}` }}>
+              <div style={{ height: 330, overflow: 'hidden', borderBottom: `1px solid ${C.line}` }}>
                 <Img src={staticFile(`v7/${x.img}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', transform: `scale(${1.04 - 0.04 * lit})` }} />
               </div>
-              <div style={{ padding: '28px 28px 34px' }}>
+              <div style={{ padding: '30px 32px 40px' }}>
                 <Ico d={x.ico} />
-                <div style={{ font: `800 34px/1.15 ${F.display}`, color: C.ink, marginTop: 14, letterSpacing: '-0.02em' }}>{x.t}</div>
-                <div style={{ font: `500 25px/1.35 ${F.text}`, color: C.ink2, marginTop: 12 }}>{x.d}</div>
+                <div style={{ font: `800 36px/1.15 ${F.display}`, color: C.ink, marginTop: 16, letterSpacing: '-0.02em' }}>{x.t}</div>
+                <div style={{ font: `500 26px/1.4 ${F.text}`, color: C.ink2, marginTop: 14 }}>{x.d}</div>
               </div>
             </div>
           );
         })}
       </div>
-      <div style={{ position: 'absolute', left: 110, bottom: 60, font: `500 20px/1.3 ${F.mono}`, color: C.ink3, opacity: interpolate(f, [voiceAt('novel', 0.8), voiceAt('novel', 0.8) + 10], [0, 1], cl) }}>
+      <div style={{ marginTop: 22, font: `500 20px/1.3 ${F.mono}`, color: C.ink3, opacity: interpolate(f, [voiceAt('novel', 0.85), voiceAt('novel', 0.85) + 10], [0, 1], cl) }}>
         Compared with the leading home-services and freelance marketplaces · sources in docs/IMPACT.md
       </div>
     </AbsoluteFill>
@@ -101,10 +100,10 @@ export const V7Novel: React.FC = () => {
 const PRODUCTS = ['Orders', 'Payments', 'Vault', 'Payouts', 'Invoicing', 'Payment Links', 'Subscriptions', 'Disputes', 'Webhooks', 'Partner Referrals', 'Risk', 'JS SDK v6', 'Agent Toolkit', 'PayPal MCP'];
 export const V7Features: React.FC = () => {
   const f = useCurrentFrame();
-  const n = [{ v: '219', l: 'PayPal features evaluated', c: C.primary, t: 0.08 }, { v: '188', l: 'built in code', c: C.signal, t: 0.28 }, { v: '91', l: 'verified in the real sandbox', c: C.ok, t: 0.42 }];
-  const chips0 = voiceAt('features', 0.55), chips1 = voiceAt('features', 0.97);
+  const n = [{ v: '219', l: 'PayPal features evaluated', c: C.primary, t: 0.18 }, { v: '188', l: 'built in code', c: C.signal, t: 0.4 }, { v: '91', l: 'verified in the real sandbox', c: C.ok, t: 0.6 }];
+  const chips0 = voiceAt('features', 0.72), chips1 = voiceAt('features', 1.12);
   return (
-    <AbsoluteFill style={{ background: C.ground, padding: '100px 120px' }}>
+    <AbsoluteFill style={{ background: C.ground, padding: '0 120px 110px', justifyContent: 'center' }}>
       <div style={{ display: 'flex', gap: 34 }}>
         {n.map((x) => {
           const at = voiceAt('features', x.t);
@@ -122,32 +121,71 @@ export const V7Features: React.FC = () => {
           return <span key={p} style={{ font: `600 30px/1 ${F.text}`, padding: '16px 24px', borderRadius: 999, background: on > 0.5 ? C.signalSoft : C.panel, color: on > 0.5 ? C.signalHi : C.ink3, border: `1px solid ${on > 0.5 ? C.signalLine : C.line}`, opacity: 0.4 + 0.6 * on }}>{p}</span>;
         })}
       </div>
-      <div style={{ position: 'absolute', left: 120, bottom: 56, font: `500 20px/1.3 ${F.mono}`, color: C.ink3, ...rise(f, chips0, 10) }}>Item-by-item status: docs/PAYPAL-整合總表.md · docs/PAYPAL-候選清單.md</div>
+      <div style={{ marginTop: 44, font: `500 20px/1.3 ${F.mono}`, color: C.ink3, ...rise(f, chips0, 10) }}>Item-by-item status: docs/PAYPAL-整合總表.md · docs/PAYPAL-候選清單.md</div>
     </AbsoluteFill>
   );
 };
 
-// ── 12a a complete product: one real page per role, a hard cut each ─────────────────────────────────────────────────
+// ── 12a a complete product: a 3×2 bento of real pages, one per role, lit in turn ─────────────────────────────────────
 const PAGES = [
-  { img: 'customer', role: 'Customer · the agent, with the job beside it' },
-  { img: 'pro', role: 'Pro · on a phone, in Spanish', phone: true },
-  { img: 'landlord', role: 'Landlord · tenants and limits' },
-  { img: 'dispute', role: 'Dispute · settled on the evidence' },
-  { img: 'office', role: 'Back office · every hold and payout' },
-  { img: 'demo', role: 'Judges · every step, one click away' },
+  { img: 'customer', role: 'Customer', sub: 'the agent, with the job beside it' },
+  { img: 'pro', role: 'Pro', sub: 'on a phone, in Spanish', phone: true },
+  { img: 'landlord', role: 'Landlord', sub: 'tenants and limits' },
+  { img: 'dispute', role: 'Dispute', sub: 'settled on the evidence' },
+  { img: 'office', role: 'Back office', sub: 'every hold and payout' },
+  { img: 'demo', role: 'Judges', sub: 'every step, one click away' },
 ];
 export const PRODUCT_CUTS = PAGES.map((_, i) => i);
 export const V7Product: React.FC = () => {
-  const f = useCurrentFrame(), d = S7.product.duration, each = d / PAGES.length;
-  const i = Math.min(PAGES.length - 1, Math.floor(f / each)), p = PAGES[i], lf = f - i * each;
-  const push = interpolate(lf, [0, each], [1.0, 1.035], { ...cl, easing: Easing.out(Easing.quad) });
+  const f = useCurrentFrame(), d = S7.product.duration, each = (d - 30) / PAGES.length;
+  const cur = Math.min(PAGES.length - 1, Math.floor((f - 6) / each)), allOn = f > d - 30;
   return (
-    <AbsoluteFill style={{ background: p.phone ? C.primary : C.ground }}>
-      {p.phone
-        ? <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 430, height: 930, borderRadius: 48, padding: 14, background: '#0B1533', boxShadow: SHADOW_LG, transform: `scale(${push})` }}><Img src={staticFile('v7/pro.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: 36 }} /></div></AbsoluteFill>
-        : <Img src={staticFile(`v7/${p.img}.jpg`)} style={{ width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', transform: `scale(${push})`, transformOrigin: '50% 30%' }} />}
-      <div style={{ position: 'absolute', left: 40, top: 18, padding: '12px 22px', borderRadius: 12, background: C.ink, color: '#fff', font: `700 28px/1 ${F.text}`, boxShadow: SHADOW_LG, ...rise(lf, 2, 14) }}>{p.role}</div>
-      <div style={{ position: 'absolute', right: 40, top: 30, padding: '8px 14px', borderRadius: 10, background: p.phone ? 'transparent' : 'rgba(255,255,255,0.92)', font: `700 24px/1 ${F.mono}`, color: p.phone ? '#fff' : C.ink3 }}>{i + 1} / {PAGES.length} · 28 pages</div>
+    <AbsoluteFill style={{ background: C.ground, padding: '56px 72px 124px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', ...rise(f, 0, 16) }}>
+        <div style={{ font: `800 52px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em' }}>One product, <span style={{ color: C.signal }}>five roles.</span></div>
+        <div style={{ font: `600 26px/1 ${F.mono}`, color: C.ink3 }}>28 pages, all real</div>
+      </div>
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', gap: 22, marginTop: 30 }}>
+        {PAGES.map((p, i) => {
+          const at = 6 + i * each, lit = allOn || i === cur;
+          const on = interpolate(f, [at - 4, at + 6], [0, 1], cl);
+          return (
+            <div key={p.img} style={{ position: 'relative', borderRadius: 18, overflow: 'hidden', background: p.phone ? C.primary : C.panel,
+              border: `${lit ? 3 : 1}px solid ${lit ? C.signal : C.line}`, boxShadow: lit ? SHADOW_LG : 'none',
+              opacity: (0.3 + 0.7 * on) * (lit ? 1 : 0.6), transform: `scale(${lit && !allOn ? 1.02 : 1})` }}>
+              {p.phone
+                ? <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', paddingTop: 16 }}><Img src={staticFile('v7/pro.jpg')} style={{ height: '125%', borderRadius: 18, objectFit: 'cover', objectPosition: 'top' }} /></div>
+                : <Img src={staticFile(`v7/${p.img}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left' }} />}
+              <div style={{ position: 'absolute', left: 16, bottom: 16, padding: '12px 20px', borderRadius: 12, background: C.ink, color: '#fff', boxShadow: SHADOW_LG }}>
+                <div style={{ font: `800 34px/1 ${F.display}`, letterSpacing: '-0.01em' }}>{p.role}</div>
+                <div style={{ font: `500 20px/1.2 ${F.text}`, marginTop: 6, color: '#C9D6F0' }}>{p.sub}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </AbsoluteFill>
+  );
+};
+
+// ── 12 AG Grid: the back office held on screen, what it does listed beside it ────────────────────────────────────────
+const GRID = ['A grid each for jobs, holds, payouts, disputes and the ledger', 'Sort, filter and search any column', 'Live job status, 41 jobs, paged', 'CSV export for the books', 'Reconciled against PayPal: 2 of 2 matched'];
+export const GridLabels: React.FC<{ dur: number }> = ({ dur }) => {
+  const f = useCurrentFrame(), x = interpolate(f, [0, 14, dur - 10, dur], [640, 0, 0, 640], { ...cl, easing: snappy });
+  return (
+    <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 620, background: C.ground, borderLeft: `1px solid ${C.line}`, padding: '120px 56px', transform: `translateX(${x}px)` }}>
+      <div style={{ font: `800 50px/1.1 ${F.display}`, color: C.ink, letterSpacing: '-0.03em' }}>AG Grid <span style={{ color: C.signal }}>back office</span></div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 26, marginTop: 48 }}>
+        {GRID.map((t, i) => {
+          const on = interpolate(f, [12 + i * 9, 22 + i * 9], [0, 1], cl);
+          return (
+            <div key={t} style={{ display: 'flex', gap: 18, alignItems: 'flex-start', opacity: on, transform: `translateY(${(1 - on) * 12}px)` }}>
+              <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke={C.ok} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: 2 }}><path d="M5 12l4 4 10-10" /></svg>
+              <div style={{ font: `600 32px/1.3 ${F.text}`, color: C.ink }}>{t}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 };
