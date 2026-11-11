@@ -2,9 +2,9 @@
 
 Your AI agent hires a local pro, PayPal holds the money, and the pro is paid as soon as the work is proven done.
 
-[![VeriPay demo video (2:58): the money waits for the proof](docs/img/cover.jpg)](https://youtu.be/qwcCWs_GXtg)
+[![VeriPay demo video (2:58): the money waits for the proof](docs/img/cover.jpg)](https://youtu.be/gCuaAUyKVbA)
 
-**Watch the demo: [youtu.be/qwcCWs_GXtg](https://youtu.be/qwcCWs_GXtg)** (2:58) ·
+**Watch the demo: [youtu.be/gCuaAUyKVbA](https://youtu.be/gCuaAUyKVbA)** (2:58) ·
 **Try it live: [veripay.theminimallab.com](https://veripay.theminimallab.com)** (open Demo, then Judge tour). It runs
 on the real PayPal sandbox with our models deciding every check.
 
@@ -246,3 +246,6 @@ how a real launch would work.
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+The leaking-tap photos in the demo video are frames of "A running tap of water" by Justeraren, CC BY 4.0, from
+Wikimedia Commons.
